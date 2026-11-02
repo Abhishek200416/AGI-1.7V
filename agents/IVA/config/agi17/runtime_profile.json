@@ -10,7 +10,7 @@
   "storage_roots": {
     "primary_storage_dir": "D:\\AGI_Storage\\AGI_1_7",
     "primary_evaluation_dir": "D:\\AGI_Evaluation\\AGI_1_7_OMEGA_COMMAND",
-    "local_fallback_dir": "agents/AGI_1_7/local_fallback_storage"
+    "local_fallback_dir": "agents/IVA/local_fallback_storage"
   },
   "orchestration_limits": {
     "max_agent_specializations": 100,

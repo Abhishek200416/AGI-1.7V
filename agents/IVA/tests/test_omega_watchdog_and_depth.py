@@ -17,17 +17,17 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.resource_snapshot import LiveResourceMetrics
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide, OrderType
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import (
+from agents.IVA.engine.agi17.capabilities.resource_snapshot import LiveResourceMetrics
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide, OrderType
+from agents.IVA.engine.agi17.finance.order_book_simulator import (
     BookLevel,
     OrderBookFactory,
     OrderFillResult,
     SimulatedOrderBook,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.resource_governor import ResourceGovernor
-from agents.AGI_1_7.engine.agi17.process_supervision.resource_watchdog import (
+from agents.IVA.engine.agi17.orchestration.resource_governor import ResourceGovernor
+from agents.IVA.engine.agi17.process_supervision.resource_watchdog import (
     ResourceWatchdogDaemon,
     WatchdogReport,
 )

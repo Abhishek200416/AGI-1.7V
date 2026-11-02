@@ -22,18 +22,18 @@ import tempfile
 import time
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import (
+from agents.IVA.engine.agi17.finance.authoritative_risk_engine import (
     AuthoritativeTradeRiskEngine,
     ExecutionSimulationResult,
     OrderRiskValidationResult,
 )
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicMarketCalendar,
     ExchangeHoliday,
     IST,
 )
-from agents.AGI_1_7.engine.agi17.finance.forward_paper_pipeline import (
+from agents.IVA.engine.agi17.finance.forward_paper_pipeline import (
     EventType,
     FeedProvenance,
     ForwardPaperEvidenceRecord,
@@ -42,7 +42,7 @@ from agents.AGI_1_7.engine.agi17.finance.forward_paper_pipeline import (
     MultiSessionEvidenceTracker,
     SupervisedForwardValidationRunner,
 )
-from agents.AGI_1_7.engine.agi17.finance.instrument_metadata_catalog import (
+from agents.IVA.engine.agi17.finance.instrument_metadata_catalog import (
     InstrumentMetadataCatalog,
 )
 

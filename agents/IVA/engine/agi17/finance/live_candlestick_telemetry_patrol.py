@@ -34,7 +34,7 @@ logger = logging.getLogger("CandlePatrol")
 # Root storage paths
 WORKSPACE_DIR = Path(__file__).resolve().parents[5]
 STREAM_LOG_PATH = WORKSPACE_DIR / "scratch" / "live_candlestick_stream.json"
-MIRROR_LOG_PATH = WORKSPACE_DIR / "agents" / "AGI_1_7" / "finance" / "live_candlestick_stream.json"
+MIRROR_LOG_PATH = WORKSPACE_DIR / "agents" / "IVA" / "finance" / "live_candlestick_stream.json"
 STREAM_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 MIRROR_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 

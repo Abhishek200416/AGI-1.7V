@@ -40,12 +40,12 @@ from datetime import datetime, date, timedelta
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     LiveBrokerLedger,
     StatutoryCostSchedule,
     calculate_statutory_charges,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContractValidator,
     LiveContract,
     OptionType,
@@ -53,25 +53,25 @@ from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
     is_valid_tick_size,
     STANDARD_LOT_SIZES,
 )
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     DynamicExchangeCalendar,
     DynamicMarketCalendar,
     CalendarSessionPhase,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ThreeAgentContractCoordinator,
     OrderApprovalConsensus,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_authorization_manager import (
+from agents.IVA.engine.agi17.finance.live_authorization_manager import (
     LiveAuthorizationManager,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_broker_adapter import (
+from agents.IVA.engine.agi17.finance.live_broker_adapter import (
     LiveBrokerAdapter,
 )
-from agents.AGI_1_7.engine.agi17.finance.seven_day_validator import (
+from agents.IVA.engine.agi17.finance.seven_day_validator import (
     SevenDayOperationalValidator,
 )
 

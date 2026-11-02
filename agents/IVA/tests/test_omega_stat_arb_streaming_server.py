@@ -20,12 +20,12 @@ import time
 import unittest
 from typing import Any, Dict, Optional
 
-from agents.AGI_1_7.engine.agi17.finance.stat_arb_streaming_server import (
+from agents.IVA.engine.agi17.finance.stat_arb_streaming_server import (
     StatArbHTTPRequestHandler,
     StatArbStreamingServer,
     SyntheticStatArbFeed,
 )
-from agents.AGI_1_7.engine.agi17.finance.statistical_arbitrage_orchestrator import (
+from agents.IVA.engine.agi17.finance.statistical_arbitrage_orchestrator import (
     OrchestratorConfig,
     OrchestratorState,
     TradeExitReason,

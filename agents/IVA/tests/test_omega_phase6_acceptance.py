@@ -35,44 +35,44 @@ import tempfile
 import unittest
 import urllib.request
 
-from agents.AGI_1_7.engine.agi17.browser.computer_use_engine import (
+from agents.IVA.engine.agi17.browser.computer_use_engine import (
     BrowserLatencyTelemetrySummary,
     ComputerUseEngine,
     InteractionPathProfiler,
     InteractionStepLatency,
     SimulatedInputAdapter,
 )
-from agents.AGI_1_7.engine.agi17.finance.adaptive_strategy_learner import (
+from agents.IVA.engine.agi17.finance.adaptive_strategy_learner import (
     AdaptiveStrategyLearner,
     LossRootCause,
     TradePostMortemReport,
 )
-from agents.AGI_1_7.engine.agi17.finance.calibrated_scenario_forecaster import (
+from agents.IVA.engine.agi17.finance.calibrated_scenario_forecaster import (
     CalibratedScenarioForecaster,
     ScenarioArchetype,
     ScenarioForecastBattery,
 )
-from agents.AGI_1_7.engine.agi17.finance.dual_index_relationship import (
+from agents.IVA.engine.agi17.finance.dual_index_relationship import (
     DualIndexCrossRelationshipEngine,
     DualIndexTrendAgreement,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     LiveBrokerLedger,
     StatutoryCostSchedule,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_event_reconstructor import (
+from agents.IVA.engine.agi17.finance.market_event_reconstructor import (
     ExplanationClass,
     MarketEventReconstructionEngine,
     MoveType,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_horizon_quant_engine import (
+from agents.IVA.engine.agi17.finance.multi_horizon_quant_engine import (
     MultiHorizonQuantEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_risk_governor import (
+from agents.IVA.engine.agi17.finance.options_risk_governor import (
     InstitutionalOptionsRiskGovernor,
     OptionsRiskAudit,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ALEXA_PERSONA,
     EMILY_PERSONA,
     MAX_PERSONA,
@@ -81,15 +81,15 @@ from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
     EndOfSessionAgentReport,
     ThreeAgentContractCoordinator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
-from agents.AGI_1_7.engine.agi17.finance.visual_chart_reasoning import (
+from agents.IVA.engine.agi17.finance.visual_chart_reasoning import (
     VisualAnnotationType,
     VisualChartReasoningEngine,
     VisualChartSnapshot,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase6Acceptance(unittest.TestCase):

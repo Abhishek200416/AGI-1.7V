@@ -10,7 +10,7 @@ Wave 32 Test Suite (TASK-BN-42):
 """
 
 import unittest
-from agents.AGI_1_7.engine.agi17.finance.bayesian_kelly_position_sizer import (
+from agents.IVA.engine.agi17.finance.bayesian_kelly_position_sizer import (
     BayesianKellyPositionSizer,
     BayesianTradeHistory,
     DrawdownGovernorConfig,

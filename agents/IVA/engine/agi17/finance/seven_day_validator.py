@@ -19,7 +19,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     DynamicExchangeCalendar,
 )
 

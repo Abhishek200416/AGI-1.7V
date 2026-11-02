@@ -102,13 +102,13 @@ class RuntimeSupervisor:
             "chrome_cdp_service": ServiceStatus(
                 name="chrome_cdp_service",
                 port=9229,
-                launch_command=f"{self.python_exe} -m agents.AGI_1_7.engine.agi17.browser.launch_persistent_browser --login-url \"https://www.paytmmoney.com/stocks/fno/dashboard\"",
+                launch_command=f"{self.python_exe} -m agents.IVA.engine.agi17.browser.launch_persistent_browser --login-url \"https://www.paytmmoney.com/stocks/fno/dashboard\"",
                 dependencies=[]
             ),
             "dashboard_service": ServiceStatus(
                 name="dashboard_service",
                 port=8088,
-                launch_command=f"{self.python_exe} -m agents.AGI_1_7.ui.standalone_dashboard_server 8088",
+                launch_command=f"{self.python_exe} -m agents.IVA.ui.standalone_dashboard_server 8088",
                 dependencies=[]
             ),
             "overlay_service": ServiceStatus(

@@ -47,16 +47,16 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.engine.agi17.browser.browser_service import (
+from agents.IVA.engine.agi17.browser.browser_service import (
     BrowserControlState,
     BrowserHealthStatus,
     PersistentBrowserService,
 )
-from agents.AGI_1_7.engine.agi17.browser.computer_use_engine import (
+from agents.IVA.engine.agi17.browser.computer_use_engine import (
     ComputerUseEngine,
     SimulatedInputAdapter,
 )
-from agents.AGI_1_7.engine.agi17.finance.nifty50_intraday_trader import (
+from agents.IVA.engine.agi17.finance.nifty50_intraday_trader import (
     BlackScholesEngine,
     Nifty50ContractSpec,
     Nifty50IntradayTrader,
@@ -64,85 +64,85 @@ from agents.AGI_1_7.engine.agi17.finance.nifty50_intraday_trader import (
     OrderSide,
     TradeOutcome,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import (
     BankNiftyContractSpec,
     BankNiftyMarketCalendar,
     NSE_HOLIDAYS_2026,
 )
-from agents.AGI_1_7.engine.agi17.finance.pre_trade_risk_killswitch import (
+from agents.IVA.engine.agi17.finance.pre_trade_risk_killswitch import (
     PortfolioKillSwitch,
     PreTradeRiskEngine,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     DuplicateSupervisorError,
     SupervisorServiceState,
 )
-from agents.AGI_1_7.engine.agi17.finance.overnight_strategy_manager import (
+from agents.IVA.engine.agi17.finance.overnight_strategy_manager import (
     NextSessionScenario,
     OvernightDecision,
     OvernightStrategyManager,
     OvernightTradeCandidate,
     ScenarioOutcomeType,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_day_accounting import (
+from agents.IVA.engine.agi17.finance.multi_day_accounting import (
     CumulativeLedgerSummary,
     DailySessionRecord,
     MultiDayLedgerManager,
     SixAccuracyMetrics,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     ContractValidationResult,
     LiveContract,
     LiveContractValidator,
     OptionType as LiveOptionType,
     OrderAction as LiveOrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_broker_adapter import (
+from agents.IVA.engine.agi17.finance.live_broker_adapter import (
     BrokerOrderRecord,
     LiveBrokerAdapter,
     LiveOrderState,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_authorization_manager import (
+from agents.IVA.engine.agi17.finance.live_authorization_manager import (
     LiveAuthorizationManager,
     LiveSessionConfig,
     mask_account_id,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     LiveBrokerLedger,
 )
-from agents.AGI_1_7.engine.agi17.finance.global_risk_radar import (
+from agents.IVA.engine.agi17.finance.global_risk_radar import (
     GlobalRiskRadar,
     RadarEvent,
     RiskCategory,
     SourceClass,
     EventImpactDirection,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_horizon_quant_engine import (
+from agents.IVA.engine.agi17.finance.multi_horizon_quant_engine import (
     DirectionBias,
     HorizonTimeframe,
     MultiHorizonQuantEngine,
     QuantCandidate,
 )
-from agents.AGI_1_7.engine.agi17.finance.adaptive_strategy_learner import (
+from agents.IVA.engine.agi17.finance.adaptive_strategy_learner import (
     AdaptiveStrategyLearner,
     StrategyHypothesis,
 )
-from agents.AGI_1_7.engine.agi17.finance.regulatory_compliance_check import (
+from agents.IVA.engine.agi17.finance.regulatory_compliance_check import (
     RegulatoryComplianceGate,
     RegulatoryStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.seven_day_validator import (
+from agents.IVA.engine.agi17.finance.seven_day_validator import (
     DailySessionAudit,
     SevenDayOperationalValidator,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ThreeAgentContractCoordinator,
     AgentMessage,
     DisagreementRecord,
@@ -151,30 +151,30 @@ from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
     EMILY_PERSONA,
     MAX_PERSONA,
 )
-from agents.AGI_1_7.engine.agi17.finance.visual_chart_reasoning import (
+from agents.IVA.engine.agi17.finance.visual_chart_reasoning import (
     VisualChartReasoningEngine,
     VisualChartSnapshot,
     VisualAnnotationType,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_event_reconstructor import (
+from agents.IVA.engine.agi17.finance.market_event_reconstructor import (
     MarketEventReconstructionEngine,
     ReconstructedMarketEvent,
     MoveType,
 )
-from agents.AGI_1_7.engine.agi17.finance.calibrated_scenario_forecaster import (
+from agents.IVA.engine.agi17.finance.calibrated_scenario_forecaster import (
     CalibratedScenarioForecaster,
     ScenarioForecastBattery,
     ScenarioArchetype,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_risk_governor import (
+from agents.IVA.engine.agi17.finance.options_risk_governor import (
     InstitutionalOptionsRiskGovernor,
     OptionsRiskAudit,
 )
-from agents.AGI_1_7.engine.agi17.finance.dual_index_relationship import (
+from agents.IVA.engine.agi17.finance.dual_index_relationship import (
     DualIndexCrossRelationshipEngine,
     DualIndexRelationshipSummary,
 )
-from agents.AGI_1_7.engine.agi17.browser.computer_use_engine import (
+from agents.IVA.engine.agi17.browser.computer_use_engine import (
     InteractionPathProfiler,
     InteractionStepLatency,
 )
@@ -192,7 +192,7 @@ def resolve_storage_root(preferred: str | None = None) -> Path:
         probe.unlink(missing_ok=True)
         return candidate
     except OSError:
-        fallback = REPO_ROOT / "agents" / "AGI_1_7" / "runtime_storage"
+        fallback = REPO_ROOT / "agents" / "IVA" / "runtime_storage"
         fallback.mkdir(parents=True, exist_ok=True)
         return fallback
 

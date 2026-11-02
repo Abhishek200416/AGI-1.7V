@@ -9,24 +9,24 @@ import urllib.request
 from http import HTTPStatus
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.adapters.model_adapter import redact_sensitive_text
-from agents.AGI_1_7.engine.agi17.adapters.paytm_open_api_client import PaytmOpenApiClient
-from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
+from agents.IVA.engine.agi17.adapters.model_adapter import redact_sensitive_text
+from agents.IVA.engine.agi17.adapters.paytm_open_api_client import PaytmOpenApiClient
+from agents.IVA.engine.agi17.finance.canonical_market_data import (
     CanonicalMarketObservation,
     DataProvenance,
     Exchange,
     ObservationType,
     OptionType,
 )
-from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import (
+from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import (
     EvaluationDatasetRegistry,
 )
-from agents.AGI_1_7.engine.agi17.finance.historical_data_quality_auditor import (
+from agents.IVA.engine.agi17.finance.historical_data_quality_auditor import (
     HistoricalDataQualityAuditor,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_math import OptionsMath
-from agents.AGI_1_7.scripts.safe_backup_manager import SafeBackupManager
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.engine.agi17.finance.options_math import OptionsMath
+from agents.IVA.scripts.safe_backup_manager import SafeBackupManager
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase126ProductionReadiness(unittest.TestCase):

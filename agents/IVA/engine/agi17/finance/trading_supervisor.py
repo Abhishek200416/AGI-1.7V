@@ -40,13 +40,13 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import get_standard_lot_size
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import get_standard_lot_size
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ThreeAgentContractCoordinator,
     ALEXA_PERSONA,
     EMILY_PERSONA,
@@ -54,8 +54,8 @@ from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
     OrderApprovalConsensus,
     DisagreementRecord,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.finance.authoritative_cost_calculator import (
     AuthoritativeCostCalculator,
     BrokerageModel,
     InstrumentCategory,
@@ -1450,7 +1450,7 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[4]
-    default_storage = Path(r"D:\AGI_Storage\AGI_1_7\finance") if Path(r"D:\AGI_Storage\AGI_1_7").exists() else repo_root / "agents" / "AGI_1_7" / "runtime_storage" / "supervisor"
+    default_storage = Path(r"D:\AGI_Storage\AGI_1_7\finance") if Path(r"D:\AGI_Storage\AGI_1_7").exists() else repo_root / "agents" / "IVA" / "runtime_storage" / "supervisor"
     storage_dir = Path(args.storage_dir) if args.storage_dir else default_storage
     storage_dir.mkdir(parents=True, exist_ok=True)
     lock_file = storage_dir / "trading_supervisor.pid.json"

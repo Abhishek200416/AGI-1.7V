@@ -36,22 +36,22 @@ REPO_ROOT = Path(__file__).resolve().parents[5]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import (
+from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import (
     CentralizedLLMGateway,
     GatewayResponse,
     GatewayRoute,
 )
-from agents.AGI_1_7.engine.agi17.memory.persistent_memory_subsystem import (
+from agents.IVA.engine.agi17.memory.persistent_memory_subsystem import (
     MemoryCategory,
     PersistentMemorySubsystem,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.research.grounded_research import (
+from agents.IVA.engine.agi17.research.grounded_research import (
     GroundedResearchEngine,
     ResearchCitation,
     SSRFBlockedError,
 )
-from agents.AGI_1_7.engine.agi17.runtime.authoritative_brain_config import AuthoritativeBrainConfig
+from agents.IVA.engine.agi17.runtime.authoritative_brain_config import AuthoritativeBrainConfig
 
 logger = logging.getLogger("PersistentImprovementWorker")
 
@@ -451,7 +451,7 @@ class PersistentImprovementWorker:
                     "description": "Verify persistent memory WAL integrity and AST parsing health.",
                     "hypothesis": "Proactive memory and AST verification maintains high runtime health.",
                     "acceptance_criteria": ["Memory WAL check returns healthy", "Zero AST syntax failures"],
-                    "target_file": "agents/AGI_1_7/engine/agi17/memory/persistent_memory_subsystem.py",
+                    "target_file": "agents/IVA/engine/agi17/memory/persistent_memory_subsystem.py",
                 }
 
             checkpoint.goal_id = selected_task.get("task_id")

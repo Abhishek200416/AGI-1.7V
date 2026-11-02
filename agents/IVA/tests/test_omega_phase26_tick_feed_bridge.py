@@ -23,12 +23,12 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_tick_feed_bridge import (
+from agents.IVA.engine.agi17.finance.autonomous_tick_feed_bridge import (
     AutonomousTickFeedBridge,
     BurstRegime,
     HawkesBurstAlert,
@@ -36,10 +36,10 @@ from agents.AGI_1_7.engine.agi17.finance.autonomous_tick_feed_bridge import (
     MarketTick,
     get_autonomous_tick_feed_bridge,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_wealth_engine import (
+from agents.IVA.engine.agi17.finance.autonomous_wealth_engine import (
     AutonomousWealthEngine,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_autonomous_tick_feed_bridge as cc_get_bridge,
 )
 

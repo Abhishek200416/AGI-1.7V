@@ -34,26 +34,26 @@ import tempfile
 import unittest
 from unittest.mock import MagicMock
 
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     IST,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     StatutoryCostSchedule,
     calculate_statutory_charges,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     LiveContractValidator,
     OptionType,
     get_standard_lot_size,
     is_valid_tick_size,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ThreeAgentContractCoordinator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
 

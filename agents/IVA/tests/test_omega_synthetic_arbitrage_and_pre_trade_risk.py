@@ -24,19 +24,19 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OptionType, OrderSide, OrderType
-from agents.AGI_1_7.engine.agi17.finance.margin_liquidation import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OptionType, OrderSide, OrderType
+from agents.IVA.engine.agi17.finance.margin_liquidation import (
     MarginAccountSnapshot,
     MarginCallLiquidationEngine,
     MarginStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.pre_trade_risk_killswitch import (
+from agents.IVA.engine.agi17.finance.pre_trade_risk_killswitch import (
     EmergencyCancellationPlan,
     PortfolioKillSwitch,
     PreTradeOrderRequest,
     PreTradeRiskEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.synthetic_arbitrage import (
+from agents.IVA.engine.agi17.finance.synthetic_arbitrage import (
     ArbitrageType,
     BoxSpreadArbitrageOpportunity,
     OptionMarketQuote,

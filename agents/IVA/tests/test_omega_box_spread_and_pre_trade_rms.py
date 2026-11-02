@@ -19,13 +19,13 @@ from __future__ import annotations
 import datetime
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyMarketCalendar
-from agents.AGI_1_7.engine.agi17.finance.box_spread_arbitrage import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyMarketCalendar
+from agents.IVA.engine.agi17.finance.box_spread_arbitrage import (
     BoxSpreadArbitrageEngine,
     BoxSpreadArbitrageResult,
     BoxSpreadLegQuote,
 )
-from agents.AGI_1_7.engine.agi17.finance.pre_trade_rms import (
+from agents.IVA.engine.agi17.finance.pre_trade_rms import (
     BankNiftyPreTradeRms,
     PreTradeOrderIntent,
     RmsCheckResult,

@@ -52,16 +52,16 @@ import urllib.request
 from http import HTTPStatus
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.finance.market_observation_engine import (
+from agents.IVA.engine.agi17.finance.market_observation_engine import (
     MarketObservation,
     MarketObservationEngine,
     ObservationProvenanceType,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     SupervisorServiceState,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase10E2EIntegration(unittest.TestCase):
@@ -97,7 +97,7 @@ class TestOmegaPhase10E2EIntegration(unittest.TestCase):
         self.server.emergency_stop_active = False
         self.server.transition_log.clear()
         if hasattr(self.server, "session_supervisor") and self.server.session_supervisor:
-            from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import SessionState
+            from agents.IVA.engine.agi17.finance.trading_session_control_plane import SessionState
             self.server.session_supervisor.intake_controller.load_safe_defaults()
             self.server.session_supervisor.current_config = self.server.session_supervisor.intake_controller.cached_config
             self.server.session_supervisor.state = SessionState.READY_FOR_SUPERVISED_PAPER

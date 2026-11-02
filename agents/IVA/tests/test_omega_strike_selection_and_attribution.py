@@ -14,14 +14,14 @@ from __future__ import annotations
 import datetime
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OptionType
-from agents.AGI_1_7.engine.agi17.finance.options_attribution_and_selection import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OptionType
+from agents.IVA.engine.agi17.finance.options_attribution_and_selection import (
     BankNiftyStrikeSelector,
     GreeksPnlAttributionReport,
     OptionsPnlAttributionEngine,
     SelectedStrikeCandidate,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_math import OptionsMath
+from agents.IVA.engine.agi17.finance.options_math import OptionsMath
 
 
 class TestOmegaStrikeSelectionAndAttribution(unittest.TestCase):

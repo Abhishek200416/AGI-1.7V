@@ -11,15 +11,15 @@ Verifies:
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.market_depth_streaming import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.market_depth_streaming import (
     MarketDepthTick,
     MicrostructureMetrics,
     StreamingMarketDepthAdapter,
     ToxicityRegime,
     TradeTick,
 )
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import BookLevel
+from agents.IVA.engine.agi17.finance.order_book_simulator import BookLevel
 
 
 class TestMarketDepthStreamingAndVPIN(unittest.TestCase):

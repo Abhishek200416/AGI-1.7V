@@ -2,7 +2,7 @@
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.intraday_decision_engine import (
+from agents.IVA.engine.agi17.finance.intraday_decision_engine import (
     BankNiftyIntradayDecisionEngine,
     CPRLevels,
     CPRRegime,

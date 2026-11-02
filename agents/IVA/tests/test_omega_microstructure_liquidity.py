@@ -2,7 +2,7 @@
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.microstructure_liquidity import (
+from agents.IVA.engine.agi17.finance.microstructure_liquidity import (
     BookDepthSnapshot,
     ExecutionImpactEstimate,
     ExecutionSafetyStatus,

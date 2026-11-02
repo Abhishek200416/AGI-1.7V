@@ -25,31 +25,31 @@ import time
 from pathlib import Path
 import pytest
 
-from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import (
+from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import (
     CentralizedLLMGateway,
     GatewayRoute,
 )
-from agents.AGI_1_7.engine.agi17.adapters.llm_communication_intelligence import (
+from agents.IVA.engine.agi17.adapters.llm_communication_intelligence import (
     CommunicationStrategy,
     LLMCommunicationIntelligence,
     PromptComponents,
 )
-from agents.AGI_1_7.engine.agi17.adapters.refusal_recovery_engine import (
+from agents.IVA.engine.agi17.adapters.refusal_recovery_engine import (
     FailureClassification,
     RefusalRecoveryEngine,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.engine.agi17.memory.persistent_memory_subsystem import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.memory.persistent_memory_subsystem import (
     MemoryCategory,
     PersistentMemorySubsystem,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import (
+from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import (
     PersistentImprovementWorker,
 )
-from agents.AGI_1_7.engine.agi17.runtime.authoritative_brain_config import (
+from agents.IVA.engine.agi17.runtime.authoritative_brain_config import (
     AuthoritativeBrainConfig,
 )
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandIntent,
     CommandRouter,
 )

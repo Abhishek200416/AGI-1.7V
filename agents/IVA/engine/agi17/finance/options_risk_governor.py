@@ -23,7 +23,7 @@ import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from agents.AGI_1_7.engine.agi17.finance.multi_horizon_quant_engine import (
+from agents.IVA.engine.agi17.finance.multi_horizon_quant_engine import (
     OptionGreeks,
     calculate_black_scholes_greeks,
 )

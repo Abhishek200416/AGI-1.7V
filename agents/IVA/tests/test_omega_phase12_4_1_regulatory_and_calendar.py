@@ -27,21 +27,21 @@ from decimal import Decimal
 import unittest
 from typing import Any, Dict, List, Optional
 
-from agents.AGI_1_7.engine.agi17.finance.regulatory_charge_schedule import (
+from agents.IVA.engine.agi17.finance.regulatory_charge_schedule import (
     VersionedRegulatoryChargeSchedule,
     ChargeType,
     MarketSegment as ChargeSegment,
     InstrumentType as ChargeInstrumentType,
     TransactionSide,
 )
-from agents.AGI_1_7.engine.agi17.finance.instrument_metadata_catalog import (
+from agents.IVA.engine.agi17.finance.instrument_metadata_catalog import (
     InstrumentMetadataCatalog,
     InstrumentMetadata,
     MarketSegment as CatalogSegment,
     InstrumentType as CatalogInstrumentType,
     SegmentMarketSessionPhase,
 )
-from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
+from agents.IVA.engine.agi17.finance.canonical_market_data import (
     CanonicalMarketObservation,
     CanonicalMarketDataPipeline,
     Exchange,
@@ -51,21 +51,21 @@ from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
     MarketSessionPhase,
     ValidationOutcome,
 )
-from agents.AGI_1_7.engine.agi17.finance.research_provenance import (
+from agents.IVA.engine.agi17.finance.research_provenance import (
     StructuredResearchRecord,
     ResearchProvenanceRepository,
     SourceAuthorityLevel,
     VerificationState,
 )
-from agents.AGI_1_7.engine.agi17.finance.quantitative_evaluation_harness import (
+from agents.IVA.engine.agi17.finance.quantitative_evaluation_harness import (
     QuantitativeEvaluationHarness,
 )
-from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import (
+from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import (
     EvaluationDatasetRegistry,
     DatasetProvenanceType,
     QualityValidationStatus,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.ui.standalone_dashboard_server import (
     StandaloneDashboardServer,
 )
 

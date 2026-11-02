@@ -4,7 +4,7 @@ Allows test discovery under both test_omega_execution_router and test_omega_exec
 """
 
 try:
-    from agents.AGI_1_7.tests.test_omega_execution_router import (  # noqa: F401
+    from agents.IVA.tests.test_omega_execution_router import (  # noqa: F401
         TestOmegaExecutionRouter,
     )
 except ImportError:

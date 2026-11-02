@@ -18,7 +18,7 @@ from decimal import Decimal
 import unittest
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
+from agents.IVA.engine.agi17.finance.authoritative_cost_calculator import (
     AuthoritativeCostCalculator,
     BrokerageModel,
     InstrumentCategory,
@@ -26,7 +26,7 @@ from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
     RegulatoryRegime,
     round_currency,
 )
-from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import (
+from agents.IVA.engine.agi17.finance.authoritative_risk_engine import (
     AuthoritativeTradeRiskEngine,
     ExecutionSimulationResult,
 )

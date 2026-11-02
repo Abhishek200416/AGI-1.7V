@@ -2,7 +2,7 @@
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.inventory_market_making import (
+from agents.IVA.engine.agi17.finance.inventory_market_making import (
     AvellanedaStoikovEngine,
     InventoryRiskRegime,
     OptimalQuotes,

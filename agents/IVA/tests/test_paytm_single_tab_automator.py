@@ -18,7 +18,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-FINANCE_DIR = REPO_ROOT / "agents" / "AGI_1_7" / "finance"
+FINANCE_DIR = REPO_ROOT / "agents" / "IVA" / "finance"
 if str(FINANCE_DIR) not in sys.path:
     sys.path.insert(0, str(FINANCE_DIR))
 

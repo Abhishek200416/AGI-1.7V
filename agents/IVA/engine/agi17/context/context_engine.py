@@ -209,10 +209,10 @@ class ContextEngine:
 
         project_map = {
             "root": str(self.repo_root.as_posix()),
-            "runtime_entry": "agents/AGI_1_7/run_agi_17.py",
+            "runtime_entry": "agents/IVA/run_agi_17.py",
             "active_branch": "feat/production-hardening-sprint",
-            "engine": "agents/AGI_1_7/engine/agi17",
-            "finance_module": "agents/AGI_1_7/engine/agi17/finance",
+            "engine": "agents/IVA/engine/agi17",
+            "finance_module": "agents/IVA/engine/agi17/finance",
             "storage_tier": "SQLite WAL on D:\\AGI_Storage (fallback: state_fallback)",
         }
 

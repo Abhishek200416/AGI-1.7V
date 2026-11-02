@@ -12,8 +12,8 @@ from __future__ import annotations
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OptionType
-from agents.AGI_1_7.engine.agi17.finance.volatility_surface import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OptionType
+from agents.IVA.engine.agi17.finance.volatility_surface import (
     ObservedQuoteIV,
     SurfaceCalibrationResult,
     VolatilitySurfaceModel,
@@ -84,7 +84,7 @@ class TestOmegaVolatilitySurface(unittest.TestCase):
         t_years = 14.0 / 365.0
 
         # Flat pricing at 16%
-        from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import BlackScholesCalculator
+        from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import BlackScholesCalculator
         flat_greeks = BlackScholesCalculator.calculate_greeks(
             spot=self.spot,
             strike=strike,

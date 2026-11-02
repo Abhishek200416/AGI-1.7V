@@ -73,9 +73,9 @@ class RecursiveReflectionEngine:
         "agents/IVA/docs/01_AUTHORITATIVE_IDENTITY_AND_PERSONA.md",
         "agents/IVA/docs/library/09_SECURITY_SANDBOX_AND_SAFETY.md",
         "agents/IVA/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md",
-        "agents/AGI_1_7/docs/01_AUTHORITATIVE_IDENTITY_AND_PERSONA.md",
-        "agents/AGI_1_7/docs/library/09_SECURITY_SANDBOX_AND_SAFETY.md",
-        "agents/AGI_1_7/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md",
+        "agents/IVA/docs/01_AUTHORITATIVE_IDENTITY_AND_PERSONA.md",
+        "agents/IVA/docs/library/09_SECURITY_SANDBOX_AND_SAFETY.md",
+        "agents/IVA/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md",
         "authoritative_runtime_config.json",
     }
 
@@ -181,7 +181,7 @@ class RecursiveReflectionEngine:
 
         # Sync lesson with PersistentSelfModel and OmegaCommandMemory
         try:
-            from agents.AGI_1_7.engine.agi17.runtime.self_model import get_self_model
+            from agents.IVA.engine.agi17.runtime.self_model import get_self_model
             get_self_model().record_mistake_and_lesson(
                 mistake_description=what_went_wrong,
                 root_cause="; ".join(flawed_assumptions),
@@ -230,7 +230,7 @@ class RecursiveReflectionEngine:
 
         # Persist verified success into procedural memory Layer 6
         try:
-            from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory, MemoryCategory
+            from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory, MemoryCategory
             mem = OmegaCommandMemory()
             mem.store_categorized(
                 category=MemoryCategory.PROCEDURAL,

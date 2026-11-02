@@ -34,38 +34,38 @@ import tempfile
 import time
 import unittest
 
-from agents.AGI_1_7.engine.agi17.browser.voice_command_registry import (
+from agents.IVA.engine.agi17.browser.voice_command_registry import (
     VoiceCommandRegistry,
     VoiceCommandType,
 )
-from agents.AGI_1_7.engine.agi17.finance.calibrated_scenario_forecaster import (
+from agents.IVA.engine.agi17.finance.calibrated_scenario_forecaster import (
     CalibratedScenarioForecaster,
     ScenarioArchetype,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     StatutoryCostSchedule,
     calculate_statutory_charges,
     LiveBrokerLedger,
     StatutoryChargeBreakdown,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_authorization_manager import (
+from agents.IVA.engine.agi17.finance.live_authorization_manager import (
     LiveAuthorizationManager,
     LiveSessionConfig,
     mask_account_id,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     OrderAction as LiveOrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     CheckpointRecord,
     DurableCheckpointManager,
     EngineStateCheckpoint,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import (
     MemoryEntry,
     OmegaCommandMemory,
 )

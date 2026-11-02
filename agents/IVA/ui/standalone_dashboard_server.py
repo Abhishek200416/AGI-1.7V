@@ -42,52 +42,52 @@ import threading
 import time
 from typing import Any, Callable, Dict, List, Optional
 
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     SupervisorServiceState,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_observation_engine import (
+from agents.IVA.engine.agi17.finance.market_observation_engine import (
     MarketObservationEngine,
     ObservationProvenanceType,
 )
-from agents.AGI_1_7.engine.agi17.adapters.omniroute_adapter import (
+from agents.IVA.engine.agi17.adapters.omniroute_adapter import (
     OmniRouteAdapter,
     OmniRouteConfig,
     TaskType,
 )
-from agents.AGI_1_7.engine.agi17.finance.watchlist_manager import (
+from agents.IVA.engine.agi17.finance.watchlist_manager import (
     OptionType,
     WatchlistManager,
 )
-from agents.AGI_1_7.engine.agi17.voice.voice_interface import (
+from agents.IVA.engine.agi17.voice.voice_interface import (
     VoiceInteractionController,
 )
-from agents.AGI_1_7.ui.intelligence_data_provider import (
+from agents.IVA.ui.intelligence_data_provider import (
     get_agent_intelligence_report,
     get_algorithms_catalog,
     get_profile_and_diagnostics,
     get_market_chart_data,
     get_memory_catalog,
 )
-from agents.AGI_1_7.engine.agi17.telemetry.omega_tracer import OmegaTracer
-from agents.AGI_1_7.engine.agi17.finance.market_data_health import MarketDataHealthMonitor
-from agents.AGI_1_7.engine.agi17.finance.decision_trace_engine import DecisionTraceRepository
-from agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio import (
+from agents.IVA.engine.agi17.telemetry.omega_tracer import OmegaTracer
+from agents.IVA.engine.agi17.finance.market_data_health import MarketDataHealthMonitor
+from agents.IVA.engine.agi17.finance.decision_trace_engine import DecisionTraceRepository
+from agents.IVA.engine.agi17.finance.initial_strategy_portfolio import (
     get_initial_strategy_portfolio,
 )
-from agents.AGI_1_7.engine.agi17.finance.strategy_research_framework import (
+from agents.IVA.engine.agi17.finance.strategy_research_framework import (
     StrategyRegistry,
 )
-from agents.AGI_1_7.engine.agi17.finance.research_job_queue import (
+from agents.IVA.engine.agi17.finance.research_job_queue import (
     ResearchJobQueue,
 )
-from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import (
+from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import (
     EvaluationDatasetRegistry,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_agent_research_coordinator import (
+from agents.IVA.engine.agi17.finance.multi_agent_research_coordinator import (
     MultiAgentResearchCoordinator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
+from agents.IVA.engine.agi17.finance.trading_session_control_plane import (
     TradingSessionSupervisor,
     SessionState,
     OperatorIntent,
@@ -96,7 +96,7 @@ from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
     SessionPreflightService,
 )
 from dataclasses import asdict
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_state_machine import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_state_machine import (
     PaytmAuthStateMachine,
     PaytmAuthState,
 )
@@ -125,7 +125,7 @@ def check_paytm_session_health() -> Dict[str, Any]:
             pass
 
     # 2. Check session file on disk
-    session_file = REPO_ROOT / "agents" / "AGI_1_7" / "runtime_storage" / "paytm_session.json"
+    session_file = REPO_ROOT / "agents" / "IVA" / "runtime_storage" / "paytm_session.json"
     is_session_valid = False
     expiry_str = "Not Generated"
     access_token_masked = "[NONE]"
@@ -350,19 +350,19 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/mode/status":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             self._send_json_response(svc.get_mode_status())
             return
 
         elif path == "/api/mode/readiness":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             self._send_json_response(svc.get_live_readiness())
             return
 
         elif path == "/api/live_data/validation":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             conn_details = getattr(self.server, "paytm_conn_details", None)
             health = check_paytm_session_health()
@@ -388,13 +388,13 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/order/pending_reviews":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             self._send_json_response({"pending_reviews": svc.get_pending_reviews()})
             return
 
         elif path == "/api/orchestration/agent_summary":
-            from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+            from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
             self._send_json_response(SpecialistFactory.get_three_tier_catalog_summary())
             return
 
@@ -629,7 +629,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.21 OMEGA Control Center Authoritative Endpoints
         # -------------------------------------------------------------
         elif path == "/api/catalog/algorithms":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
             cat_svc = get_algorithm_catalog()
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
@@ -640,7 +640,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/catalog/algorithms/verify":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
             cat_svc = get_algorithm_catalog()
             res = cat_svc.verify_algorithm_integrity()
             self._send_json_response({"ok": True, **res})
@@ -650,7 +650,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
             sub = path.split("/api/catalog/algorithms/")[1].strip()
             alg_id = sub.split("/")[0]
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
             cat_svc = get_algorithm_catalog()
             alg = cat_svc.get_algorithm(alg_id)
             if alg:
@@ -660,13 +660,13 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/catalog/agents/summary":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_agent_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_agent_catalog
             ag_svc = get_agent_catalog()
             self._send_json_response({"ok": True, **ag_svc.get_summary_metrics()})
             return
 
         elif path == "/api/catalog/agents":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_agent_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_agent_catalog
             ag_svc = get_agent_catalog()
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
@@ -679,7 +679,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
         elif path.startswith("/api/catalog/agents/"):
             agent_id = path.split("/api/catalog/agents/")[1].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_agent_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_agent_catalog
             ag_svc = get_agent_catalog()
             ag = ag_svc.get_agent(agent_id)
             if ag:
@@ -689,13 +689,13 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/orchestration/overview":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_orchestration_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_orchestration_service
             orch = get_orchestration_service()
             self._send_json_response({"ok": True, **orch.get_overview()})
             return
 
         elif path == "/api/orchestration/tasks":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_orchestration_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_orchestration_service
             orch = get_orchestration_service()
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
@@ -708,7 +708,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
         elif path.startswith("/api/orchestration/tasks/"):
             task_id = path.split("/api/orchestration/tasks/")[1].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_orchestration_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_orchestration_service
             orch = get_orchestration_service()
             task = orch.get_task(task_id)
             if task:
@@ -718,7 +718,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/release/readiness":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_readiness_assessor
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_readiness_assessor
             assessor = get_readiness_assessor()
             self._send_json_response({"ok": True, **assessor.assess_all()})
             return
@@ -727,19 +727,19 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.22 Unified Capabilities & Self-Improvement Endpoints
         # -------------------------------------------------------------
         elif path == "/api/capabilities/unified":
-            from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import get_unified_capability_registry
+            from agents.IVA.engine.agi17.capabilities.unified_capability_registry import get_unified_capability_registry
             reg = get_unified_capability_registry()
             self._send_json_response({"ok": True, **reg.get_canonical_inventory()})
             return
 
         elif path == "/api/capabilities/summary":
-            from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import get_unified_capability_registry
+            from agents.IVA.engine.agi17.capabilities.unified_capability_registry import get_unified_capability_registry
             reg = get_unified_capability_registry()
             self._send_json_response({"ok": True, **reg.get_summary_stats()})
             return
 
         elif path == "/api/memory/patterns":
-            from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+            from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
             mem = OmegaCommandMemory()
             patterns = mem.get_success_patterns(limit=20)
             lessons = mem.get_failure_lessons(limit=20)
@@ -756,8 +756,8 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.25 Autonomous Improvement Engine Endpoints
         # -------------------------------------------------------------
         elif path == "/api/improvement/status":
-            from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
-            from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import CentralizedLLMGateway
+            from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
+            from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import CentralizedLLMGateway
             w = PersistentImprovementWorker()
             gw = CentralizedLLMGateway.get_instance()
             hb = json.loads(w.heartbeat_file.read_text(encoding="utf-8")) if w.heartbeat_file.exists() else {}
@@ -786,14 +786,14 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/improvement/backlog":
-            from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
+            from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
             w = PersistentImprovementWorker()
             backlog = w.load_backlog()
             self._send_json_response({"ok": True, "backlog": backlog, "count": len(backlog)})
             return
 
         elif path == "/api/improvement/telemetry":
-            from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import CentralizedLLMGateway
+            from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import CentralizedLLMGateway
             gw = CentralizedLLMGateway.get_instance()
             self._send_json_response({"ok": True, "telemetry": gw.get_telemetry_snapshot()})
             return
@@ -802,7 +802,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.24 Autonomous Identity, Goals & Benchmark Endpoints
         # -------------------------------------------------------------
         elif path == "/api/goals":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_service
             goal_svc = get_goal_service()
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
@@ -814,14 +814,14 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/goals/runner-status":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_runner
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_runner
             runner = get_goal_runner()
             self._send_json_response(runner.get_runner_status())
             return
 
         elif path.startswith("/api/goals/") and not path.endswith("/transition"):
             goal_id = path.split("/api/goals/")[1].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_service
             goal_svc = get_goal_service()
             g = goal_svc.get_goal(goal_id)
             if g:
@@ -831,19 +831,19 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/autonomy/dimensions":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_autonomy_evaluator
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_autonomy_evaluator
             evaluator = get_autonomy_evaluator()
             self._send_json_response({"ok": True, **evaluator.evaluate_all()})
             return
 
         elif path == "/api/agent/affective-state":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_affective_engine
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_affective_engine
             aff = get_affective_engine()
             self._send_json_response({"ok": True, **aff.get_state_summary()})
             return
 
         elif path == "/api/permissions/audit":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_permission_governor
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_permission_governor
             gov = get_permission_governor()
             self._send_json_response({"ok": True, **gov.get_audit_summary()})
             return
@@ -853,13 +853,13 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.19 Authoritative Runtime Supervisor Endpoints
         # -------------------------------------------------------------
         elif path == "/api/runtime/status":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             self._send_json_response(sup.get_runtime_telemetry())
             return
 
         elif path == "/api/runtime/health":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             self._send_json_response({
                 "status": "ok",
@@ -869,7 +869,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/runtime/events":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             limit = 50
             try:
@@ -880,26 +880,26 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/runtime/topology":
-            from agents.AGI_1_7.engine.agi17.runtime.tri_tab_topology import TriTabTopology
+            from agents.IVA.engine.agi17.runtime.tri_tab_topology import TriTabTopology
             top = TriTabTopology()
             self._send_json_response(top.audit_topology())
             return
 
         elif path == "/api/runtime/market_snapshot":
-            from agents.AGI_1_7.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
+            from agents.IVA.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
             pipe = DualIndexEventPipeline()
             self._send_json_response(pipe.get_central_snapshot())
             return
 
         elif path == "/api/runtime/news":
-            from agents.AGI_1_7.engine.agi17.runtime.news_monitor import NewsMonitorService
+            from agents.IVA.engine.agi17.runtime.news_monitor import NewsMonitorService
             news_svc = NewsMonitorService()
             news_svc.poll_news_feed()
             self._send_json_response(news_svc.get_news_telemetry())
             return
 
         elif path == "/api/runtime/profile":
-            from agents.AGI_1_7.engine.agi17.runtime.command_router import CommandRouter
+            from agents.IVA.engine.agi17.runtime.command_router import CommandRouter
             router = CommandRouter()
             self._send_json_response(router.profile.to_dict())
             return
@@ -1008,7 +1008,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 # Ending Equity = Starting + Realized + Unrealized
                 conv_id = os.environ.get("CONVERSATION_ID", "2cf6d67c-7364-4901-b7ff-a40f0cf45e2c")
                 cands = [
-                    Path(__file__).resolve().parents[3] / "agents\AGI_1_7\finance\live_triumvirate_portfolio.json",
+                    Path(__file__).resolve().parents[3] / "agents/IVA\finance\live_triumvirate_portfolio.json",
                     Path(__file__).resolve().parents[3] / "live_triumvirate_portfolio.json",
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "live_triumvirate_portfolio.json",
                 ]
@@ -1026,7 +1026,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 req_epoch = query_params.get("epoch", [None])[0] or getattr(self.server, "epoch_id", "EPOCH-PAPER-10K-20261014-001")
 
                 try:
-                    from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+                    from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
                     op_mode_svc = OperatingModeService.get_instance()
                     op_mode_status = op_mode_svc.get_mode_status()
                     current_op_mode = op_mode_status.get("current_mode", "PAPER")
@@ -1169,7 +1169,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                     zero_reload_active = True
 
                 try:
-                    from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+                    from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
                     op_mode_svc = OperatingModeService.get_instance()
                     op_mode_status = op_mode_svc.get_mode_status()
                     current_op_mode = op_mode_status.get("current_mode", "PAPER")
@@ -1297,7 +1297,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
             # Authoritative Operating Mode & Live-Paper Ledger Isolation Guard
             try:
-                from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+                from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
                 op_mode_svc = OperatingModeService.get_instance()
                 op_mode_status = op_mode_svc.get_mode_status()
                 cur_mode = op_mode_status.get("current_mode", "PAPER")
@@ -1569,7 +1569,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 return
             else:
                 cand_files = [
-                    Path(r"agents/AGI_1_7/finance/live_triumvirate_portfolio.json"),
+                    Path(r"agents/IVA/finance/live_triumvirate_portfolio.json"),
                     Path(r"live_triumvirate_portfolio.json"),
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "live_triumvirate_portfolio.json",
                 ]
@@ -1601,7 +1601,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             conv_id = os.environ.get("CONVERSATION_ID", "f849de6e-d1af-4c79-8374-2bad3918a77b")
             cand_files = [
                 Path(__file__).resolve().parents[3] / "alexa_newspaper_intelligence.json",
-                Path(r"agents/AGI_1_7/finance/alexa_newspaper_intelligence.json"),
+                Path(r"agents/IVA/finance/alexa_newspaper_intelligence.json"),
                 Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "alexa_newspaper_intelligence.json",
                 Path.home() / ".gemini" / "antigravity" / "brain" / "f849de6e-d1af-4c79-8374-2bad3918a77b" / "alexa_newspaper_intelligence.json",
                 Path.home() / ".gemini" / "antigravity" / "brain" / "a8c5681a-12f9-4050-af89-05ca8acd4a5d" / "alexa_newspaper_intelligence.json",
@@ -1631,7 +1631,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
             current_op_mode = "PAPER"
             try:
-                from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+                from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
                 current_op_mode = OperatingModeService.get_instance().get_mode_status().get("current_mode", "PAPER")
             except Exception:
                 pass
@@ -1716,7 +1716,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             else:
                 conv_id = os.environ.get("CONVERSATION_ID", "2cf6d67c-7364-4901-b7ff-a40f0cf45e2c")
                 cand_files = [
-                    Path(__file__).resolve().parents[3] / "agents\AGI_1_7\finance\live_triumvirate_portfolio.json",
+                    Path(__file__).resolve().parents[3] / "agents/IVA\finance\live_triumvirate_portfolio.json",
                     Path(__file__).resolve().parents[3] / "live_triumvirate_portfolio.json",
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "live_triumvirate_portfolio.json",
                 ]
@@ -2148,7 +2148,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 13 Research Laboratory Endpoints
         # -------------------------------------------------------------
         elif path == "/api/research/strategies":
-            from agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio import get_initial_strategy_portfolio
+            from agents.IVA.engine.agi17.finance.initial_strategy_portfolio import get_initial_strategy_portfolio
             strats = [s.definition.to_dict() for s in get_initial_strategy_portfolio()]
             self._send_json_response({"ok": True, "strategies": strats, "count": len(strats)})
             return
@@ -2157,11 +2157,11 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
             strat_id = query_params.get("strategy_id", query_params.get("id", ["STRAT-ORB-V1"]))[0]
-            from agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio import get_initial_strategy_portfolio
+            from agents.IVA.engine.agi17.finance.initial_strategy_portfolio import get_initial_strategy_portfolio
             strats = {s.definition.strategy_id: s.definition for s in get_initial_strategy_portfolio()}
             strat = strats.get(strat_id)
             if not strat:
-                from agents.AGI_1_7.engine.agi17.finance.strategy_research_framework import StrategyRegistry
+                from agents.IVA.engine.agi17.finance.strategy_research_framework import StrategyRegistry
                 reg = StrategyRegistry()
                 strat = reg.get_strategy(strat_id)
             if strat:
@@ -2172,14 +2172,14 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/research/datasets":
-            from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import EvaluationDatasetRegistry
+            from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import EvaluationDatasetRegistry
             reg = EvaluationDatasetRegistry()
             ds_list = [d.to_dict() for d in reg.list_datasets()]
             self._send_json_response({"ok": True, "datasets": ds_list, "count": len(ds_list)})
             return
 
         elif path == "/api/research/jobs":
-            from agents.AGI_1_7.engine.agi17.finance.research_job_queue import ResearchJobQueue
+            from agents.IVA.engine.agi17.finance.research_job_queue import ResearchJobQueue
             storage_dir = getattr(self.server, "storage_dir", None)
             q = ResearchJobQueue(storage_dir=storage_dir / "research_jobs" if storage_dir else None)
             jobs = [j.to_dict() for j in q.list_jobs()]
@@ -2206,7 +2206,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             query_str = urllib.parse.urlparse(self.path).query
             query_params = urllib.parse.parse_qs(query_str)
             strat_id = query_params.get("strategy_id", query_params.get("id", ["STRAT-ORB-V1"]))[0]
-            from agents.AGI_1_7.engine.agi17.finance.multi_agent_research_coordinator import MultiAgentResearchCoordinator
+            from agents.IVA.engine.agi17.finance.multi_agent_research_coordinator import MultiAgentResearchCoordinator
             storage_dir = getattr(self.server, "storage_dir", None)
             coord = MultiAgentResearchCoordinator(storage_dir=storage_dir / "agent_research" if storage_dir else None)
             deliberations = coord.list_deliberations()
@@ -2535,7 +2535,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Operating Mode Service Transitions (Phase 17.17 Integration)
         # -------------------------------------------------------------
         if path == "/api/mode/set":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             target_mode = payload.get("mode") or payload.get("target_mode") or "PAPER"
             reason = payload.get("reason", "Operator changed mode via API")
@@ -2555,7 +2555,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/mode/emergency_stop":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             reason = payload.get("reason", "Emergency stop triggered via UI")
             res = svc.trigger_emergency_stop(reason=reason)
@@ -2563,7 +2563,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/mode/disarm":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             reason = payload.get("reason", "Operator requested disarm")
             res = svc.disarm_live_execution(reason=reason)
@@ -2734,7 +2734,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 return
 
             session_file = (
-                REPO_ROOT / "agents" / "AGI_1_7" / "runtime_storage" / "paytm_session.json"
+                REPO_ROOT / "agents" / "IVA" / "runtime_storage" / "paytm_session.json"
             )
             ist_tz = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
             now_dt = datetime.datetime.now(ist_tz)
@@ -2776,29 +2776,29 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.19 Runtime Supervisor POST Endpoints
         # -------------------------------------------------------------
         if path == "/api/runtime/start":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             res = sup.start_all_services()
             self._send_json_response(res)
             return
 
         if path == "/api/runtime/stop":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             res = sup.stop_all_services()
             self._send_json_response(res)
             return
 
         if path == "/api/runtime/reconcile":
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             sup = RuntimeSupervisor.get_instance()
             res = sup.reconcile()
             self._send_json_response(res)
             return
 
         if path == "/api/runtime/command":
-            from agents.AGI_1_7.engine.agi17.runtime.command_router import CommandRouter
-            from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
+            from agents.IVA.engine.agi17.runtime.command_router import CommandRouter
+            from agents.IVA.engine.agi17.runtime.runtime_supervisor import RuntimeSupervisor
             router = CommandRouter()
             sup = RuntimeSupervisor.get_instance()
             cmd_text = payload.get("command", "") or payload.get("text", "")
@@ -2807,7 +2807,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/runtime/recover_tab":
-            from agents.AGI_1_7.engine.agi17.runtime.tri_tab_topology import TriTabTopology, TabRole
+            from agents.IVA.engine.agi17.runtime.tri_tab_topology import TriTabTopology, TabRole
             top = TriTabTopology()
             role_str = payload.get("role", "")
             try:
@@ -2822,7 +2822,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.25 Autonomous Improvement Engine POST Endpoints
         # -------------------------------------------------------------
         if path == "/api/improvement/control":
-            from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
+            from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
             w = PersistentImprovementWorker()
             action = str(payload.get("action", "")).upper()
             reason = str(payload.get("reason", "Dashboard UI control"))
@@ -2844,7 +2844,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # -------------------------------------------------------------
         if path.startswith("/api/catalog/algorithms/") and path.endswith("/toggle"):
             alg_id = path.split("/api/catalog/algorithms/")[1].split("/toggle")[0].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_algorithm_catalog
             cat_svc = get_algorithm_catalog()
             enabled = bool(payload.get("enabled", True))
             try:
@@ -2856,7 +2856,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
         if path.startswith("/api/orchestration/tasks/") and path.endswith("/cancel"):
             task_id = path.split("/api/orchestration/tasks/")[1].split("/cancel")[0].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_orchestration_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_orchestration_service
             orch = get_orchestration_service()
             try:
                 res = orch.cancel_task(task_id)
@@ -2867,7 +2867,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
         if path.startswith("/api/orchestration/tasks/") and path.endswith("/heartbeat"):
             task_id = path.split("/api/orchestration/tasks/")[1].split("/heartbeat")[0].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_orchestration_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_orchestration_service
             orch = get_orchestration_service()
             try:
                 ts = float(payload.get("timestamp", time.time()))
@@ -2883,7 +2883,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.22 Self-Improvement Cycle Trigger Endpoint
         # -------------------------------------------------------------
         if path == "/api/self_improvement/trigger":
-            from agents.AGI_1_7.engine.agi17.orchestration.omega_self_improvement_orchestrator import (
+            from agents.IVA.engine.agi17.orchestration.omega_self_improvement_orchestrator import (
                 get_self_improvement_orchestrator,
                 ImprovementProposal,
             )
@@ -2916,8 +2916,8 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.24 Autonomous Goals & Permissions POST Endpoints
         # -------------------------------------------------------------
         if path == "/api/goals":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_service
-            from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_system import Goal
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_service
+            from agents.IVA.engine.agi17.orchestration.autonomous_goal_system import Goal
             goal_svc = get_goal_service()
             try:
                 g = Goal.from_dict(payload)
@@ -2929,7 +2929,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
 
         if path.startswith("/api/goals/") and path.endswith("/transition"):
             goal_id = path.split("/api/goals/")[1].split("/transition")[0].strip()
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_service
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_service
             goal_svc = get_goal_service()
             target_status = payload.get("status")
             evidence = payload.get("evidence")
@@ -2945,7 +2945,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/permissions/evaluate":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_permission_governor
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_permission_governor
             gov = get_permission_governor()
             action_name = payload.get("action_name", "")
             context = payload.get("context", {})
@@ -2964,7 +2964,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 18 Autonomous Goal Runner POST Endpoints
         # -------------------------------------------------------------
         if path == "/api/goals/run-cycle":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_runner
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_runner
             runner = get_goal_runner()
             auto_discover = bool(payload.get("auto_discover", True))
             res = runner.run_goal_cycle(auto_discover=auto_discover)
@@ -2972,7 +2972,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/goals/auto-pilot":
-            from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import get_goal_runner
+            from agents.IVA.engine.agi17.runtime.omega_control_center import get_goal_runner
             runner = get_goal_runner()
             enable = bool(payload.get("enable", True))
             interval = float(payload.get("interval_seconds", 5.0))
@@ -3019,7 +3019,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.17 Operating Mode Control Endpoints
         # -------------------------------------------------------------
         if path == "/api/mode/set":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             target_mode = payload.get("mode") or payload.get("target_mode") or "PAPER"
             reason = payload.get("reason", "")
@@ -3046,7 +3046,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/mode/emergency_stop":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             reason = payload.get("reason", "Operator manual emergency stop")
             res = svc.trigger_emergency_stop(reason=reason)
@@ -3055,7 +3055,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/mode/disarm":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             reason = payload.get("reason", "Operator requested disarm")
             res = svc.disarm_live_execution(reason=reason)
@@ -3063,7 +3063,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/account/reconcile":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             starting_cap = float(getattr(self.server, "starting_capital", 10000.0))
             realized = float(getattr(self.server, "realized_pnl", 0.0))
@@ -3079,7 +3079,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/order/propose_review":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             order_data = payload.get("order") or payload
             ok, msg, intent = svc.propose_live_order(order_data, operator=payload.get("operator", "System Strategy Engine"))
@@ -3091,7 +3091,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/order/approve_review":
-            from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import OperatingModeService
+            from agents.IVA.engine.agi17.finance.operating_mode_service import OperatingModeService
             svc = OperatingModeService.get_instance()
             intent_id = payload.get("intent_id", "")
             signature = payload.get("signature", "")
@@ -3121,7 +3121,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # -------------------------------------------------------------
         if path == "/api/paper/order":
             if not hasattr(self.server, "_risk_engine"):
-                from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import AuthoritativeTradeRiskEngine
+                from agents.IVA.engine.agi17.finance.authoritative_risk_engine import AuthoritativeTradeRiskEngine
                 self.server._risk_engine = AuthoritativeTradeRiskEngine()
 
             lock = getattr(self.server, "_order_lock", None)
@@ -3204,7 +3204,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
             save_targets = [
                 Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-                Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+                Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
             ]
             for st in save_targets:
                 try:
@@ -3287,8 +3287,8 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             params = payload.get("parameters", {})
             epoch = payload.get("epoch_id", getattr(self.server, "epoch_id", "epoch_10k"))
 
-            from agents.AGI_1_7.engine.agi17.finance.multi_agent_research_coordinator import MultiAgentResearchCoordinator
-            from agents.AGI_1_7.engine.agi17.finance.research_job_queue import ResearchJobQueue
+            from agents.IVA.engine.agi17.finance.multi_agent_research_coordinator import MultiAgentResearchCoordinator
+            from agents.IVA.engine.agi17.finance.research_job_queue import ResearchJobQueue
 
             storage_dir = getattr(self.server, "storage_dir", None)
             coord = MultiAgentResearchCoordinator(storage_dir=storage_dir / "agent_research" if storage_dir else None)
@@ -3340,7 +3340,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             if not job_id:
                 self._send_json_response({"ok": False, "error": "Missing job_id"}, status=HTTPStatus.BAD_REQUEST)
                 return
-            from agents.AGI_1_7.engine.agi17.finance.research_job_queue import ResearchJobQueue
+            from agents.IVA.engine.agi17.finance.research_job_queue import ResearchJobQueue
             storage_dir = getattr(self.server, "storage_dir", None)
             q = ResearchJobQueue(storage_dir=storage_dir / "research_jobs" if storage_dir else None)
             cancelled = q.cancel_job(job_id)
@@ -3564,7 +3564,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         # Phase 17.25 Autonomous Improvement Engine Control Endpoint
         # -------------------------------------------------------------
         elif path == "/api/improvement/control":
-            from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
+            from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import PersistentImprovementWorker
             cmd = payload.get("command", "").upper()
             reason = payload.get("reason", "API Dashboard Request")
             w = PersistentImprovementWorker()
@@ -3728,7 +3728,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
                 save_targets = [
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-                    Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+                    Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
                 ]
                 for st in save_targets:
                     try:
@@ -3788,7 +3788,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
                 save_targets = [
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-                    Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+                    Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
                 ]
                 for st in save_targets:
                     try:
@@ -3846,7 +3846,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
                 save_targets = [
                     Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-                    Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+                    Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
                 ]
                 for st in save_targets:
                     try:
@@ -4582,7 +4582,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
             logger.info("Session supervisor initialized in state %s. Paper worker standby until session confirmed.", self.session_supervisor.state.value)
 
         # Phase 16 Authoritative Risk Engine & Order Admission Lock
-        from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import AuthoritativeTradeRiskEngine
+        from agents.IVA.engine.agi17.finance.authoritative_risk_engine import AuthoritativeTradeRiskEngine
         self._risk_engine = AuthoritativeTradeRiskEngine()
         self._order_lock = threading.RLock()
 
@@ -4593,7 +4593,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
         def _loop():
             logger.info("Initializing in-process Live Candlestick Telemetry Patrol thread (30s interval)...")
             try:
-                from agents.AGI_1_7.engine.agi17.finance.live_candlestick_telemetry_patrol import LiveCandlestickTelemetryPatrol
+                from agents.IVA.engine.agi17.finance.live_candlestick_telemetry_patrol import LiveCandlestickTelemetryPatrol
                 import asyncio
                 while True:
                     try:
@@ -4612,7 +4612,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
         conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
         candidates = [
             Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-            Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+            Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
             Path.home() / ".gemini" / "antigravity" / "brain" / "cf04d6c3-f69e-4dfc-ade0-2561999f0fad" / "antigravity_reasoning_chat.json",
         ]
         for p in candidates:
@@ -4630,7 +4630,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
         conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
         candidates = [
             Path(__file__).resolve().parents[3] / "alexa_newspaper_intelligence.json",
-            Path(__file__).resolve().parents[3] / "agents\AGI_1_7\finance\alexa_newspaper_intelligence.json",
+            Path(__file__).resolve().parents[3] / "agents/IVA\finance\alexa_newspaper_intelligence.json",
             Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "alexa_newspaper_intelligence.json",
             Path.home() / ".gemini" / "antigravity" / "brain" / "cf04d6c3-f69e-4dfc-ade0-2561999f0fad" / "alexa_newspaper_intelligence.json",
         ]
@@ -4661,7 +4661,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
         conv_id = os.environ.get("CONVERSATION_ID", "a8c5681a-12f9-4050-af89-05ca8acd4a5d")
         targets = [
             Path.home() / ".gemini" / "antigravity" / "brain" / conv_id / "antigravity_reasoning_chat.json",
-            Path(__file__).resolve().parents[3] / "agents\AGI_1_7\runtime_storage\finance\antigravity_reasoning_chat.json",
+            Path(__file__).resolve().parents[3] / "agents/IVA\runtime_storage\finance\antigravity_reasoning_chat.json",
             Path.home() / ".gemini" / "antigravity" / "brain" / "cf04d6c3-f69e-4dfc-ade0-2561999f0fad" / "antigravity_reasoning_chat.json",
         ]
         for t in targets:
@@ -5647,7 +5647,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "STRAT-BASE-VWAP-ORB",
                 "name": "Opening Range Breakout & Volume Weighted Average Price",
                 "category": "Intraday Momentum & Mean Reversion",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/nifty50_intraday_trader.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/nifty50_intraday_trader.py",
                 "mathematical_formulation": "VWAP = \\frac{\\sum P_i \\cdot V_i}{\\sum V_i}, \\quad ORB_{High} = \\max(P_{09:15..09:30}), \\quad ORB_{Low} = \\min(P_{09:15..09:30})",
                 "parameters": {
                     "orb_window_minutes": 15,
@@ -5664,7 +5664,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "BSM-ANALYTICAL-GREEKS",
                 "name": "Black-Scholes-Merton Analytical Pricing & Greeks Engine",
                 "category": "Derivatives Pricing & Risk Sensitivity",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/options_risk_governor.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/options_risk_governor.py",
                 "mathematical_formulation": "d_1 = \\frac{\\ln(S/K) + (r - q + \\sigma^2/2)T}{\\sigma\\sqrt{T}}, \\quad \\Delta = e^{-qT}N(d_1), \\quad \\Gamma = \\frac{e^{-qT}\\phi(d_1)}{S\\sigma\\sqrt{T}}, \\quad \\mathcal{V} = S e^{-qT}\\phi(d_1)\\sqrt{T}",
                 "parameters": {
                     "risk_free_rate": 0.065,
@@ -5680,7 +5680,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "BAYESIAN-KELLY-DRAWDOWN-GOVERNOR",
                 "name": "Adaptive Bayesian Kelly Position Sizer with Continuous Drawdown Governor",
                 "category": "Optimal Capital Allocation & Risk Control",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/bayesian_kelly_position_sizer.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/bayesian_kelly_position_sizer.py",
                 "mathematical_formulation": "f^* = \\frac{p \\cdot b - q}{b} \\cdot \\left(1 - \\frac{DD}{DD_{max}}\\right)^2 \\cdot \\kappa, \\quad p \\sim \\text{Beta}(\\alpha, \\beta)",
                 "parameters": {
                     "fractional_kelly_cap": 0.50,
@@ -5698,7 +5698,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "SABR-SVI-ARBITRAGE-FREE-VOL",
                 "name": "Hagan SABR & Gatheral SVI Arbitrage-Free Volatility Calibrator",
                 "category": "Volatility Surface & Skew Modeling",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/sabr_svi_calibrator.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/sabr_svi_calibrator.py",
                 "mathematical_formulation": "\\sigma_{SABR}(F, K) = \\frac{\\alpha}{(FK)^{(1-\\beta)/2} [1 + \\frac{(1-\\beta)^2}{24}\\ln^2(F/K)]} \\cdot \\frac{z}{\\chi(z)} \\cdot \\left[1 + \\left(\\frac{(1-\\beta)^2\\alpha^2}{24(FK)^{1-\\beta}} + \\frac{\\rho\\beta\\nu\\alpha}{4(FK)^{(1-\\beta)/2}} + \\frac{2-3\\rho^2}{24}\\nu^2\\right)T\\right]",
                 "parameters": {
                     "alpha": 0.24,
@@ -5716,7 +5716,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "KALMAN-SPREAD-FILTER-OU",
                 "name": "High-Frequency Kalman Spread Filter & Ornstein-Uhlenbeck Mean Reversion",
                 "category": "Microstructure Stat-Arb & State Space Estimation",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/kalman_spread_filter.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/kalman_spread_filter.py",
                 "mathematical_formulation": "x_t = A x_{t-1} + w_t, \\quad z_t = H_t x_t + v_t, \\quad dS_t = \\theta(\\mu - S_t)dt + \\sigma dW_t, \\quad t_{1/2} = \\frac{\\ln 2}{\\theta}",
                 "parameters": {
                     "measurement_noise_variance": 0.05,
@@ -5733,7 +5733,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "HAYASHI-YOSHIDA-LEAD-LAG",
                 "name": "Hayashi-Yoshida Non-Synchronous Cross-Asset Lead-Lag Engine",
                 "category": "High-Frequency Cross-Asset Arbitrage",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/lead_lag_arbitrage_engine.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/lead_lag_arbitrage_engine.py",
                 "mathematical_formulation": "\\hat{\\rho}_{HY}(\\Delta) = \\frac{\\sum_{i,j} \\Delta X_i \\Delta Y_j \\mathbf{1}_{\\{I_i \\cap J_j(\\Delta) \\neq \\emptyset\\}}}{\\sqrt{\\sum_i (\\Delta X_i)^2 \\sum_j (\\Delta Y_j)^2}}",
                 "parameters": {
                     "lag_range_ms": [-500, 500],
@@ -5749,7 +5749,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "OFI-5FACTOR-ATTRIBUTION",
                 "name": "5-Factor Microstructure Order Flow Imbalance (OFI) P&L Attribution",
                 "category": "Microstructure Order Flow & Liquidity Attribution",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/intraday_order_flow_attribution.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/intraday_order_flow_attribution.py",
                 "mathematical_formulation": "OFI_t = \\Delta Q_{bid} \\mathbf{1}_{\\{\\Delta P_{bid} \\ge 0\\}} - \\Delta Q_{ask} \\mathbf{1}_{\\{\\Delta P_{ask} \\le 0\\}}, \\quad \\text{Attribution} = \\sum_{k=1}^5 \\beta_k \\cdot F_k",
                 "parameters": {
                     "depth_levels": 5,
@@ -5765,7 +5765,7 @@ class StandaloneDashboardServer(ThreadingHTTPServer):
                 "id": "VPIN-PRICE-IMPACT-ELASTICITY",
                 "name": "Volume-Synchronized Probability of Toxicity (VPIN) & Kyle's Lambda",
                 "category": "Adverse Selection & Price Impact Modeling",
-                "subsystem_file": "agents/AGI_1_7/engine/agi17/finance/cross_asset_toxicity.py",
+                "subsystem_file": "agents/IVA/engine/agi17/finance/cross_asset_toxicity.py",
                 "mathematical_formulation": "VPIN = \\frac{\\sum_{\\tau=1}^N |V_\\tau^B - V_\\tau^S|}{N \\cdot V}, \\quad \\Delta P_t = \\lambda \\cdot OFI_t + \\epsilon_t",
                 "parameters": {
                     "volume_bucket_size": 25000,

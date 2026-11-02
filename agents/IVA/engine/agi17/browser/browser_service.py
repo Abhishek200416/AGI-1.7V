@@ -440,7 +440,7 @@ class BrowserSessionManager:
 
             # Check if PaytmAuthStateMachine is waiting for operator login
             try:
-                from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_state_machine import (
+                from agents.IVA.engine.agi17.adapters.paytm_auth_state_machine import (
                     PaytmAuthStateMachine,
                     PaytmAuthState,
                 )

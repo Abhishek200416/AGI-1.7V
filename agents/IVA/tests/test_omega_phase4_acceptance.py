@@ -28,28 +28,28 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.browser.browser_service import (
+from agents.IVA.engine.agi17.browser.browser_service import (
     BrowserHealthStatus,
     PersistentBrowserService,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import LiveBrokerLedger
-from agents.AGI_1_7.engine.agi17.finance.live_authorization_manager import (
+from agents.IVA.engine.agi17.finance.live_accounting import LiveBrokerLedger
+from agents.IVA.engine.agi17.finance.live_authorization_manager import (
     LiveAuthorizationManager,
     LiveSessionConfig,
     mask_account_id,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_broker_adapter import (
+from agents.IVA.engine.agi17.finance.live_broker_adapter import (
     BrokerOrderRecord,
     LiveBrokerAdapter,
     LiveOrderState,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     LiveContractValidator,
     OptionType,
     OrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
     run_go_real_command,
 )

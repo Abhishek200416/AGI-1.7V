@@ -16,15 +16,15 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.slippage_calibration import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.slippage_calibration import (
     MultiLegSlippageReport,
     SlippageCalibrationEngine,
     SlippageImpactReport,
     SquareRootImpactParams,
 )
-from agents.AGI_1_7.engine.agi17.finance.volatility_skew_arbitrage import (
+from agents.IVA.engine.agi17.finance.volatility_skew_arbitrage import (
     SkewArbitrageAction,
     SkewArbitrageTradeProposal,
     SkewMetricsSnapshot,

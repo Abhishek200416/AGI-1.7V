@@ -16,7 +16,7 @@ import sys
 import time
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
+from agents.IVA.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
 
 logging.basicConfig(
     level=logging.INFO,

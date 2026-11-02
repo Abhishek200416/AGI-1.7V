@@ -27,29 +27,29 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     UnifiedCapabilityRegistry,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_runner import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_runner import (
     AutonomousGoalRunner,
     get_autonomous_goal_runner,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_system import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_system import (
     AutonomousGoalStore,
     Goal,
     GoalStatus,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_intrinsic_drive_engine import (
+from agents.IVA.engine.agi17.orchestration.autonomous_intrinsic_drive_engine import (
     AutonomousIntrinsicDriveEngine,
     DrivePotential,
     IntrinsicDriveType,
     SelfAim,
     get_intrinsic_drive_engine,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_intrinsic_drive_engine as get_intrinsic_drive_from_control_center,
 )
 

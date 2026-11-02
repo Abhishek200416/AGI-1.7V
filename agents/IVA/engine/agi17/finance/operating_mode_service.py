@@ -161,7 +161,7 @@ class OperatingModeService:
             # Check primary state file, or fallback to legacy agents/agents path
             candidates = [
                 self.state_file,
-                Path(str(Path(__file__).resolve().parents[3] / "agents\agents\AGI_1_7\runtime_storage\operating_mode_state.json"))
+                Path(str(Path(__file__).resolve().parents[3] / "agents\agents/IVA\runtime_storage\operating_mode_state.json"))
             ]
             for cand in candidates:
                 if cand.exists():
@@ -303,7 +303,7 @@ class OperatingModeService:
                 "category": "Architecture & Release",
                 "status": "PASSED",
                 "summary": "Git branch clean, SHA-256 safety-critical baseline manifest sealed.",
-                "evidence": "agents/AGI_1_7/reports/phase17_14_safety_critical_baseline_manifest.json (20 files verified).",
+                "evidence": "agents/IVA/reports/phase17_14_safety_critical_baseline_manifest.json (20 files verified).",
                 "blocking": False,
             },
             {
@@ -312,7 +312,7 @@ class OperatingModeService:
                 "category": "Testing & QA",
                 "status": "PASSED",
                 "summary": "93 test files, 934 tests passed, 0 failures, 0 errors, 5 skipped (Docker).",
-                "evidence": "agents/AGI_1_7/reports/PHASE17_14_VALIDATION_CLOSURE_REPORT.md",
+                "evidence": "agents/IVA/reports/PHASE17_14_VALIDATION_CLOSURE_REPORT.md",
                 "blocking": False,
             },
             {
@@ -321,7 +321,7 @@ class OperatingModeService:
                 "category": "Safety Controls",
                 "status": "PASSED",
                 "summary": "All 10 safety invariants verified via 18 independent adversarial tests.",
-                "evidence": "agents/AGI_1_7/tests/test_omega_phase17_14_accounting_and_safety_negative.py (18/18 passed).",
+                "evidence": "agents/IVA/tests/test_omega_phase17_14_accounting_and_safety_negative.py (18/18 passed).",
                 "blocking": False,
             },
             {

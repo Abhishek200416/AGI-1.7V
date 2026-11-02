@@ -29,30 +29,30 @@ from http import HTTPStatus
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.ecosystem.agent_registry.agent_contract import AgentContract
-from agents.AGI_1_7.ecosystem.agent_registry.capability_router import CapabilityRouter
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
-from agents.AGI_1_7.engine.agi17.adapters.omniroute_adapter import (
+from agents.IVA.ecosystem.agent_registry.agent_contract import AgentContract
+from agents.IVA.ecosystem.agent_registry.capability_router import CapabilityRouter
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.engine.agi17.adapters.omniroute_adapter import (
     OmniRouteAdapter,
     TaskType,
 )
-from agents.AGI_1_7.engine.agi17.context.context_engine import (
+from agents.IVA.engine.agi17.context.context_engine import (
     ContextEngine,
     EpistemicStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_observation_engine import (
+from agents.IVA.engine.agi17.finance.market_observation_engine import (
     MarketObservationEngine,
     ObservationProvenanceType,
 )
-from agents.AGI_1_7.engine.agi17.process_supervision.continuous_supervisor import (
+from agents.IVA.engine.agi17.process_supervision.continuous_supervisor import (
     ContinuousSupervisor,
 )
-from agents.AGI_1_7.engine.agi17.supervisor.persistent_supervisor import (
+from agents.IVA.engine.agi17.supervisor.persistent_supervisor import (
     QueuedTask,
     SupervisorState,
     TaskPriority,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase122FailureModes(unittest.TestCase):

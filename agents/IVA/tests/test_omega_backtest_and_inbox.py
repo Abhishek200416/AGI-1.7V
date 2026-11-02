@@ -19,8 +19,8 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.adapters.model_adapter import ModelAdapter
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_backtest import (
+from agents.IVA.engine.agi17.adapters.model_adapter import ModelAdapter
+from agents.IVA.engine.agi17.finance.bank_nifty_backtest import (
     BacktestReport,
     BankNiftyBacktestEngine,
     MarketBar,
@@ -31,28 +31,28 @@ from agents.AGI_1_7.engine.agi17.finance.bank_nifty_backtest import (
     ShortStrangleDeltaHedgingStrategy,
     VWAPEMAStrategy,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_data_feed import (
+from agents.IVA.engine.agi17.finance.market_data_feed import (
     MarketDataFeed,
     calculate_ema,
     calculate_intraday_vwap,
     resample_1min_to_5min,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import (
     BankNiftyPaperTrader,
     OrderSide,
     OrderType,
 )
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import (
+from agents.IVA.engine.agi17.finance.order_book_simulator import (
     BookLevel,
     OrderBookFactory,
     OrderFillResult,
     SimulatedOrderBook,
 )
-from agents.AGI_1_7.engine.agi17.process_supervision.continuous_supervisor import (
+from agents.IVA.engine.agi17.process_supervision.continuous_supervisor import (
     ContinuousSupervisor,
 )
-from agents.AGI_1_7.engine.agi17.supervisor.persistent_supervisor import (
+from agents.IVA.engine.agi17.supervisor.persistent_supervisor import (
     SupervisorState,
     TaskPriority,
 )

@@ -28,39 +28,39 @@ from typing import Any, Dict
 
 import pytest
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_callback_server import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_callback_server import (
     PaytmTokenStore,
     redact_query_string,
     redact_token,
 )
-from agents.AGI_1_7.engine.agi17.adapters.paytm_open_api_client import (
+from agents.IVA.engine.agi17.adapters.paytm_open_api_client import (
     LiveTradingDisabledError,
     PaytmApiError,
     PaytmOpenApiClient,
 )
-from agents.AGI_1_7.engine.agi17.finance.bayesian_kelly_position_sizer import (
+from agents.IVA.engine.agi17.finance.bayesian_kelly_position_sizer import (
     BayesianKellyPositionSizer,
     SizingRegime,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_broker_adapter import (
+from agents.IVA.engine.agi17.finance.live_broker_adapter import (
     LiveBrokerAdapter,
     LiveOrderState,
     OrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     LiveContractValidator,
     OptionType,
     get_standard_lot_size,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ALEXA_PERSONA,
     EMILY_PERSONA,
     MAX_PERSONA,
     DisagreementRecord,
     OrderApprovalConsensus,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestPhase122P0SafetyAndIsolation:
@@ -253,8 +253,8 @@ class TestPhase122ContractLotSizeTransitions:
         assert get_standard_lot_size("BANKNIFTY", datetime.date(2026, 1, 15)) == 30
 
     def test_spec_classes_delegate_to_date_aware_lot_sizing(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.nifty50_intraday_trader import Nifty50ContractSpec
-        from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+        from agents.IVA.engine.agi17.finance.nifty50_intraday_trader import Nifty50ContractSpec
+        from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
 
         now_2026 = datetime.date(2026, 10, 14)
         assert Nifty50ContractSpec.get_lot_size(now_2026) == 65

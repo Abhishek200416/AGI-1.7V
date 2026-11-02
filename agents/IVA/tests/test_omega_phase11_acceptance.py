@@ -33,7 +33,7 @@ import unittest
 import urllib.error
 import urllib.request
 
-from agents.AGI_1_7.engine.agi17.adapters.omniroute_adapter import (
+from agents.IVA.engine.agi17.adapters.omniroute_adapter import (
     CircuitBreaker,
     CircuitState,
     DeterministicPaperFallbackEngine,
@@ -43,22 +43,22 @@ from agents.AGI_1_7.engine.agi17.adapters.omniroute_adapter import (
     REGISTERED_MODELS,
     TaskType,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_observation_engine import (
+from agents.IVA.engine.agi17.finance.market_observation_engine import (
     MarketObservation,
     MarketObservationEngine,
     ObservationProvenanceType,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     SupervisorServiceState,
 )
-from agents.AGI_1_7.engine.agi17.finance.watchlist_manager import (
+from agents.IVA.engine.agi17.finance.watchlist_manager import (
     OptionType,
     WatchlistCandidate,
     WatchlistManager,
     WatchlistStatus,
 )
-from agents.AGI_1_7.engine.agi17.voice.voice_interface import (
+from agents.IVA.engine.agi17.voice.voice_interface import (
     AudioBuffer,
     AudioCaptureEngine,
     SpeechToTextEngine,
@@ -69,7 +69,7 @@ from agents.AGI_1_7.engine.agi17.voice.voice_interface import (
     VoiceInteractionResult,
     VoiceSessionState,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase11Acceptance(unittest.TestCase):

@@ -43,37 +43,37 @@ from typing import Any, Dict
 
 import pytest
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_callback_server import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_callback_server import (
     PaytmTokenStore,
     redact_query_string,
     redact_token,
 )
-from agents.AGI_1_7.engine.agi17.finance.adaptive_strategy_learner import (
+from agents.IVA.engine.agi17.finance.adaptive_strategy_learner import (
     AdaptiveStrategyLearner,
     LossRootCause,
     StrategyHypothesis,
     TradePostMortemReport,
 )
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ALEXA_PERSONA,
     EMILY_PERSONA,
     MAX_PERSONA,
     OrderApprovalConsensus,
     ThreeAgentContractCoordinator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     DuplicateSupervisorError,
     NoTradeReason,
     SupervisorServiceState,
     _is_pid_alive,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
 
 
 @pytest.fixture

@@ -52,7 +52,7 @@ class PROCESS_INFORMATION(ctypes.Structure):
 
 def launch_visible_chrome(urls: list[str]) -> int:
     # First close any old chromium processes on omega_persistent_profile
-    profile_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "AGI_1_7" / "runtime_storage\browser\profiles\omega_persistent_profile"))
+    profile_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "IVA" / "runtime_storage\browser\profiles\omega_persistent_profile"))
     profile_dir.mkdir(parents=True, exist_ok=True)
 
     # Strictly use project's dedicated isolated Chromium (Playwright managed)
@@ -140,7 +140,7 @@ def launch_visible_chrome(urls: list[str]) -> int:
 
 
 if __name__ == "__main__":
-    dashboard_url = Path(str(Path(__file__).resolve().parents[3] / "agents" / "AGI_1_7" / "ui\trading_dashboard.html")).as_uri()
+    dashboard_url = Path(str(Path(__file__).resolve().parents[3] / "agents" / "IVA" / "ui\trading_dashboard.html")).as_uri()
     paytm_url = "https://www.paytmmoney.com/"
     # Open both tabs: Tab 1 = Paytm Money (for logging in), Tab 2 = AGI 1.7 Trading Dashboard & Virtual Mouse
     hwnd = launch_visible_chrome([paytm_url, dashboard_url])

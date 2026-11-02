@@ -35,60 +35,60 @@ import time
 import unittest
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.browser.browser_service import (
+from agents.IVA.engine.agi17.browser.browser_service import (
     BrowserHealthStatus,
     PersistentBrowserService,
 )
-from agents.AGI_1_7.engine.agi17.browser.computer_use_engine import (
+from agents.IVA.engine.agi17.browser.computer_use_engine import (
     ComputerUseEngine,
     SafetyInterventionError,
     SerializedInteractionQueue,
     SimulatedInputAdapter,
 )
-from agents.AGI_1_7.engine.agi17.browser.risk_execution_gate import ExecutionMode
-from agents.AGI_1_7.engine.agi17.finance.adaptive_strategy_learner import (
+from agents.IVA.engine.agi17.browser.risk_execution_gate import ExecutionMode
+from agents.IVA.engine.agi17.finance.adaptive_strategy_learner import (
     AdaptiveStrategyLearner,
 )
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.global_risk_radar import (
+from agents.IVA.engine.agi17.finance.global_risk_radar import (
     EventImpactDirection,
     GlobalRiskRadar,
     RadarEvent,
     RiskCategory,
     SourceClass,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import LiveBrokerLedger
-from agents.AGI_1_7.engine.agi17.finance.live_authorization_manager import (
+from agents.IVA.engine.agi17.finance.live_accounting import LiveBrokerLedger
+from agents.IVA.engine.agi17.finance.live_authorization_manager import (
     LiveAuthorizationManager,
     LiveSessionConfig,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_broker_adapter import (
+from agents.IVA.engine.agi17.finance.live_broker_adapter import (
     LiveBrokerAdapter,
     LiveOrderState,
     OrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     LiveContractValidator,
     OptionType,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_horizon_quant_engine import (
+from agents.IVA.engine.agi17.finance.multi_horizon_quant_engine import (
     DirectionBias,
     HorizonTimeframe,
     MultiHorizonQuantEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.seven_day_validator import (
+from agents.IVA.engine.agi17.finance.seven_day_validator import (
     DailySessionAudit,
     SevenDayOperationalValidator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase5Acceptance(unittest.TestCase):
@@ -567,7 +567,7 @@ class TestOmegaPhase5Acceptance(unittest.TestCase):
     # Criterion 21: Installer does not expose credentials or silently arm live
     # -------------------------------------------------------------------------
     def test_21_installer_does_not_expose_credentials_or_silently_arm(self):
-        cfg_template_path = Path("agents/AGI_1_7/config/config.template.yaml")
+        cfg_template_path = Path("agents/IVA/config/config.template.yaml")
         self.assertTrue(cfg_template_path.exists())
         text = cfg_template_path.read_text(encoding="utf-8")
 

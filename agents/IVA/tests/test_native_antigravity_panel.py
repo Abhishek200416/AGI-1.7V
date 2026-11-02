@@ -23,7 +23,7 @@ root_dir = Path(__file__).resolve().parents[3]
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
-from agents.AGI_1_7.engine.agi17.browser import (
+from agents.IVA.engine.agi17.browser import (
     BrowserControlState,
     BrowserHealthStatus,
     PersistentBrowserService,
@@ -58,7 +58,7 @@ class TestNativeAntigravityPanel(unittest.TestCase):
 
     def test_02_visible_isolated_chrome_window_active(self) -> None:
         """Step 2: Verify single visible Isolated Chrome window is active on screen."""
-        from agents.AGI_1_7.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
+        from agents.IVA.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
         eng = RealChromiumEngine.get_instance()
         self.assertTrue(eng.ensure_started("https://www.google.com"))
         self.assertIsNotNone(eng.hwnd, "Isolated Chrome HWND must exist")
@@ -169,7 +169,7 @@ class TestNativeAntigravityPanel(unittest.TestCase):
         self.assertFalse(hasattr(mgr, "host_actuation_enabled") and getattr(mgr, "host_actuation_enabled"))
 
         secret_token = mgr.session.external_access_token if mgr.session else ""
-        engine_src = (root_dir / "agents" / "AGI_1_7" / "engine" / "agi17" / "browser" / "real_chromium_engine.py").read_text(encoding="utf-8")
+        engine_src = (root_dir / "agents" / "IVA" / "engine" / "agi17" / "browser" / "real_chromium_engine.py").read_text(encoding="utf-8")
         if secret_token:
             self.assertNotIn(secret_token, engine_src, "Engine source must not hardcode external session token")
 

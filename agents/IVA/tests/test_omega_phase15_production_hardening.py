@@ -21,8 +21,8 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.adapters.model_adapter import redact_sensitive_text
-from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
+from agents.IVA.engine.agi17.adapters.model_adapter import redact_sensitive_text
+from agents.IVA.engine.agi17.finance.trading_session_control_plane import (
     IntakeQuestion,
     OperatorIntent,
     PreflightCheckResult,
@@ -39,9 +39,9 @@ from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
     TradingSessionSupervisor,
     VALID_STATE_TRANSITIONS,
 )
-from agents.AGI_1_7.finance.paytm_persistent_overlay_daemon import BROWSER_DOM_EXTRACTION_ENABLED
-from agents.AGI_1_7.scripts.safe_backup_manager import SafeBackupManager
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.finance.paytm_persistent_overlay_daemon import BROWSER_DOM_EXTRACTION_ENABLED
+from agents.IVA.scripts.safe_backup_manager import SafeBackupManager
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase15ProductionHardening(unittest.TestCase):

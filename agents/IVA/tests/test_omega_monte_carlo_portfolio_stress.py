@@ -7,11 +7,11 @@ extreme tail risk metrics (95%/99% VaR, CVaR), and trailing stop truncation for 
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import (
     OptionType,
     OrderSide,
 )
-from agents.AGI_1_7.engine.agi17.finance.monte_carlo_portfolio_stress import (
+from agents.IVA.engine.agi17.finance.monte_carlo_portfolio_stress import (
     MonteCarloPortfolioStressEngine,
     OptionLeg,
     SimulationConfig,

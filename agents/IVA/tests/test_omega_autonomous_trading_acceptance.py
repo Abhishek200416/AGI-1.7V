@@ -34,7 +34,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     ActivePaperPosition,
     AutonomousTradingOrchestrator,
     DuplicateSessionError,
@@ -45,17 +45,17 @@ from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
     TradeFailureReason,
     run_trading_command,
 )
-from agents.AGI_1_7.engine.agi17.browser.browser_service import (
+from agents.IVA.engine.agi17.browser.browser_service import (
     BrowserControlState,
     BrowserHealthStatus,
     BrowserSessionManager,
 )
-from agents.AGI_1_7.engine.agi17.browser.computer_use_engine import (
+from agents.IVA.engine.agi17.browser.computer_use_engine import (
     ComputerUseEngine,
     ExecutionMode,
     SimulatedInputAdapter,
 )
-from agents.AGI_1_7.engine.agi17.finance.nifty50_intraday_trader import OptionType
+from agents.IVA.engine.agi17.finance.nifty50_intraday_trader import OptionType
 
 
 class TestOmegaAutonomousTradingAcceptance(unittest.TestCase):
@@ -145,11 +145,11 @@ class TestOmegaAutonomousTradingAcceptance(unittest.TestCase):
     def test_07_four_to_five_second_refresh_failure_prevented(self) -> None:
         """Regression test ensuring NO autonomous client setInterval timers trigger unsolicited clicks."""
         # 1. Verify trading_dashboard.html has no active setInterval(runAgiVirtualMouseCycle, 4200)
-        dashboard_html = (REPO_ROOT / "agents" / "AGI_1_7" / "ui" / "trading_dashboard.html").read_text(encoding="utf-8")
+        dashboard_html = (REPO_ROOT / "agents" / "IVA" / "ui" / "trading_dashboard.html").read_text(encoding="utf-8")
         self.assertNotIn("setInterval(runAgiVirtualMouseCycle, 4200);", dashboard_html)
 
         # 2. Verify cdp_universal_mouse.py does not blind-click target elements
-        mouse_py = (REPO_ROOT / "agents" / "AGI_1_7" / "engine" / "agi17" / "browser" / "cdp_universal_mouse.py").read_text(encoding="utf-8")
+        mouse_py = (REPO_ROOT / "agents" / "IVA" / "engine" / "agi17" / "browser" / "cdp_universal_mouse.py").read_text(encoding="utf-8")
         self.assertNotIn("try { targetEl.click(); } catch(e){}", mouse_py)
 
     # -------------------------------------------------------------------------

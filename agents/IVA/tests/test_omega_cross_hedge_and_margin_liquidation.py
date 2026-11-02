@@ -16,11 +16,11 @@ from __future__ import annotations
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.cross_index_hedge import (
+from agents.IVA.engine.agi17.finance.cross_index_hedge import (
     BetaHedgeRatioResult,
     BetaWeightedHedgeEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.margin_liquidation import (
+from agents.IVA.engine.agi17.finance.margin_liquidation import (
     LiquidationCandidate,
     MarginCallLiquidationEngine,
     MarginStatus,

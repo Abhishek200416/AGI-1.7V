@@ -16,7 +16,7 @@ import math
 import unittest
 from typing import Callable
 
-from agents.AGI_1_7.engine.agi17.finance.local_volatility_engine import (
+from agents.IVA.engine.agi17.finance.local_volatility_engine import (
     DupireLocalVolatilityEngine,
     LocalVolPoint,
     LocalVolSurfaceGrid,

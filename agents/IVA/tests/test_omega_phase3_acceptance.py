@@ -36,7 +36,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     CalendarUpdateRecord,
     DynamicExchangeCalendar,
@@ -44,26 +44,26 @@ from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
     SpecialTradingSession,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     DuplicateSupervisorError,
     SupervisorServiceState,
 )
-from agents.AGI_1_7.engine.agi17.finance.overnight_strategy_manager import (
+from agents.IVA.engine.agi17.finance.overnight_strategy_manager import (
     NextSessionScenario,
     OvernightDecision,
     OvernightStrategyManager,
     OvernightTradeCandidate,
     ScenarioOutcomeType,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_day_accounting import (
+from agents.IVA.engine.agi17.finance.multi_day_accounting import (
     CumulativeLedgerSummary,
     DailySessionRecord,
     MultiDayLedgerManager,
     SixAccuracyMetrics,
 )
-from agents.AGI_1_7.engine.agi17.browser.browser_service import BrowserHealthStatus
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.browser.browser_service import BrowserHealthStatus
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
     DuplicateSessionError,
     OptionType,
@@ -554,7 +554,7 @@ class TestOmegaPhase3Acceptance(unittest.TestCase):
 
 
 def _build_test_position_helper(self):
-    from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import ActivePaperPosition
+    from agents.IVA.engine.agi17.finance.trading_orchestrator import ActivePaperPosition
     return ActivePaperPosition(
         trade_id="POS-TEST-1",
         instrument="NIFTY 22550 CE",

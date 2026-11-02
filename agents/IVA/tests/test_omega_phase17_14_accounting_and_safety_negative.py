@@ -39,23 +39,23 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Dict
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_open_api_client import (
+from agents.IVA.engine.agi17.adapters.paytm_open_api_client import (
     LiveTradingDisabledError,
     PaytmOpenApiClient,
 )
-from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
+from agents.IVA.engine.agi17.finance.authoritative_cost_calculator import (
     AuthoritativeCostCalculator,
     BrokerageModel,
     InstrumentCategory,
     OrderSide,
     round_currency,
 )
-from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import (
+from agents.IVA.engine.agi17.finance.authoritative_risk_engine import (
     AuthoritativeTradeRiskEngine,
     OrderRiskValidationResult,
 )
-from agents.AGI_1_7.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.engine.agi17.browser.real_chromium_engine import RealChromiumEngine
+from agents.IVA.ui.standalone_dashboard_server import (
     LIVE_ORDER_DISPATCH_ENABLED,
     StandaloneDashboardServer,
 )

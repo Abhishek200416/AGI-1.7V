@@ -28,14 +28,14 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Dict
 
-from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import (
+from agents.IVA.engine.agi17.finance.operating_mode_service import (
     DataFeedProvenance,
     LiveReadinessStatus,
     OperatingMode,
     OperatingModeService,
     OrderApprovalIntent,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.ui.standalone_dashboard_server import (
     LIVE_ORDER_DISPATCH_ENABLED,
     StandaloneDashboardServer,
 )

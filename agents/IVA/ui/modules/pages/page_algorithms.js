@@ -204,7 +204,7 @@ export class PageAlgorithmsController {
 
                     <div class="algo-details-body">
                         <div class="algo-detail-row">
-                            <strong>Source Path:</strong> <code>${algo.code_reference || 'agents/AGI_1_7/engine/agi17/'}</code>
+                            <strong>Source Path:</strong> <code>${algo.code_reference || 'agents/IVA/engine/agi17/'}</code>
                         </div>
                         <div class="algo-detail-row">
                             <strong>Required Inputs:</strong> <span>${algo.required_inputs || 'Price, IV, Volume'}</span>

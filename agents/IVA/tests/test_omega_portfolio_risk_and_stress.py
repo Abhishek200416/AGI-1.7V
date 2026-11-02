@@ -14,9 +14,9 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OptionType
-from agents.AGI_1_7.engine.agi17.finance.portfolio_risk import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OptionType
+from agents.IVA.engine.agi17.finance.portfolio_risk import (
     BankNiftyStressTester,
     PortfolioGreeksRiskEngine,
     PortfolioGreeksSummary,

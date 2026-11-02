@@ -15,19 +15,19 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.execution_router import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.execution_router import (
     ExecutionLifecycleState,
     ExecutionPipelineRequest,
     ExecutionPipelineResult,
     LifecyclePosition,
     UnifiedAlgorithmicExecutionRouter,
 )
-from agents.AGI_1_7.engine.agi17.finance.pre_trade_risk_killswitch import (
+from agents.IVA.engine.agi17.finance.pre_trade_risk_killswitch import (
     PortfolioKillSwitch,
     PreTradeRiskEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_agents_debate import StrategyType
+from agents.IVA.engine.agi17.finance.trading_agents_debate import StrategyType
 
 
 class TestOmegaExecutionRouter(unittest.TestCase):

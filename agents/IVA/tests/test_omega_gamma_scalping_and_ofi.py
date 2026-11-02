@@ -14,16 +14,16 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.gamma_scalping import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.gamma_scalping import (
     GammaScalpingEngine,
     GammaScalpParameters,
     GammaScalpRebalanceDecision,
     GammaScalpSessionState,
 )
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import BookLevel, SimulatedOrderBook
-from agents.AGI_1_7.engine.agi17.finance.order_flow_imbalance import (
+from agents.IVA.engine.agi17.finance.order_book_simulator import BookLevel, SimulatedOrderBook
+from agents.IVA.engine.agi17.finance.order_flow_imbalance import (
     LevelOFISnapshot,
     OFIMicrostructureReport,
     OFISignalRegime,

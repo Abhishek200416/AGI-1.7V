@@ -15,7 +15,7 @@ import math
 import numpy as np
 import pytest
 
-from agents.AGI_1_7.engine.agi17.finance.hawkes_calendar_roll_engine import (
+from agents.IVA.engine.agi17.finance.hawkes_calendar_roll_engine import (
     CalendarState,
     CalendarTransition,
     CalendarEvent,
@@ -25,7 +25,7 @@ from agents.AGI_1_7.engine.agi17.finance.hawkes_calendar_roll_engine import (
     CalendarRollEvaluation,
     LIVE_ORDER_DISPATCH_ENABLED,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
+from agents.IVA.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
     DualCriticRegularizedEvolutionGate,
     MutationProposal,
     CriticDecision,
@@ -195,12 +195,12 @@ class TestDualCriticRegularizedEvolutionCycle16:
             delta_j=0.01,
         )
 
-        with open("agents/AGI_1_7/engine/agi17/finance/hawkes_calendar_roll_engine.py", "r", encoding="utf-8") as f:
+        with open("agents/IVA/engine/agi17/finance/hawkes_calendar_roll_engine.py", "r", encoding="utf-8") as f:
             code = f.read()
 
         proposal = MutationProposal(
             proposal_id="CYCLE_16_HAWKES_CALENDAR_ROLL_001",
-            target_filepath="agents/AGI_1_7/engine/agi17/finance/hawkes_calendar_roll_engine.py",
+            target_filepath="agents/IVA/engine/agi17/finance/hawkes_calendar_roll_engine.py",
             hypothesis="Phase 28 Cycle 16: Log-Forward Variance Monotonicity & Calendar Roll State Machine",
             original_code="",
             candidate_code=code,

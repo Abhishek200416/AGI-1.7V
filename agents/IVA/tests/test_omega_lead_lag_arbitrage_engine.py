@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.cross_impact_matrix import (
+from agents.IVA.engine.agi17.finance.cross_impact_matrix import (
     AsynchronousTick,
     MarketIndex,
 )
-from agents.AGI_1_7.engine.agi17.finance.lead_lag_arbitrage_engine import (
+from agents.IVA.engine.agi17.finance.lead_lag_arbitrage_engine import (
     ArbitrageAction,
     ArbitrageExecutionStatus,
     ArbitrageOrderLeg,

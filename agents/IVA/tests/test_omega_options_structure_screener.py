@@ -16,9 +16,9 @@ import math
 import unittest
 from typing import List
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.options_structure_screener import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.options_structure_screener import (
     OptionsStructureProposal,
     OptionsStructureScreener,
     SpreadLeg,

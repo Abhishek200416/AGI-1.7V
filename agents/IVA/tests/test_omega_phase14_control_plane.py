@@ -19,7 +19,7 @@ import shutil
 import tempfile
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
+from agents.IVA.engine.agi17.finance.trading_session_control_plane import (
     SessionState,
     OperatorIntent,
     VALID_STATE_TRANSITIONS,
@@ -37,7 +37,7 @@ from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
     REGISTERED_STRATEGIES,
     PAPER_ALLOWED_STRATEGY_IDS,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestPhase14ControlPlane(unittest.TestCase):

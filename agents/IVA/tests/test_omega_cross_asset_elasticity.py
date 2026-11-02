@@ -13,7 +13,7 @@ from __future__ import annotations
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.cross_asset_elasticity import (
+from agents.IVA.engine.agi17.finance.cross_asset_elasticity import (
     CrossAssetElasticityEngine,
     CrossElasticityMatrix,
     CrossElasticityMetrics,

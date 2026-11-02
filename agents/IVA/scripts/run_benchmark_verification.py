@@ -26,10 +26,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
-from agents.AGI_1_7.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
-from agents.AGI_1_7.engine.agi17.evaluation.benchmark_auditor import BenchmarkAuditor
-from agents.AGI_1_7.engine.agi17.verification.evidence_verifier import EvidenceVerifier
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
+from agents.IVA.engine.agi17.evaluation.benchmark_auditor import BenchmarkAuditor
+from agents.IVA.engine.agi17.verification.evidence_verifier import EvidenceVerifier
 
 
 def sha256_file(path: Path) -> str:
@@ -125,7 +125,7 @@ def main() -> int:
         storage_root / "telemetry" / "omega_command_dashboard.html",
         canary_path,
         norm_path,
-        REPO_ROOT / "agents" / "AGI_1_7" / "ecosystem" / "agent_registry" / "registry.json",
+        REPO_ROOT / "agents" / "IVA" / "ecosystem" / "agent_registry" / "registry.json",
     ]
     artifact_hashes = {
         str(p): sha256_file(p) for p in tracked_files if p.exists() and p.is_file()

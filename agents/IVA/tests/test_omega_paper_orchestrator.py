@@ -15,14 +15,14 @@ from __future__ import annotations
 import unittest
 from typing import List
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
-from agents.AGI_1_7.engine.agi17.finance.market_depth_streaming import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import OrderSide
+from agents.IVA.engine.agi17.finance.market_depth_streaming import (
     MarketDepthTick,
     TradeTick,
 )
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import BookLevel
-from agents.AGI_1_7.engine.agi17.finance.paper_orchestrator import (
+from agents.IVA.engine.agi17.finance.order_book_simulator import BookLevel
+from agents.IVA.engine.agi17.finance.paper_orchestrator import (
     PaperTradingOrchestrator,
     QuantitativePerformanceTearSheet,
 )

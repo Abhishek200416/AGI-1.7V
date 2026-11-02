@@ -23,25 +23,25 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_alpha_stream_engine import (
+from agents.IVA.engine.agi17.finance.autonomous_alpha_stream_engine import (
     AlphaCycleSummary,
     AlphaSignal,
     AutonomousAlphaStreamEngine,
     OptionQuote,
     get_autonomous_alpha_stream_engine,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_wealth_engine import (
+from agents.IVA.engine.agi17.finance.autonomous_wealth_engine import (
     AutonomousWealthEngine,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_agent_factory import (
+from agents.IVA.engine.agi17.orchestration.autonomous_agent_factory import (
     AutonomousAgentFactory,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_autonomous_alpha_stream_engine as cc_get_alpha,
 )
 

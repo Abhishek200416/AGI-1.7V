@@ -86,8 +86,8 @@ class AutonomousGoalDiscoveryEngine:
     def _audit_codebase_coverage(self) -> List[DiscoveredGoalCandidate]:
         """Discovers modules that need dedicated regression or integration coverage."""
         candidates = []
-        engine_dir = self.workspace_root / "agents" / "AGI_1_7" / "engine" / "agi17"
-        tests_dir = self.workspace_root / "agents" / "AGI_1_7" / "tests"
+        engine_dir = self.workspace_root / "agents" / "IVA" / "engine" / "agi17"
+        tests_dir = self.workspace_root / "agents" / "IVA" / "tests"
 
         if not engine_dir.exists() or not tests_dir.exists():
             return candidates
@@ -122,7 +122,7 @@ class AutonomousGoalDiscoveryEngine:
     def _audit_runtime_health(self) -> List[DiscoveredGoalCandidate]:
         """Audits memory fragmentation, WAL storage size, and cache cleanliness."""
         candidates = []
-        memory_db = self.workspace_root / "agents" / "AGI_1_7" / "memory" / "omega_memory.db"
+        memory_db = self.workspace_root / "agents" / "IVA" / "memory" / "omega_memory.db"
 
         # Check WAL size
         wal_path = memory_db.with_suffix(".db-wal")

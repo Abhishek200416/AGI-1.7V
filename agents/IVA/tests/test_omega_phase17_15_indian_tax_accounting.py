@@ -15,7 +15,7 @@ from __future__ import annotations
 import datetime
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.indian_tax_accounting import (
+from agents.IVA.engine.agi17.finance.indian_tax_accounting import (
     FinancialYearInfo,
     GoverningTaxAct,
     IndianTaxAccountingEngine,

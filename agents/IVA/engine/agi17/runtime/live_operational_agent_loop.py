@@ -454,7 +454,7 @@ def update_shared_news_and_chat(
 
     # 2. Update alexa_newspaper_intelligence.json with clean summarized intelligence
     news_file = WORKSPACE_DIR / "alexa_newspaper_intelligence.json"
-    finance_news_file = WORKSPACE_DIR / "agents" / "AGI_1_7" / "finance" / "alexa_newspaper_intelligence.json"
+    finance_news_file = WORKSPACE_DIR / "agents" / "IVA" / "finance" / "alexa_newspaper_intelligence.json"
     try:
         news_data = {"documents": []}
         if news_file.exists():

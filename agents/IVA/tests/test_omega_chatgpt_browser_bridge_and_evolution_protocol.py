@@ -16,21 +16,21 @@ import time
 from pathlib import Path
 import pytest
 
-from agents.AGI_1_7.engine.agi17.browser.chatgpt_browser_bridge import (
+from agents.IVA.engine.agi17.browser.chatgpt_browser_bridge import (
     ChatGPTBrowserBridge,
     ChatGPTBridgeState,
     ChatGPTInquiryRecord,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_evolution_protocol import (
+from agents.IVA.engine.agi17.orchestration.autonomous_evolution_protocol import (
     AutonomousEvolutionProtocol,
     EvolutionConfiguration,
     CycleReport,
 )
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandRouter,
     CommandIntent,
 )
-from agents.AGI_1_7.engine.agi17.runtime.authoritative_brain_config import (
+from agents.IVA.engine.agi17.runtime.authoritative_brain_config import (
     AuthoritativeBrainConfig,
 )
 

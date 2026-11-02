@@ -29,29 +29,29 @@ import urllib.request
 from http import HTTPStatus
 from typing import Any, Dict, Tuple
 
-from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
+from agents.IVA.engine.agi17.finance.authoritative_cost_calculator import (
     AuthoritativeCostCalculator,
     BrokerageModel,
     InstrumentCategory,
     OrderSide,
     RegulatoryRegime,
 )
-from agents.AGI_1_7.engine.agi17.finance.operating_mode_service import (
+from agents.IVA.engine.agi17.finance.operating_mode_service import (
     DataFeedProvenance,
     LiveReadinessStatus,
     OperatingMode,
     OperatingModeService,
 )
-from agents.AGI_1_7.engine.agi17.task_control.task_state_machine import (
+from agents.IVA.engine.agi17.task_control.task_state_machine import (
     InvalidStateTransitionError,
     TaskState,
     TaskStateMachine,
 )
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import (
+from agents.IVA.ecosystem.agent_registry.specialist_factory import (
     SpecialistFactory,
     SPECIALIST_SPECS,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.ui.standalone_dashboard_server import (
     LIVE_ORDER_DISPATCH_ENABLED,
     StandaloneDashboardServer,
 )

@@ -18,38 +18,38 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.runtime import (
+from agents.IVA.engine.agi17.runtime import (
     CommandRouter,
     CommandIntent,
     RuntimeSupervisor,
     get_algorithm_catalog,
     get_agent_catalog,
 )
-from agents.AGI_1_7.engine.agi17.capabilities import (
+from agents.IVA.engine.agi17.capabilities import (
     UnifiedCapabilityRegistry,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.engine.agi17.orchestration.conflict_resolver import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.orchestration.conflict_resolver import (
     ConflictResolver,
     SpecialistProposal,
     ConflictDomain,
     ResolutionRule,
     get_conflict_resolver,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.omega_self_improvement_orchestrator import (
+from agents.IVA.engine.agi17.orchestration.omega_self_improvement_orchestrator import (
     OmegaSelfImprovementOrchestrator,
     ImprovementProposal,
     get_self_improvement_orchestrator,
 )
-from agents.AGI_1_7.engine.agi17.security import (
+from agents.IVA.engine.agi17.security import (
     LeastPrivilegeEnforcer,
     SecretsHygieneAuditor,
     SecurityPermissionTier,
     PermissionDeniedError,
 )
-from agents.AGI_1_7.engine.agi17.research.grounded_research import GroundedResearchEngine, SSRFBlockedError
+from agents.IVA.engine.agi17.research.grounded_research import GroundedResearchEngine, SSRFBlockedError
 
 
 class TestPhase1722DomainAArchitecture(unittest.TestCase):
@@ -61,7 +61,7 @@ class TestPhase1722DomainAArchitecture(unittest.TestCase):
 
     def test_01_track1_architecture_integrity_runtime_exports(self):
         """Track 1: Verify all core runtime and control center classes are cleanly exported."""
-        import agents.AGI_1_7.engine.agi17.runtime as rt
+        import agents.IVA.engine.agi17.runtime as rt
         self.assertTrue(hasattr(rt, "CommandRouter"))
         self.assertTrue(hasattr(rt, "RuntimeSupervisor"))
         self.assertTrue(hasattr(rt, "AlgorithmCatalogService"))
@@ -104,7 +104,7 @@ class TestPhase1722DomainAArchitecture(unittest.TestCase):
     def test_04_track4_task_deduplication(self):
         """Track 4: Verify task engine deduplicates duplicate active task submissions."""
         import tempfile
-        from agents.AGI_1_7.engine.agi17.task_control.task_store import TaskStore
+        from agents.IVA.engine.agi17.task_control.task_store import TaskStore
         with tempfile.TemporaryDirectory() as tmp:
             db_path = Path(tmp) / "dedup_test.db"
             store = TaskStore(db_path=db_path)
@@ -260,7 +260,7 @@ class TestPhase1722DomainCLearningAndMemory(unittest.TestCase):
         res = self.orchestrator.execute_improvement_cycle(
             proposal=p,
             evaluation_checks={"check_ast": lambda: True, "check_invariants": lambda: True},
-            regression_test_paths=["agents/AGI_1_7/tests/test_omega_phase17_20_chat_entry_fast_path.py"],
+            regression_test_paths=["agents/IVA/tests/test_omega_phase17_20_chat_entry_fast_path.py"],
         )
         self.assertEqual(res.terminal_outcome, "PROMOTED")
         self.assertTrue(res.passed_all_criteria)

@@ -32,13 +32,13 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_callback_server import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_callback_server import (
     PaytmAuthCallbackServer,
     PaytmTokenStore,
     redact_query_string,
     redact_token,
 )
-from agents.AGI_1_7.engine.agi17.adapters.paytm_open_api_client import (
+from agents.IVA.engine.agi17.adapters.paytm_open_api_client import (
     AccountDetails,
     LiveTradingDisabledError,
     MarginLimits,

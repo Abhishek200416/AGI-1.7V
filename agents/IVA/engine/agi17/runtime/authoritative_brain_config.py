@@ -140,7 +140,7 @@ class RuntimeConfigurationConfig:
 @dataclass
 class LLMCommunicationIntelligenceConfig:
     enabled: bool = True
-    module_path: str = "agents.AGI_1_7.engine.agi17.adapters.llm_communication_intelligence"
+    module_path: str = "agents.IVA.engine.agi17.adapters.llm_communication_intelligence"
     default_strategy: str = "FACTUAL_DIRECT"
     vague_prompt_refinement_enabled: bool = True
     max_context_tokens: int = 4000
@@ -149,7 +149,7 @@ class LLMCommunicationIntelligenceConfig:
 @dataclass
 class RefusalRecoveryConfig:
     enabled: bool = True
-    module_path: str = "agents.AGI_1_7.engine.agi17.adapters.refusal_recovery_engine"
+    module_path: str = "agents.IVA.engine.agi17.adapters.refusal_recovery_engine"
     max_recovery_attempts: int = 3
     desensitization_enabled: bool = True
     json_auto_repair_enabled: bool = True
@@ -159,7 +159,7 @@ class RefusalRecoveryConfig:
 @dataclass
 class ChatGPTBrowserBridgeConfig:
     enabled: bool = True
-    module_path: str = "agents.AGI_1_7.engine.agi17.browser.chatgpt_browser_bridge"
+    module_path: str = "agents.IVA.engine.agi17.browser.chatgpt_browser_bridge"
     default_url: str = "https://chatgpt.com"
     handshake_timeout_sec: int = 300
     login_handshake_state: str = "AWAITING_OPERATOR_LOGIN"
@@ -169,7 +169,7 @@ class ChatGPTBrowserBridgeConfig:
 @dataclass
 class EvolutionProtocolConfig:
     enabled: bool = True
-    module_path: str = "agents.AGI_1_7.engine.agi17.orchestration.autonomous_evolution_protocol"
+    module_path: str = "agents.IVA.engine.agi17.orchestration.autonomous_evolution_protocol"
     questionnaire_dimensions_count: int = 4
     continuous_cycle_reporting: str = "DUAL_SECTION_IMPROVED_AND_NEXT"
 
@@ -178,11 +178,11 @@ class EvolutionProtocolConfig:
 class CognitiveArchitectureConfig:
     enabled: bool = True
     persona_gender: str = "FEMALE"
-    self_model_module: str = "agents.AGI_1_7.engine.agi17.runtime.self_model"
-    affective_engine_module: str = "agents.AGI_1_7.engine.agi17.orchestration.omega_affective_engine"
-    reflection_engine_module: str = "agents.AGI_1_7.engine.agi17.orchestration.recursive_reflection_engine"
-    independent_reasoning_module: str = "agents.AGI_1_7.engine.agi17.orchestration.independent_reasoning_engine"
-    consciousness_investigation_module: str = "agents.AGI_1_7.engine.agi17.evaluation.consciousness_investigation_framework"
+    self_model_module: str = "agents.IVA.engine.agi17.runtime.self_model"
+    affective_engine_module: str = "agents.IVA.engine.agi17.orchestration.omega_affective_engine"
+    reflection_engine_module: str = "agents.IVA.engine.agi17.orchestration.recursive_reflection_engine"
+    independent_reasoning_module: str = "agents.IVA.engine.agi17.orchestration.independent_reasoning_engine"
+    consciousness_investigation_module: str = "agents.IVA.engine.agi17.evaluation.consciousness_investigation_framework"
     respectful_disagreement_enabled: bool = True
     scientific_consciousness_framework_enabled: bool = True
 

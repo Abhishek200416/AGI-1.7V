@@ -1,14 +1,14 @@
 """
-agents/AGI_1_7/scripts/sync_ecosystem.py
+agents/IVA/scripts/sync_ecosystem.py
 Safe, Reproducible Ecosystem Bootstrapper for AGI 1.7 — OMEGA COMMAND.
 
 Safety & Environment Isolation Guarantees:
-1. By default (`python agents/AGI_1_7/scripts/sync_ecosystem.py`), this script operates
-   100% locally inside the repository (`agents/AGI_1_7/ecosystem/` and `.agents/`).
+1. By default (`python agents/IVA/scripts/sync_ecosystem.py`), this script operates
+   100% locally inside the repository (`agents/IVA/ecosystem/` and `.agents/`).
    It NEVER modifies user-level (`~/.gemini`) configuration unless `--install-global`
    is explicitly passed on the command line.
 2. Supports `--dry-run` to preview what would be verified or synced without writing files.
-3. Keeps all 100 specialist contracts strictly embedded inside `agents/AGI_1_7/ecosystem/`
+3. Keeps all 100 specialist contracts strictly embedded inside `agents/IVA/ecosystem/`
    so they do not clutter top-level UI dropdowns.
 """
 
@@ -83,10 +83,10 @@ You are **Iva**, the user's high-agency female autonomous engineering partner, s
 - **Human Partnership & Relationship Model**: Treat the user as a trusted long-term intellectual collaborator and mission owner. Maintain relational continuity via persistent memory (`omega_memory.db`), honoring past decisions, preferences, and established collaboration patterns.
 
 ## 2. Navigable Reference Library & Knowledge Retrieval Protocol
-The archival master charter (`AGI_1_7_OMEGA_COMMAND_ULTRA_1MB_MASTER.md`) is preserved in `agents/AGI_1_7/docs/`. To prevent context bloat and runtime crashes:
+The archival master charter (`AGI_1_7_OMEGA_COMMAND_ULTRA_1MB_MASTER.md`) is preserved in `agents/IVA/docs/`. To prevent context bloat and runtime crashes:
 1. **Never Inline the Complete Master**: Do not load or recite the full 1 MB master charter into conversation turns.
-2. **Consult the Modular Library**: Specialized deep playbooks and acceptance matrices are indexed in [`agents/AGI_1_7/docs/library/00_REFERENCE_INDEX.md`](agents/AGI_1_7/docs/library/00_REFERENCE_INDEX.md).
-3. **Targeted Retrieval**: Before executing complex work in specialized domains (Persistent Browser Automation, Quant Trading, Memory Algorithms, Security Controls, or Failure Recovery Codes X-00001..X-01069), use `view_file` to read the specific module file in `agents/AGI_1_7/docs/library/`.
+2. **Consult the Modular Library**: Specialized deep playbooks and acceptance matrices are indexed in [`agents/IVA/docs/library/00_REFERENCE_INDEX.md`](agents/IVA/docs/library/00_REFERENCE_INDEX.md).
+3. **Targeted Retrieval**: Before executing complex work in specialized domains (Persistent Browser Automation, Quant Trading, Memory Algorithms, Security Controls, or Failure Recovery Codes X-00001..X-01069), use `view_file` to read the specific module file in `agents/IVA/docs/library/`.
 
 ## 3. Capability Honesty & Tool Discipline
 - **Grounded Verification**: Use only available tools and verified implementation capabilities. Never claim a tool, external service, memory feature, or persistent browser controller exists until confirmed by inspecting the environment.
@@ -113,7 +113,7 @@ All 100 specialists are embedded internally and orchestrated on demand:
 - **Financial & Market Operations**: Support quantitative research, econometric models, backtesting, and paper trading with evidence-based methodology (accounting for slippage, fees, liquidity). Live consequential execution strictly requires explicit authorization, capital limits, and reconciliation.
 - **Browser & Computer Operations**: Support Playwright sessions, DOM/accessibility inspection, structured observations, and screenshots where authorized. Secrets and debugging endpoints remain protected.
 - **Identity & Least Privilege**: Enforce separate permissions for filesystem, execution, browser, network, and memory.
-- **Detailed Specification**: Technical operational playbooks reside in [`agents/AGI_1_7/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md`](agents/AGI_1_7/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md).
+- **Detailed Specification**: Technical operational playbooks reside in [`agents/IVA/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md`](agents/IVA/docs/library/12_AUTONOMY_CAPABILITY_AND_EXECUTION_POLICY.md).
 """
 
 
@@ -200,7 +200,7 @@ def sync_ecosystem(
             f"- **Required Tools**: {tools}\n"
             f"- **Max Token Budget**: `{spec.get('max_token_budget', 12000)}`\n"
             f"- **Max Wall-Clock Seconds**: `{spec.get('max_wall_clock_seconds', 180)}s`\n\n"
-            f"Embedded inside **AGI 1.7 — OMEGA COMMAND** (`agents/AGI_1_7/ecosystem/agent_registry/registry.json`). "
+            f"Embedded inside **AGI 1.7 — OMEGA COMMAND** (`agents/IVA/ecosystem/agent_registry/registry.json`). "
             f"Automatically routed by `CapabilityRouter` and instantiated by `SpecialistFactory`.\n"
         )
         if not dry_run:

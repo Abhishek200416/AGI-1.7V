@@ -36,34 +36,34 @@ import tempfile
 import time
 import unittest
 
-from agents.AGI_1_7.engine.agi17.browser.voice_command_registry import (
+from agents.IVA.engine.agi17.browser.voice_command_registry import (
     VoiceCommandRegistry,
     VoiceCommandType,
     VoiceSessionState,
 )
-from agents.AGI_1_7.engine.agi17.finance.calibrated_scenario_forecaster import (
+from agents.IVA.engine.agi17.finance.calibrated_scenario_forecaster import (
     CalibratedScenarioForecaster,
     MulticlassBrierScoreResult,
     ScenarioArchetype,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_contract_validator import (
+from agents.IVA.engine.agi17.finance.live_contract_validator import (
     LiveContract,
     OrderAction as LiveOrderAction,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_risk_governor import (
+from agents.IVA.engine.agi17.finance.options_risk_governor import (
     InstitutionalOptionsRiskGovernor,
 )
-from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+from agents.IVA.engine.agi17.finance.three_agent_contract import (
     ThreeAgentContractCoordinator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_orchestrator import (
+from agents.IVA.engine.agi17.finance.trading_orchestrator import (
     AutonomousTradingOrchestrator,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     Autonomous24x7TradingSupervisor,
     DurableCheckpointManager,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import (
     KnowledgeCorpusProfile,
     OmegaCommandMemory,
 )

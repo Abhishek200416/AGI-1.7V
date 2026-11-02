@@ -21,17 +21,17 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-ENGINE_DIR = REPO_ROOT / "agents" / "AGI_1_7" / "engine"
+ENGINE_DIR = REPO_ROOT / "agents" / "IVA" / "engine"
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_state_machine import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_state_machine import (
     PaytmAuthStateMachine,
     PaytmAuthState,
 )
-from agents.AGI_1_7.engine.agi17.browser.real_chromium_engine import (
+from agents.IVA.engine.agi17.browser.real_chromium_engine import (
     RealChromiumEngine,
     sanitize_navigation_url,
 )
-from agents.AGI_1_7.engine.agi17.browser.browser_service import BrowserSessionManager
+from agents.IVA.engine.agi17.browser.browser_service import BrowserSessionManager
 
 
 class TestOmegaPhase1711AuthGuardAndCycleLoop(unittest.TestCase):
@@ -80,8 +80,8 @@ class TestOmegaPhase1711AuthGuardAndCycleLoop(unittest.TestCase):
         self.assertFalse(status["can_reload_page"])
         self.assertIn("PIN_INPUT_FIELDS_PRESENT", status["state_reason"])
 
-    @patch("agents.AGI_1_7.engine.agi17.browser.real_chromium_engine.RealChromiumEngine.check_active_tab_auth_screen")
-    @patch("agents.AGI_1_7.engine.agi17.browser.real_chromium_engine.RealChromiumEngine._cdp_call")
+    @patch("agents.IVA.engine.agi17.browser.real_chromium_engine.RealChromiumEngine.check_active_tab_auth_screen")
+    @patch("agents.IVA.engine.agi17.browser.real_chromium_engine.RealChromiumEngine._cdp_call")
     def test_03_repeated_polling_does_not_trigger_browser_navigation(self, mock_cdp, mock_auth_chk) -> None:
         """Verify automated navigation to broker trading routes is blocked when auth/OTP screen is active."""
         engine = RealChromiumEngine.get_instance()

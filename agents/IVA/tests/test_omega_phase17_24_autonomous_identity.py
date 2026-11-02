@@ -22,29 +22,29 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.evaluation.autonomy_dimension_benchmark import (
+from agents.IVA.engine.agi17.evaluation.autonomy_dimension_benchmark import (
     AutonomyDimension,
     AutonomyDimensionEvaluator,
     get_autonomy_dimension_evaluator,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_system import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_system import (
     AutonomousGoalStore,
     Goal,
     GoalSelectionPolicy,
     GoalStatus,
     get_autonomous_goal_store,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.omega_affective_engine import (
+from agents.IVA.engine.agi17.orchestration.omega_affective_engine import (
     AffectiveState,
     OmegaAffectiveEngine,
     get_affective_engine,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.permission_tier_governor import (
+from agents.IVA.engine.agi17.orchestration.permission_tier_governor import (
     AuthorizationDecision,
     PermissionTier,
     PermissionTierGovernor,

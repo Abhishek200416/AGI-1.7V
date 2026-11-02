@@ -25,25 +25,25 @@ import unittest
 import urllib.error
 import urllib.request
 
-from agents.AGI_1_7.engine.agi17.finance.authoritative_risk_engine import (
+from agents.IVA.engine.agi17.finance.authoritative_risk_engine import (
     AuthoritativeTradeRiskEngine,
     OrderRiskValidationResult,
 )
-from agents.AGI_1_7.engine.agi17.finance.instrument_metadata_catalog import (
+from agents.IVA.engine.agi17.finance.instrument_metadata_catalog import (
     InstrumentMetadataCatalog,
     InstrumentType,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import (
+from agents.IVA.engine.agi17.finance.trading_session_control_plane import (
     SessionState,
     SessionStore,
     TradingSessionConfig,
     TradingSessionSupervisor,
     VALID_STATE_TRANSITIONS,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import (
+from agents.IVA.engine.agi17.finance.trading_supervisor import (
     SupervisorServiceState,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase16RuntimeRiskAndResilience(unittest.TestCase):

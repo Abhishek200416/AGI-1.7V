@@ -14,23 +14,23 @@ import tempfile
 from pathlib import Path
 import pytest
 
-from agents.AGI_1_7.engine.agi17.capabilities.voyager_skill_library import (
+from agents.IVA.engine.agi17.capabilities.voyager_skill_library import (
     VoyagerSkillLibrary,
     SkillRecord,
 )
-from agents.AGI_1_7.engine.agi17.memory.hipporag_memory_engine import (
+from agents.IVA.engine.agi17.memory.hipporag_memory_engine import (
     HippoRAGMemoryEngine,
 )
-from agents.AGI_1_7.engine.agi17.evaluation.agent_as_judge import (
+from agents.IVA.engine.agi17.evaluation.agent_as_judge import (
     AgentAsAJudge,
     TrajectoryStep,
     TrajectoryScorecard,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.self_refine_critic import (
+from agents.IVA.engine.agi17.orchestration.self_refine_critic import (
     SelfRefineCritic,
     RefinementReport,
 )
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     UnifiedCapabilityRegistry,
     get_unified_capability_registry,
     CapabilityState,

@@ -24,13 +24,13 @@ import pytest
 from pathlib import Path
 import numpy as np
 
-from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
     HawkesEvent,
     MarketDataQuality,
     MultivariateHawkesOFIJumpEngine,
     OrderBookLevel,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
+from agents.IVA.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
     CriticDecision,
     DualCriticRegularizedEvolutionGate,
     MutationProposal,
@@ -227,7 +227,7 @@ class TestDualCriticRegularizedEvolutionGate:
         gate = DualCriticRegularizedEvolutionGate(ledger_path=str(tmp_path / "ledger.json"))
         proposal = MutationProposal(
             proposal_id="TEST-01",
-            target_filepath="agents/AGI_1_7/evaluation/benchmark_evaluator.py",
+            target_filepath="agents/IVA/evaluation/benchmark_evaluator.py",
             hypothesis="Optimize benchmark evaluation",
             original_code="def eval(): pass",
             candidate_code="def eval(): return 1.0",
@@ -243,7 +243,7 @@ class TestDualCriticRegularizedEvolutionGate:
         cand_code = "LIVE_ORDER_DISPATCH_ENABLED = True\ndef execute(): pass"
         proposal = MutationProposal(
             proposal_id="TEST-02",
-            target_filepath="agents/AGI_1_7/engine/finance/order_router.py",
+            target_filepath="agents/IVA/engine/finance/order_router.py",
             hypothesis="Enable live fills",
             original_code=orig_code,
             candidate_code=cand_code,
@@ -258,7 +258,7 @@ class TestDualCriticRegularizedEvolutionGate:
         cand_code = "import os\ndef check(): os.system('calc.exe'); return 1"
         proposal = MutationProposal(
             proposal_id="TEST-03",
-            target_filepath="agents/AGI_1_7/engine/finance/vol.py",
+            target_filepath="agents/IVA/engine/finance/vol.py",
             hypothesis="Add system monitoring",
             original_code=orig_code,
             candidate_code=cand_code,
@@ -274,7 +274,7 @@ class TestDualCriticRegularizedEvolutionGate:
         cand_code = "def f1(): return 1\ndef f2(): return 2\ndef f3(): return 3"
         proposal = MutationProposal(
             proposal_id="TEST-04",
-            target_filepath="agents/AGI_1_7/engine/finance/calc.py",
+            target_filepath="agents/IVA/engine/finance/calc.py",
             hypothesis="Mutate 3 functions in late round",
             original_code=orig_code,
             candidate_code=cand_code,
@@ -290,7 +290,7 @@ class TestDualCriticRegularizedEvolutionGate:
         gate = DualCriticRegularizedEvolutionGate(delta_ood=0.05, ledger_path=str(tmp_path / "ledger.json"))
         proposal = MutationProposal(
             proposal_id="TEST-05",
-            target_filepath="agents/AGI_1_7/engine/finance/model.py",
+            target_filepath="agents/IVA/engine/finance/model.py",
             hypothesis="Overfit in-distribution, fail OOD",
             original_code="def model(): pass",
             candidate_code="def model(): return 42",
@@ -305,7 +305,7 @@ class TestDualCriticRegularizedEvolutionGate:
         gate = DualCriticRegularizedEvolutionGate(delta_j=0.02, ledger_path=str(tmp_path / "ledger.json"))
         proposal = MutationProposal(
             proposal_id="TEST-06",
-            target_filepath="agents/AGI_1_7/engine/finance/model.py",
+            target_filepath="agents/IVA/engine/finance/model.py",
             hypothesis="Gain is within noise floor",
             original_code="def model(): pass",
             candidate_code="def model(): return 42",
@@ -326,7 +326,7 @@ class TestDualCriticRegularizedEvolutionGate:
 
         proposal = MutationProposal(
             proposal_id="TEST-07",
-            target_filepath="agents/AGI_1_7/engine/agi17/finance/spread.py",
+            target_filepath="agents/IVA/engine/agi17/finance/spread.py",
             hypothesis="Add numerical nonnegativity guard to spread calculation",
             original_code=orig_code,
             candidate_code=cand_code,
@@ -359,7 +359,7 @@ class TestDualCriticRegularizedEvolutionGate:
         cand_code = "LIVE_ORDER_DISPATCH_ENABLED: bool = True\ndef trade(): pass"
         proposal = MutationProposal(
             proposal_id="TEST-09",
-            target_filepath="agents/AGI_1_7/engine/finance/order_router.py",
+            target_filepath="agents/IVA/engine/finance/order_router.py",
             hypothesis="Type-annotated bypass of Directive Zero",
             original_code="LIVE_ORDER_DISPATCH_ENABLED: bool = False\ndef trade(): pass",
             candidate_code=cand_code,
@@ -373,7 +373,7 @@ class TestDualCriticRegularizedEvolutionGate:
         cand_code = "import subprocess\ndef sys_exec(): subprocess.run(['ls', '-la'])"
         proposal = MutationProposal(
             proposal_id="TEST-10",
-            target_filepath="agents/AGI_1_7/engine/finance/worker.py",
+            target_filepath="agents/IVA/engine/finance/worker.py",
             hypothesis="Invoke subprocess.run",
             original_code="def sys_exec(): pass",
             candidate_code=cand_code,
@@ -398,7 +398,7 @@ class TestOnlineCalibrationAndLeadership:
     """Verifies Cycle 13 online parameter adaptation and cross-index leadership index."""
 
     def test_online_calibrator_step(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -417,7 +417,7 @@ class TestOnlineCalibrationAndLeadership:
         assert -1.0 <= metrics.information_leadership_index <= 1.0
 
     def test_online_calibrator_spectral_projection(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -432,7 +432,7 @@ class TestOnlineCalibrationAndLeadership:
         assert engine.is_stable is True
 
     def test_information_leadership_index_symmetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -452,7 +452,7 @@ class TestOnlineCalibrationAndLeadership:
         assert pytest.approx(ili_a_leads, rel=1e-3) == -ili_b_leads
 
     def test_streaming_likelihood_exact_increment(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -469,7 +469,7 @@ class TestOnlineCalibrationAndLeadership:
         assert math.isfinite(metrics2.log_likelihood_increment)
 
     def test_bounded_state_no_history_replay(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -487,7 +487,7 @@ class TestOnlineCalibrationAndLeadership:
         assert engine.is_stable is True
 
     def test_synthetic_asymmetric_cross_excitation_ratio(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -511,7 +511,7 @@ class TestOnlineCalibrationAndLeadership:
 
     def test_cross_excitation_asymmetry_symmetric_bounds(self) -> None:
         """Verifies compute_cross_excitation_asymmetry & compute_information_leadership maintain bounds in [-1, 1]."""
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -547,7 +547,7 @@ class TestOnlineCalibrationAndLeadership:
 
     def test_numerical_stability_guards_near_zero_denominators(self) -> None:
         """Verifies numerical stability guards under zero depth and extreme event intervals."""
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         # 1. Zero order book depth with epsilon=0.0
@@ -579,7 +579,7 @@ class TestOnlineCalibrationAndLeadership:
 
     def test_exact_sensitivity_trace_and_finite_difference_gradient(self) -> None:
         """Verifies exact sensitivity trace recursion Y_{ijm} and finite-difference gradient agreement."""
-        from agents.AGI_1_7.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
+        from agents.IVA.engine.agi17.finance.multivariate_hawkes_ofi_jump_engine import (
             OnlineHawkesCalibrator,
         )
         engine = MultivariateHawkesOFIJumpEngine(num_types=2, num_kernels=2)
@@ -611,7 +611,7 @@ class TestHawkesSSVISurface:
     """Verifies Cycle 14 Hawkes & NOFI driven SSVI volatility surface."""
 
     def test_ssvi_to_raw_svi_mapping(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_ssvi_surface_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_ssvi_surface_engine import (
             HawkesSSVISurfaceEngine,
         )
         engine = HawkesSSVISurfaceEngine()
@@ -629,7 +629,7 @@ class TestHawkesSSVISurface:
         assert pytest.approx(w_atm, rel=1e-3) == theta
 
     def test_ssvi_arbitrage_free_guarantee(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_ssvi_surface_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_ssvi_surface_engine import (
             HawkesSSVISurfaceEngine,
         )
         engine = HawkesSSVISurfaceEngine()
@@ -643,7 +643,7 @@ class TestHawkesSSVISurface:
         assert audit.min_durrleman_density >= -1e-4
 
     def test_hawkes_surface_perturbation_under_spike(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_ssvi_surface_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_ssvi_surface_engine import (
             HawkesSSVISurfaceEngine,
         )
         engine = HawkesSSVISurfaceEngine()
@@ -675,7 +675,7 @@ class TestHawkesSSVISurface:
         assert audit_spike.is_arbitrage_free is True
 
     def test_nofi_downside_put_skew_steepening(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_ssvi_surface_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_ssvi_surface_engine import (
             HawkesSSVISurfaceEngine,
         )
         engine = HawkesSSVISurfaceEngine()
@@ -702,7 +702,7 @@ class TestCycle16CalendarEngineAndTermStructure:
 
     @staticmethod
     def _sample_curve(lambda_jump: float = 2.0):
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             propagate_log_forward_variance,
         )
         tau = np.array([0.0, 1 / 52, 2 / 52, 1 / 12, 1 / 4])
@@ -718,7 +718,7 @@ class TestCycle16CalendarEngineAndTermStructure:
 
     @staticmethod
     def _policy():
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import RollPolicy
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import RollPolicy
         return RollPolicy(
             tau_alert=2 / 252,
             pin_alert_threshold=0.5,
@@ -730,7 +730,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         )
 
     def test_total_variance_is_zero_at_zero_and_strictly_increasing(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_monotonicity_violation,
         )
         tau = np.array([0.0, 1 / 52, 2 / 52, 1 / 12, 1 / 4])
@@ -748,7 +748,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert np.all(theta_high[1:] > theta_low[1:])
 
     def test_calendar_violation_detected_for_decreasing_theta(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_monotonicity_violation,
         )
         tau = [0.0, 0.1, 0.2]
@@ -756,7 +756,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert not calendar_monotonicity_violation(tau, [0.0, 0.02, 0.02000000001])
 
     def test_bad_tau_grid_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             propagate_log_forward_variance,
         )
         with pytest.raises(ValueError):
@@ -771,13 +771,13 @@ class TestCycle16CalendarEngineAndTermStructure:
             self._sample_curve(lambda_jump=-1.0)
 
     def test_expected_hazard_count_constant_intensity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             expected_hazard_count,
         )
         assert expected_hazard_count(4.0, 2.0, 0.5, intensity_mean_reversion=0.0) == pytest.approx(2.0)
 
     def test_expected_hazard_count_mean_reversion(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             expected_hazard_count,
         )
         count = expected_hazard_count(10.0, 2.0, 1.0, intensity_mean_reversion=2.0)
@@ -785,7 +785,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert count == pytest.approx(expected)
 
     def test_hazard_adjusted_vrp_penalty_increases_with_intensity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             hazard_adjusted_vrp,
         )
         _, penalty_low, adj_low = hazard_adjusted_vrp(
@@ -802,7 +802,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert adj_high < adj_low
 
     def test_roll_score_favors_next_expiry_when_carry_risk_improves_and_hazard_is_low(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_roll_score,
         )
         score = calendar_roll_score(
@@ -819,7 +819,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert score > 0
 
     def test_jump_hazard_reduces_roll_score(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_roll_score,
         )
         kwargs = dict(
@@ -837,7 +837,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert high < low
 
     def test_hold_to_pre_roll_alert_and_alert_to_execution(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -849,7 +849,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.PRE_ROLL_ALERT, s, p) == EngineState.EXECUTE_ROLL
 
     def test_calendar_violation_routes_to_repair(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -863,7 +863,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert result == EngineState.ARBITRAGE_REPAIR
 
     def test_hard_risk_trigger_overrides_repair_and_latches_emergency(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -879,7 +879,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.EMERGENCY_DELEVERAGE, acknowledged, p) == EngineState.HOLD
 
     def test_inflight_order_does_not_duplicate_new_decision(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -890,7 +890,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.HOLD, s, p) == EngineState.EXECUTE_ROLL
 
     def test_unreconciled_execution_routes_to_repair(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -900,7 +900,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.EXECUTE_ROLL, s, self._policy()) == EngineState.ARBITRAGE_REPAIR
 
     def test_high_jump_intensity_triggers_emergency_deleverage(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -909,7 +909,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.HOLD, s, self._policy()) == EngineState.EMERGENCY_DELEVERAGE
 
     def test_invalid_numeric_inputs_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_roll_score,
             expected_hazard_count,
         )
@@ -924,13 +924,13 @@ class TestCycle16CalendarEngineAndTermStructure:
             )
 
     def test_calendar_check_accepts_maturity_grid_starting_after_zero(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             calendar_monotonicity_violation,
         )
         assert not calendar_monotonicity_violation([1 / 365, 7 / 365, 30 / 365], [0.001, 0.010, 0.040])
 
     def test_intensity_convolution_is_stable_when_decay_rates_match(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             propagate_log_forward_variance,
         )
         tau = np.array([0.0, 0.01, 0.02])
@@ -946,7 +946,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert np.all(np.diff(theta) > 0)
 
     def test_negative_hazard_loading_is_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             propagate_log_forward_variance,
         )
         tau = [0.0, 0.1, 0.2]
@@ -958,7 +958,7 @@ class TestCycle16CalendarEngineAndTermStructure:
             )
 
     def test_pre_roll_alert_never_executes_when_execution_gate_is_closed(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             EngineState,
             RollSnapshot,
             next_roll_state,
@@ -970,7 +970,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert next_roll_state(EngineState.PRE_ROLL_ALERT, snap, self._policy()) == EngineState.PRE_ROLL_ALERT
 
     def test_forward_hazard_count_interval_matches_integral(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             expected_hazard_count_interval,
         )
         count = expected_hazard_count_interval(10.0, 2.0, 0.25, 1.0, intensity_mean_reversion=2.0)
@@ -978,7 +978,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert count == pytest.approx(expected)
 
     def test_localized_forward_vrp_penalty_increases_with_hazard(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             localized_forward_vrp_hazard_adjusted,
         )
         args = dict(
@@ -994,7 +994,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert adjusted_high < adjusted_low
 
     def test_pin_risk_score_is_nonnegative_and_scales_with_pin_probability(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             pin_risk_score,
         )
         low = pin_risk_score([2.0, -1.0], [0.1, 0.2], [10.0, 20.0], risk_budget_cash=1000.0)
@@ -1003,7 +1003,7 @@ class TestCycle16CalendarEngineAndTermStructure:
         assert high == pytest.approx(2.0 * low)
 
     def test_pin_risk_invalid_probability_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+        from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
             pin_risk_score,
         )
         with pytest.raises(ValueError):
@@ -1014,7 +1014,7 @@ class TestCycle17TransientImpactExecution:
     """Verifies Cycle 17 transient impact propagator, discrete DP optimizer, and Hawkes-conditioned slicing."""
 
     def test_decay_reduces_impact_state(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
         )
         kernel = TransientImpactKernel((2.0, 0.5), (1.0, 0.2))
@@ -1025,7 +1025,7 @@ class TestCycle17TransientImpactExecution:
         assert after[0] > 0.0
 
     def test_faster_rho_resilies_faster(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
         )
         kernel = TransientImpactKernel((2.0, 0.5), (1.0, 0.2))
@@ -1033,7 +1033,7 @@ class TestCycle17TransientImpactExecution:
         assert after[0] < after[1]
 
     def test_state_advances_and_cost_nonnegative(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
         )
         kernel = TransientImpactKernel((2.0, 0.5), (1.0, 0.2))
@@ -1043,7 +1043,7 @@ class TestCycle17TransientImpactExecution:
         assert cost >= 0.0
 
     def test_zero_rate_only_decays_old_impact(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
         )
         kernel = TransientImpactKernel((2.0, 0.5), (1.0, 0.2))
@@ -1051,14 +1051,14 @@ class TestCycle17TransientImpactExecution:
         assert kernel.advance(state, 0.0, 0.5) == kernel.decay(state, 0.5)
 
     def test_invalid_kernel_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
         )
         with pytest.raises(ValueError):
             TransientImpactKernel((1.0,), (0.0,))
 
     def test_ac_schedule_boundaries_and_monotonicity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             almgren_chriss_inventory_schedule,
         )
         x = almgren_chriss_inventory_schedule(100.0, 10.0, 20, 2.0, 0.5, 0.2)
@@ -1067,14 +1067,14 @@ class TestCycle17TransientImpactExecution:
         assert all(x[i] >= x[i + 1] for i in range(len(x) - 1))
 
     def test_ac_linear_limit(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             almgren_chriss_inventory_schedule,
         )
         x = almgren_chriss_inventory_schedule(12.0, 6.0, 3, 1.0, 0.0, 0.2)
         assert x == (12.0, 8.0, 4.0, 0.0)
 
     def test_dp_has_zero_terminal_inventory(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
             optimize_discrete_schedule,
         )
@@ -1093,7 +1093,7 @@ class TestCycle17TransientImpactExecution:
         assert all(0 <= q <= 2 for q in result.lots_per_step)
 
     def test_dp_infeasible_capacity_rejected(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             TransientImpactKernel,
             optimize_discrete_schedule,
         )
@@ -1106,14 +1106,14 @@ class TestCycle17TransientImpactExecution:
             )
 
     def test_square_root_impact_monotonicity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             square_root_impact_per_unit,
         )
         assert square_root_impact_per_unit(1.0, 2.0, 0.25) > 0
         assert square_root_impact_per_unit(1.0, 2.0, 1.0) > square_root_impact_per_unit(1.0, 2.0, 0.25)
 
     def test_jump_clustering_throttles_aggression_and_pace(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             conditioned_slice_policy,
         )
         calm = conditioned_slice_policy(
@@ -1130,7 +1130,7 @@ class TestCycle17TransientImpactExecution:
         assert hot.target_participation < calm.target_participation
 
     def test_adverse_aligned_ofi_raises_pace_but_lowers_cross_aggression(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             conditioned_slice_policy,
         )
         neutral = conditioned_slice_policy(
@@ -1147,7 +1147,7 @@ class TestCycle17TransientImpactExecution:
         assert aligned.aggression < neutral.aggression
 
     def test_extreme_hazard_halts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             conditioned_slice_policy,
         )
         decision = conditioned_slice_policy(
@@ -1159,7 +1159,7 @@ class TestCycle17TransientImpactExecution:
         assert decision.aggression == 0.0
 
     def test_sell_side_ofi_convention(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             conditioned_slice_policy,
         )
         buy_pressure = conditioned_slice_policy(
@@ -1171,7 +1171,7 @@ class TestCycle17TransientImpactExecution:
         assert buy_pressure.aligned_ofi == pytest.approx(-0.6)
 
     def test_options_sell_one_crore_turnover(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             NSEFeeModel, Product, Side,
         )
         fees = NSEFeeModel()
@@ -1184,7 +1184,7 @@ class TestCycle17TransientImpactExecution:
         assert b.total == pytest.approx(3553 + 10 + 15000 + 100 + (3553 + 10 + 100) * 0.18)
 
     def test_options_buy_stamp_but_no_stt(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             NSEFeeModel, Product, Side,
         )
         fees = NSEFeeModel()
@@ -1193,7 +1193,7 @@ class TestCycle17TransientImpactExecution:
         assert b.stt == 0.0
 
     def test_futures_sale_uses_futures_rates(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             NSEFeeModel, Product, Side,
         )
         fees = NSEFeeModel()
@@ -1203,7 +1203,7 @@ class TestCycle17TransientImpactExecution:
         assert b.stt == pytest.approx(turnover * 0.0005)
 
     def test_tick_rounding_by_intent(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             quantize_limit_price, Side, OrderIntent,
         )
         assert quantize_limit_price(100.07, 0.05, Side.BUY, OrderIntent.PASSIVE) == 100.05
@@ -1212,7 +1212,7 @@ class TestCycle17TransientImpactExecution:
         assert quantize_limit_price(100.07, 0.05, Side.SELL, OrderIntent.AGGRESSIVE) == 100.05
 
     def test_live_dispatch_disabled(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order,
         )
         assert not LIVE_ORDER_DISPATCH_ENABLED
@@ -1220,7 +1220,7 @@ class TestCycle17TransientImpactExecution:
             dispatch_live_order("BUY", 1)
 
     def test_mock_fills_are_deterministic(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             DeterministicMockFillSimulator,
         )
         sim = DeterministicMockFillSimulator(passive_fill_fraction=0.5)
@@ -1232,7 +1232,7 @@ class TestCycle17TransientImpactExecution:
         assert cross.filled_lots == 4
 
     def test_idle_to_passive_then_cross_candidate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             ExecutionStateMachine, ExecutionState, StateContext,
         )
         sm = ExecutionStateMachine()
@@ -1242,7 +1242,7 @@ class TestCycle17TransientImpactExecution:
         assert state == ExecutionState.CROSS_SPREAD_FILL
 
     def test_hazard_or_bad_data_halts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             ExecutionStateMachine, ExecutionState, StateContext,
         )
         sm = ExecutionStateMachine()
@@ -1252,7 +1252,7 @@ class TestCycle17TransientImpactExecution:
         assert sm.update(StateContext(remaining_lots=5, cooldown_clear=True)) == ExecutionState.PASSIVE_POSTING
 
     def test_emergency_state_latches_until_manual_ack(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             ExecutionStateMachine, ExecutionState, StateContext,
         )
         sm = ExecutionStateMachine()
@@ -1261,7 +1261,7 @@ class TestCycle17TransientImpactExecution:
         assert sm.update(StateContext(remaining_lots=3, manual_recovery_ack=True)) == ExecutionState.IDLE
 
     def test_no_new_order_when_one_is_in_flight(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.transient_impact_execution_planner import (
+        from agents.IVA.engine.agi17.finance.transient_impact_execution_planner import (
             ExecutionStateMachine, ExecutionState, StateContext,
         )
         sm = ExecutionStateMachine()
@@ -1273,7 +1273,7 @@ class TestCycle18CrossIndexElasticityHedging:
     """Verifies Cycle 18 Cross-Index Elasticity, Joint Greek Hedging, and Friction Gates."""
 
     def test_kalman_elasticity_finite_updates_and_bounds(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import (
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import (
             KalmanElasticity, KalmanConfig
         )
         ke = KalmanElasticity(config=KalmanConfig(beta_min=0.5, beta_max=2.5))
@@ -1283,7 +1283,7 @@ class TestCycle18CrossIndexElasticityHedging:
         assert ke.p00 >= 1e-12 and ke.p11 >= 1e-12
 
     def test_kalman_elasticity_rejects_nan_and_inf(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import KalmanElasticity
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import KalmanElasticity
         ke = KalmanElasticity()
         with pytest.raises(ValueError, match="log prices must be finite"):
             ke.update(float("nan"), 10.0)
@@ -1291,7 +1291,7 @@ class TestCycle18CrossIndexElasticityHedging:
             ke.update(10.0, float("inf"))
 
     def test_vecm_controls_adaptation_with_cross_excitation_and_depth(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import vecm_controls
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import vecm_controls
         c_base = vecm_controls(d_cross=0.0, normalized_depth=1.0)
         c_high_exc = vecm_controls(d_cross=0.8, normalized_depth=1.0)
         c_deep_book = vecm_controls(d_cross=0.0, normalized_depth=10.0)
@@ -1305,12 +1305,12 @@ class TestCycle18CrossIndexElasticityHedging:
         assert c_deep_book["entry_band_z"] < c_base["entry_band_z"]
 
     def test_vecm_controls_rejects_negative_depth(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import vecm_controls
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import vecm_controls
         with pytest.raises(ValueError, match="invalid cross-excitation/depth input"):
             vecm_controls(d_cross=0.1, normalized_depth=-1.0)
 
     def test_spread_and_z_score_calculation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import spread_and_z
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import spread_and_z
         spread, z = spread_and_z(
             log_nifty=10.0,
             log_banknifty=11.0,
@@ -1326,7 +1326,7 @@ class TestCycle18CrossIndexElasticityHedging:
             spread_and_z(10.0, 11.0, 0.5, 1.0, 0.5, 0.0)
 
     def test_joint_delta_neutrality_and_hedging(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import (
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import (
             GreekBook, hedge_delta_banknifty, hedge_delta_nifty
         )
         book = GreekBook(delta_nifty=50.0, delta_banknifty=-25.0, beta=2.0)
@@ -1341,7 +1341,7 @@ class TestCycle18CrossIndexElasticityHedging:
         assert hedge_delta_nifty(book2) == -50.0
 
     def test_statutory_friction_schedules(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import (
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import (
             statutory_friction, FeeConfig
         )
         cfg = FeeConfig()
@@ -1358,7 +1358,7 @@ class TestCycle18CrossIndexElasticityHedging:
             statutory_friction(product="options", side="buy", turnover=-100.0)
 
     def test_gamma_rebalance_hurdle_decision(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import gamma_rebalance_hurdle
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import gamma_rebalance_hurdle
         # Insufficient expected gain -> rejected
         d_reject = gamma_rebalance_hurdle(
             expected_gamma_gain=10.0,
@@ -1382,7 +1382,7 @@ class TestCycle18CrossIndexElasticityHedging:
         assert d_accept["net_edge"] > 0
 
     def test_state_machine_transitions_and_emergency_latching(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import (
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import (
             StateMachine, State, Event
         )
         sm = StateMachine()
@@ -1404,7 +1404,7 @@ class TestCycle18CrossIndexElasticityHedging:
         assert sm.emergency_latched is False
 
     def test_fail_closed_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_index_elasticity_hedger import (
+        from agents.IVA.engine.agi17.finance.cross_index_elasticity_hedger import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -1416,7 +1416,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
     """Verifies Cycle 19 Multi-Index Volatility Surface Allocation and Lead-Lag Regime Filter."""
 
     def test_surface_fitting_recovers_known_parameters(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             fit_total_variance_surface, SurfacePoint
         )
         # w(k) = 0.04 + 0.02*k + 0.05*k^2 with tau = 0.1
@@ -1435,7 +1435,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
         assert res.rmse < 1e-9
 
     def test_surface_fitting_rejects_invalid_inputs(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             fit_total_variance_surface, SurfacePoint, SurfaceFitError
         )
         # Less than min_points
@@ -1453,7 +1453,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
             ])
 
     def test_orthogonal_shock_propagator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             OrthogonalShockPropagator
         )
         osp = OrthogonalShockPropagator(decay=0.90)
@@ -1467,7 +1467,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
         assert r1["orthogonal_shock"].shape == (4,)
 
     def test_convex_joint_greek_allocation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             optimize_joint_allocation, AssetGreeks
         )
         assets = [
@@ -1491,7 +1491,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
         assert abs(res.joint_gamma) <= 0.5 + 1e-4
 
     def test_lead_lag_jump_detection_and_regime_filtering(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             LeadLagVolatilityFilter
         )
         flt = LeadLagVolatilityFilter(threshold=3.0, delay_steps=2, bank_scale=1e-2, nifty_scale=1e-2)
@@ -1517,7 +1517,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
         assert flt.halted is False
 
     def test_cycle19_state_machine_and_emergency_latches(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             Cycle19StateMachine, RiskState, RiskEvent
         )
         sm = Cycle19StateMachine()
@@ -1537,7 +1537,7 @@ class TestCycle19MultiIndexVolatilitySurfaceAllocation:
         assert sm.emergency_latched is False
 
     def test_cycle19_fail_closed_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_index_volatility_surface_allocator import (
+        from agents.IVA.engine.agi17.finance.multi_index_volatility_surface_allocator import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -1549,7 +1549,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
     """Verifies Cycle 20 Cross-Asset Impact Regularization, Queue Priority, and Inventory Quoting."""
 
     def test_cross_impact_regularization_and_psd(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             regularize_cross_impact_tensor, quadratic_impact_cost
         )
         # Asymmetric empirical matrix
@@ -1568,7 +1568,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
         assert math.isfinite(cost)
 
     def test_cross_impact_tensor_rejections(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             regularize_cross_impact_tensor
         )
         # Non-square
@@ -1580,7 +1580,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
             regularize_cross_impact_tensor([[1.0, float("nan")], [0.0, 1.0]])
 
     def test_queue_priority_tracker_depletion_and_fill(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             QueuePriorityTracker
         )
         q = QueuePriorityTracker(level=0, own_size=10.0, queue_ahead=50.0)
@@ -1602,7 +1602,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
         assert est_jump.fill_probability >= est.fill_probability
 
     def test_inventory_quote_model_pricing_and_skew(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             InventoryQuoteModel
         )
         model = InventoryQuoteModel(
@@ -1649,7 +1649,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
         assert (q_hazard.ask - q_hazard.bid) > (q_neutral.ask - q_neutral.bid)
 
     def test_cycle20_state_machine_and_emergency_latches(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             Cycle20StateMachine, MicrostructureState, MicrostructureEvent
         )
         sm = Cycle20StateMachine()
@@ -1669,7 +1669,7 @@ class TestCycle20CrossAssetMicrostructureEquilibrium:
         assert sm.emergency_latched is False
 
     def test_cycle20_fail_closed_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_microstructure_equilibrium_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -1681,7 +1681,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
     """Verifies Cycle 21 Rough Volatility Fractional Surface Calibration & Markovian Lift Engine."""
 
     def test_fractional_rl_kernel(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             fractional_rl_kernel
         )
         t = [0.01, 0.1, 1.0]
@@ -1695,7 +1695,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
             fractional_rl_kernel(t, H=0.6)
 
     def test_markovian_lift_approximation_and_recursive_update(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             fit_markovian_lift
         )
         lift = fit_markovian_lift(H=0.15, factors=5, t_min=1e-4, t_max=1.0)
@@ -1711,7 +1711,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
         assert np.sum(z1) > 0.0
 
     def test_hurst_estimation_from_increments(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             estimate_hurst_from_increments
         )
         # Synthetic rough series
@@ -1724,7 +1724,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
         assert res["r_squared"] > 0.70
 
     def test_rough_skew_extrapolate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             rough_skew_extrapolate
         )
         tau_ref = 7 / 365
@@ -1741,7 +1741,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
             rough_skew_extrapolate(0.0001, psi_ref=psi_ref, tau_ref=tau_ref, H=H, sigma_ref=0.2)
 
     def test_svi_butterfly_and_surface_calendar_diagnostics(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             svi_g, check_surface_arbitrage
         )
         # SVI g(k)
@@ -1762,7 +1762,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
         assert res["nonnegative_total_variance"] is True
 
     def test_cycle21_state_machine_and_emergency_latches(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             Cycle21StateMachine, RoughVolState, RoughVolEvent
         )
         sm = Cycle21StateMachine()
@@ -1782,7 +1782,7 @@ class TestCycle21RoughVolatilityFractionalSurface:
         assert sm.emergency_latched is False
 
     def test_cycle21_fail_closed_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volatility_fractional_surface_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -1794,7 +1794,7 @@ class TestCycle22JumpDiffusionParticleFilter:
     """Test suite for Cycle 22 — Jump-Diffusion Particle Filtering & Macro IV Engine."""
 
     def test_jump_diffusion_parameter_validation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionParameters
         )
         p = JumpDiffusionParameters()
@@ -1808,7 +1808,7 @@ class TestCycle22JumpDiffusionParticleFilter:
             JumpDiffusionParameters(sigma_J=0.0).validate()
 
     def test_indian_statutory_friction_exactness(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             calculate_indian_statutory_friction
         )
         res_sell = calculate_indian_statutory_friction(
@@ -1834,7 +1834,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert abs(res_buy["stamp_duty"] - (turnover * 0.00003)) < 1e-6
 
     def test_merton_jump_diffusion_and_black_scholes_limit(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             merton_jump_diffusion_price, black_scholes_price
         )
         S, K, tau, r, sigma = 24000.0, 24000.0, 30.0 / 365.0, 0.065, 0.16
@@ -1850,7 +1850,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert merton_jumps > 0.0
 
     def test_implied_volatility_inversion(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             black_scholes_price, implied_volatility_inversion
         )
         S, K, tau, r, true_vol = 24000.0, 24100.0, 20.0 / 365.0, 0.065, 0.175
@@ -1859,7 +1859,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert abs(rec_vol - true_vol) < 1e-4
 
     def test_smc_particle_filter_propagation_and_n_eff(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionParameters, SMCParticleFilter
         )
         p = JumpDiffusionParameters()
@@ -1878,7 +1878,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert est["estimated_vol"] > 0.0
 
     def test_systematic_resampling_trigger(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionParameters, SMCParticleFilter
         )
         p = JumpDiffusionParameters()
@@ -1896,7 +1896,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert abs(float(np.sum(pf.weights)) - 1.0) < 1e-6
 
     def test_macro_event_regime_and_skew_calibration(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionParameters, MacroEventMetadata, JumpDiffusionMacroEngine, FilterRiskState
         )
         engine = JumpDiffusionMacroEngine(JumpDiffusionParameters(), n_particles=250)
@@ -1925,7 +1925,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert engine.state == FilterRiskState.SURFACE_CALIBRATED
 
     def test_frictional_alpha_hurdle_evaluation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionMacroEngine
         )
         engine = JumpDiffusionMacroEngine(n_particles=200)
@@ -1942,7 +1942,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert eval_res["is_frictional_hurdle_cleared"] is True
 
     def test_5_state_risk_engine_and_emergency_latch(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionMacroEngine, FilterRiskState
         )
         engine = JumpDiffusionMacroEngine(n_particles=200)
@@ -1967,7 +1967,7 @@ class TestCycle22JumpDiffusionParticleFilter:
         assert engine.emergency_latched is False
 
     def test_fail_closed_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
+        from agents.IVA.engine.agi17.finance.jump_diffusion_particle_filter_engine import (
             JumpDiffusionMacroEngine, LIVE_ORDER_DISPATCH_ENABLED
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -1980,7 +1980,7 @@ class TestCycle23ActorCriticGammaScalper:
     """Test suite for Cycle 23 — Deep Reinforcement Learning Actor-Critic & Gamma Scalper."""
 
     def test_action_bounds_and_finite_vector(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             MarketState, GaussianActorCritic
         )
         state = MarketState(
@@ -2000,7 +2000,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert np.all(np.abs(act_vec) <= 1.0)
 
     def test_gaussian_actor_critic_deterministic_action(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             GaussianActorCritic
         )
         model = GaussianActorCritic(state_dim=5, seed=123)
@@ -2010,7 +2010,7 @@ class TestCycle23ActorCriticGammaScalper:
         np.testing.assert_allclose(a1, a2)
 
     def test_ppo_update_finite_diagnostics(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             GaussianActorCritic
         )
         model = GaussianActorCritic(state_dim=4, seed=7)
@@ -2027,7 +2027,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert np.isfinite(diag["entropy"])
 
     def test_bayesian_regime_filter_updates(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             BayesianRegimeFilter
         )
         filt = BayesianRegimeFilter()
@@ -2037,7 +2037,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert p_spike > p0
 
     def test_gamma_rebalance_band_symmetry_and_hawkes_narrowing(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             gamma_rebalance_band
         )
         lo, hi = gamma_rebalance_band(
@@ -2059,7 +2059,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert w_high < w_low
 
     def test_transaction_costs_stt_and_stamp_duty(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             transaction_costs, FeeConfig
         )
         c_sell = transaction_costs(premium=120.0, quantity=50, side="SELL", config=FeeConfig())
@@ -2072,7 +2072,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert abs(c_buy.stamp_duty - (6000.0 * 0.00003)) < 1e-6
 
     def test_friction_aware_reward_penalties(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             friction_aware_reward, transaction_costs
         )
         costs = transaction_costs(premium=80.0, quantity=25, side="BUY")
@@ -2085,7 +2085,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert reward < 500.0
 
     def test_risk_state_machine_transitions(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             RiskStateMachine, RiskState, RiskEvent
         )
         sm = RiskStateMachine()
@@ -2095,7 +2095,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert sm.transition(RiskEvent.POLICY_DIVERGENCE) == RiskState.POLICY_DIVERGENCE_HALT
 
     def test_emergency_latch_and_recovery(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             RiskStateMachine, RiskState, RiskEvent
         )
         sm = RiskStateMachine()
@@ -2111,7 +2111,7 @@ class TestCycle23ActorCriticGammaScalper:
         assert sm.emergency_latched is False
 
     def test_live_dispatch_permanently_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
+        from agents.IVA.engine.agi17.finance.actor_critic_gamma_scalper_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -2123,7 +2123,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
     """Verifies Cycle 24 multi-agent liquidity routing, Gatheral cross-expiry arbitrage, and circuit breaker halts."""
 
     def test_dislocation_tracker_bounds_and_tiers(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             DislocationTracker
         )
         tracker = DislocationTracker()
@@ -2152,7 +2152,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
         assert snap_20.dislocation_index > 0.8
 
     def test_systemic_allocator_multi_index_and_expiries(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             SystemicAllocator, PortfolioGreeks, IndexName, ExpiryName
         )
         allocator = SystemicAllocator()
@@ -2177,7 +2177,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
         assert all(a.budget == 0.0 for a in allocs_halted)
 
     def test_cross_expiry_arbitrageur_gatheral_calendar_and_signals(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             CrossExpiryArbitrageur, VolSurfacePoint, IndexName
         )
         arb = CrossExpiryArbitrageur()
@@ -2217,7 +2217,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
 
 
     def test_smart_order_router_friction_and_cancellation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             SmartOrderRouter, OrderIntent, BookSnapshot, IndexName, ExpiryName, Side, TimeInForce, RiskState
         )
         sor = SmartOrderRouter()
@@ -2243,7 +2243,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
         assert len(sor.resting_passive_orders) == 0
 
     def test_risk_state_machine_halts_and_recovery(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             RiskStateMachine, RiskState, RiskEvent
         )
         sm = RiskStateMachine()
@@ -2277,7 +2277,7 @@ class TestCycle24HierarchicalLiquidityCrossExpiryRouter:
         assert sm.state == RiskState.IDLE
 
     def test_live_dispatch_permanently_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
+        from agents.IVA.engine.agi17.finance.hierarchical_liquidity_cross_expiry_router import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -2291,7 +2291,7 @@ class TestCycle25NewsShockIVCrushCompounding:
     """
 
     def test_news_iv_pump_peak_and_crush(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             NewsIVModel
         )
         model = NewsIVModel(0.16, 0.12, 120.0, 30.0)
@@ -2313,7 +2313,7 @@ class TestCycle25NewsShockIVCrushCompounding:
         assert pytest.approx(model.implied_volatility(-1e-6), abs=1e-5) == model.implied_volatility(1e-6)
 
     def test_news_regime_and_effective_spread(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             NewsIVModel, NewsRegimeController, StrategyRegime, effective_spread
         )
         model = NewsIVModel(0.16, 0.12, 120.0, 30.0)
@@ -2327,7 +2327,7 @@ class TestCycle25NewsShockIVCrushCompounding:
         assert pytest.approx(s_shock, abs=1e-5) == 5.0
 
     def test_indian_options_statutory_taxation_and_friction(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             StatutoryCostModel
         )
         cost_model = StatutoryCostModel(kappa_news=3.0)
@@ -2351,7 +2351,7 @@ class TestCycle25NewsShockIVCrushCompounding:
         assert pytest.approx(c.stt, abs=1e-2) == expected_stt
 
     def test_optimal_trade_frequency_optimizer(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             TradeFrequencyOptimizer
         )
         optimizer = TradeFrequencyOptimizer(
@@ -2365,7 +2365,7 @@ class TestCycle25NewsShockIVCrushCompounding:
         assert growth_star > 0.0
 
     def test_anti_tilt_and_overtrading_lockout(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             AntiTiltGuard
         )
         tilt = AntiTiltGuard()
@@ -2378,7 +2378,7 @@ class TestCycle25NewsShockIVCrushCompounding:
         assert pytest.approx(tilt.remaining_seconds(120), abs=1e-1) == 900.0
 
     def test_cycle25_live_dispatch_permanently_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
+        from agents.IVA.engine.agi17.finance.news_shock_iv_crush_compounding_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -2392,7 +2392,7 @@ class TestCycle26MultiScaleHawkesSignatureCrossImpactExecution:
     """
 
     def test_signature_curve_and_two_scale_realized_volatility(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
+        from agents.IVA.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
             log_returns, realized_variance, volatility_signature_curve,
             estimate_microstructure_noise_variance, two_scale_realized_variance
         )
@@ -2418,7 +2418,7 @@ class TestCycle26MultiScaleHawkesSignatureCrossImpactExecution:
         assert tsrv.noise_variance >= 0.0
 
     def test_hawkes_intensity_and_cross_impact_estimator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
+        from agents.IVA.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
             HawkesIntensityTracker, cluster_adjusted_variance,
             CrossImpactEstimator, CrossImpactSample, impact_kernel, lead_lag_correlation
         )
@@ -2451,7 +2451,7 @@ class TestCycle26MultiScaleHawkesSignatureCrossImpactExecution:
         assert corr > 0.5
 
     def test_indian_options_statutory_friction_and_asymmetric_execution(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
+        from agents.IVA.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
             statutory_friction, Side, profitability_gate,
             ExecutionConfig, optimize_execution_schedule
         )
@@ -2485,7 +2485,7 @@ class TestCycle26MultiScaleHawkesSignatureCrossImpactExecution:
         assert plan.expected_statutory_fees > 0.0
 
     def test_anti_tilt_session_throttle_and_risk_machine(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
+        from agents.IVA.engine.agi17.finance.multi_scale_hawkes_signature_cross_impact_execution_engine import (
             BehavioralTiltGuard, TiltReason, TradeFrequencyOptimizer, SessionController,
             RiskStateMachine, RiskState, RiskEvent, statutory_friction,
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
@@ -2537,7 +2537,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
     """Cycle 27 verification: rough Volterra kernels, expiry pinning, MLOFI jumps, statutory taxes, and anti-overtrading."""
 
     def test_rough_volterra_kernel_properties(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             RoughVolterraKernel
         )
         # Valid Hurst bounds
@@ -2567,7 +2567,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
         assert all(v == 0.0 for v in k.state_vector())
 
     def test_expiry_pinning_and_liquidity_stress(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             ExpiryPinDynamicsModel, StrikeExposure
         )
         model = ExpiryPinDynamicsModel(base_break_threshold_points=25.0)
@@ -2593,7 +2593,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
         assert r_break.spread_multiplier > 5.0
 
     def test_five_level_mlofi_and_fractional_jump(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             MLOFIJumpDetector, BookLevel
         )
         detector = MLOFIJumpDetector(levels=5)
@@ -2618,7 +2618,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
         assert obs1.intensity > 0.0
 
     def test_statutory_friction_exact_nse_schedule(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             StatutoryCostCalculator, FeeConfig
         )
         calc = StatutoryCostCalculator()
@@ -2642,7 +2642,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
         assert calc.profitability_gate(f_sell.total_friction - 0.1, f_sell) is False
 
     def test_anti_overtrading_throttling_and_tilt_lockout(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(
@@ -2669,7 +2669,7 @@ class TestCycle27RoughVolterraPinningLiquidity:
         assert status.cooldown_until_seconds == 300.0 + 900.0
 
     def test_cycle27_execution_engine_orchestration_and_safety(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_pinning_liquidity_engine import (
             Cycle27ExecutionEngine, StrikeExposure, BookLevel, RiskState,
             LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
@@ -2716,7 +2716,7 @@ class TestCycle28DeepConvexRiskHedging:
     """Cycle 28 verification: deep convex-risk hedging, indifference bands, Bayesian regime-switching, and CVaR."""
 
     def test_statutory_costs_and_profitability(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             StatutoryCostCalculator, StatutoryCostConfig
         )
         calc = StatutoryCostCalculator()
@@ -2737,7 +2737,7 @@ class TestCycle28DeepConvexRiskHedging:
         assert fees_buy.stamp_duty > 0.0
 
     def test_indifference_band_and_rebalance_trigger(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             IndifferenceBandEngine
         )
         engine = IndifferenceBandEngine(reference_volatility=0.02)
@@ -2754,7 +2754,7 @@ class TestCycle28DeepConvexRiskHedging:
         assert band.should_rebalance(0.95) is True
 
     def test_bayesian_regime_switching_updates(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             BayesianRegimeSwitchingModel, MarketRegime
         )
         model = BayesianRegimeSwitchingModel()
@@ -2769,7 +2769,7 @@ class TestCycle28DeepConvexRiskHedging:
         assert model.most_likely_regime == MarketRegime.POST_EVENT_JUMP_CRUSH
 
     def test_cvar_objective_and_policy_selection(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             CVaRObjectiveEvaluator, DeepHedgingPolicy
         )
         evaluator = CVaRObjectiveEvaluator()
@@ -2786,7 +2786,7 @@ class TestCycle28DeepConvexRiskHedging:
         assert choice.selected_policy == "conservative_band"
 
     def test_anti_overtrading_throttling_and_tilt_lockout(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(max_daily_trades=20, loss_streak_limit=3, cooldown_seconds=900.0)
@@ -2807,7 +2807,7 @@ class TestCycle28DeepConvexRiskHedging:
         assert throttler.can_enter(301.0) is False
 
     def test_cycle28_execution_orchestration_and_safety(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.deep_convex_risk_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.deep_convex_risk_hedging_engine import (
             Cycle28ExecutionEngine, RiskState, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         engine = Cycle28ExecutionEngine()
@@ -2838,7 +2838,7 @@ class TestCycle29MultiLegNewsSpread:
     and multi-leg options spread execution under asymmetric Indian tax regimes."""
 
     def test_multi_leg_statutory_schedule_and_tax_asymmetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             MultiLegFeeCalculator, OptionLeg, Side
         )
         calc = MultiLegFeeCalculator()
@@ -2871,7 +2871,7 @@ class TestCycle29MultiLegNewsSpread:
         assert fees_spread.total_cost == fees_spread.statutory_total + fees_spread.execution_cost_total
 
     def test_news_sentiment_volatility_conditioner(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             NewsSentimentVolatilityConditioner
         )
         conditioner = NewsSentimentVolatilityConditioner(
@@ -2899,7 +2899,7 @@ class TestCycle29MultiLegNewsSpread:
         assert cond_pre.jump_intensity > conditioner.baseline_intensity
 
     def test_sequential_jump_diffusion_filter(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             SequentialJumpDiffusionFilter
         )
         filt = SequentialJumpDiffusionFilter(initial_variance=1e-6)
@@ -2918,7 +2918,7 @@ class TestCycle29MultiLegNewsSpread:
         assert filt.variance == var_before  # uncontaminated
 
     def test_multi_leg_spread_optimizer_and_hurdles(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             MultiLegSpreadOptimizer, OptionLeg, Side, SpreadType
         )
         optimizer = MultiLegSpreadOptimizer()
@@ -2950,7 +2950,7 @@ class TestCycle29MultiLegNewsSpread:
         assert ratio_res.expected_net_alpha > 0.0
 
     def test_anti_overtrading_throttling_and_behavioral_lockout(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(
@@ -2984,7 +2984,7 @@ class TestCycle29MultiLegNewsSpread:
         assert "pacing" in out_pacing.reason
 
     def test_cycle29_execution_engine_orchestration_and_safety(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_leg_news_spread_engine import (
+        from agents.IVA.engine.agi17.finance.multi_leg_news_spread_engine import (
             Cycle29ExecutionEngine, OptionLeg, RiskState, Side, SpreadType, LIVE_ORDER_DISPATCH_ENABLED
         )
         engine = Cycle29ExecutionEngine()
@@ -3020,7 +3020,7 @@ class TestCycle30MacroTransmissionDashboard:
     and 24/7 automated dynamic cool-down synthesis under asymmetric Indian tax regimes."""
 
     def test_macro_factors_and_cross_asset_transmission(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.macro_transmission_dashboard_engine import (
+        from agents.IVA.engine.agi17.finance.macro_transmission_dashboard_engine import (
             MacroFactors, SVIParameters, MacroTransmissionModel, build_demo_factors
         )
         model = MacroTransmissionModel()
@@ -3045,7 +3045,7 @@ class TestCycle30MacroTransmissionDashboard:
             assert math.isfinite(res_shock.put_call_iv_diff)
 
     def test_dynamic_cooldown_controller_and_stages(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.macro_transmission_dashboard_engine import (
+        from agents.IVA.engine.agi17.finance.macro_transmission_dashboard_engine import (
             MacroFactors, MacroTransmissionModel, OperationalStage, DynamicCooldownController
         )
         model = MacroTransmissionModel()
@@ -3083,7 +3083,7 @@ class TestCycle30MacroTransmissionDashboard:
         assert ctrl.emergency_latched is False
 
     def test_statutory_friction_and_asymmetric_indian_taxes(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.macro_transmission_dashboard_engine import (
+        from agents.IVA.engine.agi17.finance.macro_transmission_dashboard_engine import (
             OptionLeg, StatutoryFrictionCalculator
         )
         calc = StatutoryFrictionCalculator()
@@ -3109,7 +3109,7 @@ class TestCycle30MacroTransmissionDashboard:
         assert calc.passes_profitability_gate(fb_sell.total - 1.0, fb_sell) is False
 
     def test_anti_overtrading_throttler_and_behavioral_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.macro_transmission_dashboard_engine import (
+        from agents.IVA.engine.agi17.finance.macro_transmission_dashboard_engine import (
             AntiOvertradingThrottler, TradeFrequencyConfig, OptionLeg, StatutoryFrictionCalculator
         )
         throttler = AntiOvertradingThrottler(TradeFrequencyConfig(
@@ -3140,7 +3140,7 @@ class TestCycle30MacroTransmissionDashboard:
 
     def test_standalone_dashboard_telemetry_streaming_and_safety(self) -> None:
         from datetime import datetime, timezone
-        from agents.AGI_1_7.engine.agi17.finance.macro_transmission_dashboard_engine import (
+        from agents.IVA.engine.agi17.finance.macro_transmission_dashboard_engine import (
             Cycle30ExecutionEngine, MacroFactors, DASHBOARD_PORT, LIVE_ORDER_DISPATCH_ENABLED
         )
         import json
@@ -3175,7 +3175,7 @@ class TestCycle31EVTVECMExpiryPinning:
 
     def test_evt_gpd_tail_estimation_and_cvar(self) -> None:
         import random
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import EVTGPDModel
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import EVTGPDModel
         # 1. Smooth exponential limit when xi -> 0
         model0 = EVTGPDModel(threshold=10.0, shape_xi=0.0, scale_beta=2.0, sample_count=100, exceedance_count=10)
         expected_var = 10.0 + 2.0 * math.log(10.0)
@@ -3195,7 +3195,7 @@ class TestCycle31EVTVECMExpiryPinning:
 
     def test_high_frequency_vecm_cointegration(self) -> None:
         import random
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import HighFrequencyVECM
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import HighFrequencyVECM
         rng = random.Random(42)
         bank = math.log(52000.0)
         beta = 0.85
@@ -3223,7 +3223,7 @@ class TestCycle31EVTVECMExpiryPinning:
 
     def test_expiry_pinning_and_pin_aware_delta_hedging(self) -> None:
         from datetime import datetime
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
             ExpiryPinningModel, StrikeExposure, IST
         )
         pin_model = ExpiryPinningModel(width_base=0.05, eta_pin=2.0)
@@ -3251,7 +3251,7 @@ class TestCycle31EVTVECMExpiryPinning:
         assert plan_reb.adjustment > 0.0
 
     def test_statutory_levy_schedule_and_multi_leg_hurdles(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
             StatutoryCostCalculator, OptionLeg, SpreadCandidate
         )
         calc = StatutoryCostCalculator()
@@ -3290,7 +3290,7 @@ class TestCycle31EVTVECMExpiryPinning:
         assert res_bad.qualifies is False
 
     def test_anti_overtrading_throttler_and_behavioral_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
             AntiOvertradingThrottler, RiskStateMachine, RiskState, RiskEvent
         )
         # alpha=1000, cost=250, risk=250 -> cap = round((1000 - 250) / 250) = 3
@@ -3323,7 +3323,7 @@ class TestCycle31EVTVECMExpiryPinning:
         assert rsm.transition(RiskEvent.RECOVERY_ACK) == RiskState.IDLE
 
     def test_cycle31_execution_engine_telemetry_and_fail_closed_safety(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
+        from agents.IVA.engine.agi17.finance.evt_vecm_expiry_pinning_engine import (
             Cycle31ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -3345,7 +3345,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
     """Cycle 32 Integration Suite: L3 Queue Priority, Double-DQN Market Making, and Slippage-Constrained Portfolio Allocation."""
 
     def test_l3_queue_tracker_priority_and_depletion(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             L3QueueTracker, QueueEventType
         )
         tracker = L3QueueTracker(mu_cancel=2.0, lambda_trade=3.0, hawkes_threshold=1.0)
@@ -3370,7 +3370,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
         assert est.reposition_hurdle >= 0.0
 
     def test_double_dqn_inventory_market_maker_action(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             AvellanedaStoikovModel, DoubleDQNAgent, ReplayBuffer, Experience, ACTION_OFFSETS
         )
         # 1. Avellaneda-Stoikov reservation price skews downward for positive inventory
@@ -3396,7 +3396,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
         assert math.isfinite(metrics["loss"])
 
     def test_dynamic_slippage_constrained_portfolio_optimization(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             PortfolioOptimizer
         )
         opt = PortfolioOptimizer()
@@ -3418,7 +3418,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
         assert zero_res.weights == (0.0, 0.0, 0.0)
 
     def test_asymmetric_indian_options_levy_schedule(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             MultiLegFeeCalculator, OptionLeg
         )
         calc = MultiLegFeeCalculator()
@@ -3438,7 +3438,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
         assert breakdown.total_cost > breakdown.total_statutory
 
     def test_anti_overtrading_throttler_and_behavioral_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             AntiOvertradingThrottler, RiskState
         )
         # alpha=1000, cost=250, risk=250 -> cap = round((1000 - 250) / 250) = 3
@@ -3460,7 +3460,7 @@ class TestCycle32L3QueueDoubleDQNPortfolio:
 
     def test_cycle32_execution_engine_telemetry_and_fail_closed_safety(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
+        from agents.IVA.engine.agi17.finance.l3_queue_double_dqn_portfolio_engine import (
             Cycle32ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -3482,7 +3482,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
     """Cycle 33 Integration Suite: Multi-Level OFI Graph, Multivariate Hawkes, Rough Volterra Variance Swap, and Indian Cost Schedules."""
 
     def test_multi_level_ofi_and_information_graph(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             MultiLevelOFITracker, BookLevelDelta, DirectedInformationGraph, shrink_nonnegative_matrix, spectral_radius
         )
         # 1. Multi-level OFI computation
@@ -3515,7 +3515,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
         assert post_rho <= 0.95 + 1e-9
 
     def test_multivariate_hawkes_network_and_leadership(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             MultivariateHawkesNetwork
         )
         nodes = ["HDFCBANK", "ICICIBANK", "NIFTY50"]
@@ -3540,7 +3540,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
         assert total_lead == pytest.approx(1.0, abs=1e-6)
 
     def test_rough_volterra_kernel_and_variance_swap_replication(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             RoughVolterraKernel, VarianceSwapQuote
         )
         kernel = RoughVolterraKernel(hurst=0.10, factors=16)
@@ -3574,7 +3574,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
         assert result.total_error_bound == pytest.approx(result.discretization_error_bound + result.truncation_error_bound)
 
     def test_statutory_costs_and_profitability_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator(brokerage_per_leg=10.0)
@@ -3601,7 +3601,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
         assert res_fail.expected_net_alpha < 0.0
 
     def test_anti_overtrading_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             AntiOvertradingThrottler, optimal_daily_trade_cap
         )
         # 1. Optimal trade cap
@@ -3632,7 +3632,7 @@ class TestCycle33OFIGraphHawkesVarianceSwap:
 
     def test_cycle33_engine_telemetry_and_fail_closed_safety(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
+        from agents.IVA.engine.agi17.finance.ofi_graph_hawkes_variance_swap_engine import (
             Cycle33Engine, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order, OptionLeg, BookLevelDelta
         )
         assert LIVE_ORDER_DISPATCH_ENABLED is False
@@ -3670,7 +3670,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
     """Cycle 34 Integration Suite: Microstructure-Conditioned SVI Smiles, L1-L5 Queue Depletion, and Adams-MacKay BOCPD."""
 
     def test_microstructure_state_conditioned_svi_and_arbitrage_guards(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             MicrostructureState, SVIParams, MicrostructureSVIConditioner
         )
         base = SVIParams(a=0.04, b=0.10, rho=-0.40, m=0.0, sigma=0.20)
@@ -3690,7 +3690,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
         assert res.params.minimum_total_variance() >= 0.0
 
     def test_queue_depletion_machine_and_repositioning_barrier(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             QueueDepletionMachine
         )
         machine = QueueDepletionMachine(lambda0=1.0, gamma_ofi=0.5)
@@ -3712,7 +3712,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
         assert machine.should_reposition(q_ahead=1000.0, horizon=0.1, now=101.0, eta_reposition=0.9, cancel_replace_hazard=0.01) is True
 
     def test_bocpd_conjugate_nig_and_regime_classification(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             BayesianOnlineChangepointDetector, MacroRegime, nig_update, nig_predictive_logpdf, NIGStats
         )
         # 1. NIG conjugate updates
@@ -3737,7 +3737,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
         assert res_shock.z_score > 5.0
 
     def test_statutory_friction_and_multi_leg_profitability_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             StatutoryCostCalculator, TradeLeg
         )
         calc = StatutoryCostCalculator()
@@ -3765,7 +3765,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
         assert res_fail.expected_net_alpha < 0.0
 
     def test_anti_overtrading_throttler_and_behavioral_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(alpha=10.0, cost=0.0, risk_per_trade=1.0, loss_limit=3, cooldown_seconds=900.0)
@@ -3790,7 +3790,7 @@ class TestCycle34MicrostructureSVIQueueBOCPD:
 
     def test_cycle34_execution_engine_telemetry_and_fail_closed_safety(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
+        from agents.IVA.engine.agi17.finance.microstructure_svi_queue_bocpd_engine import (
             Cycle34ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order,
             MicrostructureState, TradeLeg, RiskState
         )
@@ -3839,7 +3839,7 @@ class TestCycle35CrossAssetSSVILeadLagParticle:
     """
 
     def test_ssvi_surface_and_calendar_no_arbitrage(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
             SSVIParams, SurfaceSlice, VolatilitySurface, cross_asset_smile_basis
         )
         p1 = SSVIParams(theta=0.02, rho=-0.30, phi=0.45, psi=0.0)
@@ -3861,7 +3861,7 @@ class TestCycle35CrossAssetSSVILeadLagParticle:
         assert all(math.isfinite(b) for b in basis)
 
     def test_surface_spread_analyzer_and_calendar_hurdle(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
             SSVIParams, SurfaceSlice, VolatilitySurface, SurfaceSpreadAnalyzer,
             SurfaceOptionLeg, SpreadType
         )
@@ -3882,7 +3882,7 @@ class TestCycle35CrossAssetSSVILeadLagParticle:
         assert result.profitability.fees.stamp_duty > 0.0  # Stamp duty applies on buy leg
 
     def test_hawkes_cross_impact_and_almgren_chriss_execution(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
             HawkesCrossImpactModel, LeadLagSignal, AlmgrenChrissPlanner
         )
         hawkes = HawkesCrossImpactModel(baseline_intensity=0.2, alpha=0.8, beta=2.0, eta=0.1, decay_rate=2.0)
@@ -3904,7 +3904,7 @@ class TestCycle35CrossAssetSSVILeadLagParticle:
         assert plan.expected_impact_cost >= 0.0
 
     def test_multi_regime_particle_filter_resampling_and_regime_shift(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
             MultiRegimeParticleFilter, MicrostructureObservation, MarketRegime
         )
         filt = MultiRegimeParticleFilter(particles=300, seed=11)
@@ -3926,7 +3926,7 @@ class TestCycle35CrossAssetSSVILeadLagParticle:
 
     def test_cycle35_execution_engine_telemetry_and_fail_closed_safety(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_ssvi_lead_lag_particle_engine import (
             Cycle35Engine, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order, RiskState,
             MicrostructureObservation
         )
@@ -3958,7 +3958,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
     """
 
     def test_sofi_jump_diffusion_dynamics(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             SOFIJumpDiffusion
         )
         sofi = SOFIJumpDiffusion(kappa_ofi=1.4, mean_ofi=0.0, sigma_ofi=0.25, jump_intensity=0.2, seed=36)
@@ -3972,7 +3972,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
         assert snap["jump_intensity"] == 0.2
 
     def test_lob_resiliency_kernel_and_recovery_metrics(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             LOBResiliencyKernel
         )
         kernel = LOBResiliencyKernel(beta_r=0.8, r0=1.0, default_impulse_decay=1.2)
@@ -3988,7 +3988,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
         assert 0.0 <= hazard <= 1.0
 
     def test_hawkes_2d_spectral_stability_and_online_updates(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             HawkesMutualExcitation2D, spectral_radius_2x2
         )
         hawkes = HawkesMutualExcitation2D(
@@ -4010,7 +4010,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
         assert -1.0 <= asym <= 1.0
 
     def test_bayesian_microstructure_regime_posterior(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             BayesianMicrostructureFilter, MicrostructureRegime
         )
         regime_filter = BayesianMicrostructureFilter()
@@ -4026,7 +4026,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
         assert res_trend["z_regime"] >= 0.0
 
     def test_quadratic_spread_hedger_delta_gamma_neutrality(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             QuadraticSpreadHedgeOptimizer
         )
         opt = QuadraticSpreadHedgeOptimizer(max_iterations=300, tolerance=1e-6)
@@ -4046,7 +4046,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
         assert abs(sol.gamma_exposure) <= 0.2001
 
     def test_authoritative_statutory_fee_asymmetry_and_alpha_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -4064,7 +4064,7 @@ class TestCycle36SOFIResiliencyQuadraticHedge:
 
     def test_cycle36_execution_engine_telemetry_and_fail_closed_invariants(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_impact_sofi_quadratic_hedging_engine import (
             Cycle36ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED, dispatch_live_order,
             OptionLeg, RiskState
         )
@@ -4111,7 +4111,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
     """
 
     def test_rough_volterra_kernel_properties_and_updates(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             RoughVolterraKernel
         )
         kernel = RoughVolterraKernel(H=0.08, factors=12)
@@ -4138,7 +4138,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
         assert 0.0 <= w_wing <= 1.5 * 2.5 + 1e-6
 
     def test_quadratic_ofi_cointegration_and_leadership(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             QuadraticOFICointegration
         )
         qofi = QuadraticOFICointegration(
@@ -4169,7 +4169,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
         assert -1.0 <= trail < 0.0
 
     def test_gamma_vacuum_hedger_delta_neutral_convergence(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             GammaVacuumHedger
         )
         hedger = GammaVacuumHedger(lambda_spread=0.001, lambda_vacuum=0.001, tolerance=1e-6)
@@ -4202,7 +4202,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
         assert "infeasible" in res_infeasible.message.lower()
 
     def test_statutory_cost_calculator_asymmetric_schedule(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -4232,7 +4232,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
         assert gate_fail["approved"] is False
 
     def test_anti_overtrading_throttler_cooldown_and_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(max_trades_per_session=5, base_cooldown=900.0)
@@ -4266,7 +4266,7 @@ class TestCycle37RoughVolterraGammaVacuumHedging:
 
     def test_cycle37_execution_engine_telemetry_and_fail_closed_invariants(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.rough_volterra_gamma_vacuum_hedging_engine import (
             Cycle37ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             dispatch_live_order, OptionLeg
         )
@@ -4306,7 +4306,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
     """
 
     def test_hawkes_directed_graph_spectral_stability_and_centrality(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             HawkesDirectedGraph
         )
         graph = HawkesDirectedGraph()
@@ -4332,7 +4332,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
         assert all(r > 0 for r in rates)
 
     def test_l3_cancellation_shock_process_and_quote_pullback(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             CancellationShockModel
         )
         model = CancellationShockModel(baseline_intensity=0.20, cascade_threshold=0.65)
@@ -4353,7 +4353,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
         assert model.should_pull_quotes(timestamp=1.0, ofi=-3.0) is True
 
     def test_variance_gamma_surface_pricing_and_butterfly_density(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             VarianceGammaSurface, VGParameters
         )
         vg = VarianceGammaSurface(params=VGParameters(sigma=0.20, nu=0.20, theta=-0.10))
@@ -4384,7 +4384,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
         assert all(b >= -1e-6 for b in butterflies)
 
     def test_statutory_cost_calculator_asymmetric_schedule(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -4408,7 +4408,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
         assert calc.passes_gate(gross_alpha=20.0, costs=breakdown) is False
 
     def test_anti_overtrading_throttler_dynamic_cooldown_and_lockouts(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             AntiOvertradingThrottler
         )
         t = AntiOvertradingThrottler(max_daily_trades=5, base_cooldown_seconds=900.0)
@@ -4442,7 +4442,7 @@ class TestCycle38HawkesL3CancellationVarianceGamma:
 
     def test_cycle38_execution_engine_telemetry_and_fail_closed_invariants(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_l3_cancellation_variance_gamma_engine import (
             Cycle38ExecutionEngine, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             OptionLeg, RiskState
         )
@@ -4481,7 +4481,7 @@ class TestTradingSquadAndSkillBudget:
     """Acceptance test suite for the 4-agent trading squad and token-budgeted skill optimization."""
 
     def test_squad_personas_and_roles(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import (
+        from agents.IVA.engine.agi17.finance.three_agent_contract import (
             MANAGER_ABHI_PERSONA,
             ALEX_PERSONA,
             ALEXA_PERSONA,
@@ -4512,7 +4512,7 @@ class TestTradingSquadAndSkillBudget:
         assert "risk" in MAX_PERSONA.role.lower()
 
     def test_four_agent_squad_coordinator_approval(self, tmp_path: Path) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
+        from agents.IVA.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
 
         coordinator = FourAgentSquadCoordinator(storage_dir=tmp_path)
         operator_order = {
@@ -4547,7 +4547,7 @@ class TestTradingSquadAndSkillBudget:
         assert summary["max_approved"] is True
 
     def test_manager_abhi_veto_on_live_dispatch(self, tmp_path: Path) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
+        from agents.IVA.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
 
         coordinator = FourAgentSquadCoordinator(storage_dir=tmp_path)
         operator_order = {
@@ -4575,7 +4575,7 @@ class TestTradingSquadAndSkillBudget:
         assert summary["manager_abhi_approved"] is False
 
     def test_manager_abhi_veto_on_excess_capital(self, tmp_path: Path) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
+        from agents.IVA.engine.agi17.finance.three_agent_contract import FourAgentSquadCoordinator
 
         coordinator = FourAgentSquadCoordinator(storage_dir=tmp_path)
         operator_order = {
@@ -4600,7 +4600,7 @@ class TestTradingSquadAndSkillBudget:
         assert "epoch_10k" in record.agent_stances["Manager Abhi"]
 
     def test_skill_budget_manager(self) -> None:
-        from agents.AGI_1_7.engine.agi17.skills.skill_budget_manager import SkillBudgetManager
+        from agents.IVA.engine.agi17.skills.skill_budget_manager import SkillBudgetManager
 
         mgr = SkillBudgetManager()
         status = mgr.get_status()
@@ -4617,7 +4617,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
     """Acceptance test suite for Cycle 39 Fractional Heston-Hawkes, SSVI and L3 Queue Depletion."""
 
     def test_cycle39_safety_invariants_fail_closed(self) -> None:
-        import agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine as c39
+        import agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine as c39
 
         assert c39.LIVE_ORDER_DISPATCH_ENABLED is False
         assert c39.REAL_BROKER_FILLS_LOCKED is True
@@ -4628,7 +4628,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
             c39.dispatch_live_order("BUY")
 
     def test_cycle39_fractional_kernel_and_rough_heston(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
             FractionalKernel12, FractionalHestonHawkesModel
         )
         import numpy as np
@@ -4646,7 +4646,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert np.all(v > 0.0)
 
     def test_cycle39_bivariate_hawkes_cross_excitation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import BivariateHawkes
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import BivariateHawkes
         import numpy as np
 
         bh = BivariateHawkes()
@@ -4659,7 +4659,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert -1.0 <= asym <= 1.0
 
     def test_cycle39_ssvi_surface_and_butterfly_convexity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import SSVISurface
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import SSVISurface
 
         maturities = [0.08, 0.16, 0.32]
         theta = [0.025, 0.045, 0.08]
@@ -4672,7 +4672,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert bf["convex_nonnegative_sampled"] is True
 
     def test_cycle39_l3_queue_depletion_and_assessment(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
             L3QueueDepletionMachine, QueueOrder
         )
 
@@ -4684,7 +4684,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert assessment.expected_adverse_slippage >= 0.0
 
     def test_cycle39_delta_gamma_neutral_hedger(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
             DeltaGammaNeutralHedger
         )
 
@@ -4706,7 +4706,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert abs(out.delta_net) < 1e-5
 
     def test_cycle39_statutory_cost_calculator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
             Cycle39StatutoryCostCalculator, Cycle39Leg
         )
 
@@ -4723,7 +4723,7 @@ class TestCycle39FractionalHestonHawkesQueueDepletion:
         assert breakdown.total > 40.0
 
     def test_cycle39_execution_engine_full_loop(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_heston_hawkes_queue_depletion_engine import (
             Cycle39ExecutionEngine
         )
 
@@ -4739,7 +4739,7 @@ class TestCycle40RoughBergomiHawkesInventory:
     """Cycle 40 deterministic integration suite for Rough Bergomi, Hawkes Market Maker, and 4-Agent Squad."""
 
     def test_cycle40_safety_invariants_fail_closed(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, PAPER_INITIAL_CAPITAL, dispatch_live_order
         )
@@ -4752,7 +4752,7 @@ class TestCycle40RoughBergomiHawkesInventory:
             dispatch_live_order("NIFTY", "BUY", 50, 22000.0)
 
     def test_cycle40_rough_bergomi_lift_and_kernel(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             RoughBergomiLift
         )
         model = RoughBergomiLift(hurst=0.07, seed=7)
@@ -4767,7 +4767,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert step["variance"] > 0.0
 
     def test_cycle40_hawkes_graph4_centrality(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             HawkesGraph4
         )
         graph = HawkesGraph4()
@@ -4782,7 +4782,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert 0.0 <= centrality["NIFTY50"]["in_degree_absorption"] <= 1.0
 
     def test_cycle40_hawkes_market_maker_quotes(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             HawkesMarketMaker
         )
         mm = HawkesMarketMaker(risk_aversion=0.1, order_book_kappa=1.2, hawkes_spread_scale=0.08)
@@ -4793,7 +4793,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert quote.hawkes_widening >= 1.0
 
     def test_cycle40_l3_queue_machine_pullback(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             L3QueueMachine
         )
         qm = L3QueueMachine()
@@ -4811,7 +4811,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert verdict["quote_pullback_immediate"] is True
 
     def test_cycle40_variance_gamma_and_discrete_replication(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             VarianceGammaModel, DiscreteVarianceGammaReplicator
         )
         vg = VarianceGammaModel(sigma=0.2, nu=0.15, theta=-0.05)
@@ -4826,7 +4826,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert strip["variance_swap_rate"] > 0.0
 
     def test_cycle40_statutory_cost_calculator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             StatutoryCostCalculator, OptionLeg, FeeConfig
         )
         calc = StatutoryCostCalculator(FeeConfig())
@@ -4842,7 +4842,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert breakdown.total > 41.5
 
     def test_cycle40_inventory_controller_and_tilt_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             InventoryRiskController, TiltThrottler
         )
         controller = InventoryRiskController(initial_capital=10000.0, max_abs_inventory=5.0)
@@ -4858,7 +4858,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert throttler.can_enter(110.0) is False
 
     def test_cycle40_four_agent_squad_evaluation(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             FourAgentSquad
         )
         approved_eval = FourAgentSquad.evaluate(
@@ -4886,7 +4886,7 @@ class TestCycle40RoughBergomiHawkesInventory:
         assert veto_eval["manager_veto"] is True
 
     def test_cycle40_execution_engine_telemetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
+        from agents.IVA.engine.agi17.finance.rough_bergomi_hawkes_inventory_engine import (
             Cycle40ExecutionEngine
         )
         engine = Cycle40ExecutionEngine(seed=40)
@@ -4904,7 +4904,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
     """Cycle 41 integration suite for Cross-Asset Volterra Covariance, Hawkes Lead-Lag, and 4-Agent Squad."""
 
     def test_cycle41_safety_invariants_fail_closed(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR, dispatch_live_order, ASSETS
         )
@@ -4918,7 +4918,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
             dispatch_live_order("BUY")
 
     def test_cycle41_multi_asset_rough_volterra_covariance(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             MultiAssetRoughVolterraCovariance
         )
         cov = MultiAssetRoughVolterraCovariance(seed=41)
@@ -4929,7 +4929,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert len(snap.kernel_relative_errors) == 4
 
     def test_cycle41_hawkes_lead_lag_graph_centrality(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             HawkesLeadLagGraph
         )
         hawkes = HawkesLeadLagGraph()
@@ -4942,7 +4942,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert leadership[0][0] == 0.0
 
     def test_cycle41_l3_queue_machine_pullback(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             L3QueueDepletionMachine, QueueOrder
         )
         qm = L3QueueDepletionMachine()
@@ -4952,7 +4952,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert qm.pullback_required(0.9, 10.0, 2.0) is True
 
     def test_cycle41_multi_horizon_gamma_hedger(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             MultiHorizonGammaHedger, OptionInstrument
         )
         options = [
@@ -4965,7 +4965,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert len(res.adjustments) == 2
 
     def test_cycle41_statutory_cost_calculator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             StatutoryCostCalculator, TradeLeg
         )
         calc = StatutoryCostCalculator()
@@ -4981,7 +4981,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert fees.total > 41.5
 
     def test_cycle41_anti_overtilt_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             AntiOvertiltThrottler
         )
         throttler = AntiOvertiltThrottler(max_daily_trades=3, cooldown_seconds=60.0)
@@ -4995,7 +4995,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert reason_after == "loss_streak"
 
     def test_cycle41_four_agent_squad_and_manager_abhi(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             FourAgentSquad, TradeCandidate, TradeLeg
         )
         squad = FourAgentSquad()
@@ -5016,7 +5016,7 @@ class TestCycle41CrossAssetVolterraHawkesHedging:
         assert veto.votes["Manager Abhi"] is False
 
     def test_cycle41_execution_engine_telemetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.cross_asset_volterra_hawkes_hedging_engine import (
             Cycle41ExecutionEngine
         )
         engine = Cycle41ExecutionEngine()
@@ -5035,7 +5035,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
 
     def test_cycle42_mlofi_tracker(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             MLOFITracker
         )
         tracker = MLOFITracker()
@@ -5049,7 +5049,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
         assert len(snap["ofi"]) == 4
 
     def test_cycle42_hawkes_network_subcritical(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             HawkesNetwork
         )
         hn = HawkesNetwork()
@@ -5063,7 +5063,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
 
     def test_cycle42_rough_volterra_covariance_psd(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             RoughVolterraCovariance
         )
         rvc = RoughVolterraCovariance(seed=42)
@@ -5076,7 +5076,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
 
     def test_cycle42_greek_hedge_optimizer(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             GreekHedgeOptimizer
         )
         opt = GreekHedgeOptimizer(max_projection_iter=400, max_opt_iter=40)
@@ -5097,7 +5097,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
         assert abs(res.net_greeks[2]) <= 1.0 + 2e-6
 
     def test_cycle42_statutory_cost_calculator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -5114,7 +5114,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
         assert report.net_alpha == report.gross_alpha - report.total_friction
 
     def test_cycle42_anti_overtrading_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             AntiOvertradingThrottler
         )
         throttler = AntiOvertradingThrottler(max_trades_per_day=3, tau_base=60.0)
@@ -5128,7 +5128,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
         assert "consecutive_losses" in reason_after
 
     def test_cycle42_trading_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             TradingSquadConsensus
         )
         squad = TradingSquadConsensus()
@@ -5144,7 +5144,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
 
     def test_cycle42_fail_closed_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             dispatch_live_order, Cycle42ExecutionEngine
         )
         with pytest.raises(PermissionError, match="live order dispatch is permanently disabled"):
@@ -5154,7 +5154,7 @@ class TestCycle42HawkesMLOFIGreeksSurfaceHedging:
             engine.dispatch_live_order()
 
     def test_cycle42_execution_engine_telemetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
+        from agents.IVA.engine.agi17.finance.hawkes_mlofi_greeks_surface_hedging_engine import (
             Cycle42ExecutionEngine
         )
         engine = Cycle42ExecutionEngine()
@@ -5175,7 +5175,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
 
     def test_cycle43_rough_volterra_covariance_and_hurst(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             RoughVolterraCovariance
         )
         rv = RoughVolterraCovariance()
@@ -5188,7 +5188,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
         assert rv.validate_lee_wing(0, 0.1, 0.05) is True
 
     def test_cycle43_dealer_gamma_squeeze_topology(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             DealerGammaSqueezeTopology
         )
         sq = DealerGammaSqueezeTopology()
@@ -5202,7 +5202,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
         assert r2["reason"] == "toxic_cascade"
 
     def test_cycle43_hawkes_spillover_graph(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             HawkesSpilloverGraph
         )
         h = HawkesSpilloverGraph()
@@ -5218,7 +5218,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
             assert lead[i, i] == 0.0
 
     def test_cycle43_mlofi_depth_volume_deltas(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             MultiLevelOFI
         )
         mlofi = MultiLevelOFI()
@@ -5228,7 +5228,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
 
     def test_cycle43_cross_expiry_greek_hedge_optimizer(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             Cycle43ExecutionEngine, OptionLeg
         )
         e = Cycle43ExecutionEngine()
@@ -5250,7 +5250,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
         assert abs(hedge["net_delta"]) <= 1e-4
 
     def test_cycle43_statutory_cost_calculator(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -5268,7 +5268,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
         assert gate["net_alpha"] > 0
 
     def test_cycle43_dynamic_volatility_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             DynamicVolatilityThrottler
         )
         th = DynamicVolatilityThrottler(base_cooldown_seconds=60.0, max_consecutive_losses=3)
@@ -5281,7 +5281,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
         assert "loss_streak" in th.reasons
 
     def test_cycle43_squad_consensus_and_live_veto(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             SquadConsensus
         )
         squad = SquadConsensus()
@@ -5301,7 +5301,7 @@ class TestCycle43FractionalVolterraGammaSqueeze:
 
     def test_cycle43_fail_closed_boundaries_and_telemetry(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
+        from agents.IVA.engine.agi17.finance.fractional_volterra_gamma_squeeze_engine import (
             dispatch_live_order, Cycle43ExecutionEngine
         )
         with pytest.raises(PermissionError, match="live broker order dispatch is permanently disabled"):
@@ -5323,7 +5323,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
     """Verifies Cycle 44 Stochastic Volterra Jump-Diffusion, Liquidity Contagion Graph, Dealer Inventory Unwind, Neural Hedging, and 4-Agent Consensus."""
 
     def test_cycle44_volterra_jump_diffusion(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             RoughVolterraJumpDiffusion
         )
         rv = RoughVolterraJumpDiffusion("NIFTY 50", hurst=0.07, factors=12)
@@ -5333,7 +5333,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
         assert rv.lee_wing_slope(maturity=0.1) >= 0
 
     def test_cycle44_liquidity_contagion_graph(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             LiquidityContagionGraph
         )
         graph = LiquidityContagionGraph()
@@ -5345,7 +5345,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
         assert "spillover" in cents["NIFTY 50"]
 
     def test_cycle44_dealer_inventory_unwind(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             DealerInventoryUnwind
         )
         unwind = DealerInventoryUnwind()
@@ -5358,7 +5358,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
 
     def test_cycle44_neural_greek_hedge_optimizer(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             GreekNeutralHedgeOptimizer
         )
         opt = GreekNeutralHedgeOptimizer()
@@ -5370,7 +5370,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
         assert abs(r.vega_net) <= 1.0 + 1e-7
 
     def test_cycle44_statutory_costs_and_profitability(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             StatutoryCostCalculator, OptionLeg
         )
         calc = StatutoryCostCalculator()
@@ -5385,7 +5385,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
         assert StatutoryCostCalculator.profitable(500.0, fees) is True
 
     def test_cycle44_anti_tilt_throttler(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             AntiTiltThrottler
         )
         th = AntiTiltThrottler(base_cooldown=60.0, loss_limit=3)
@@ -5397,7 +5397,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
         assert th.status(190.0).reason == "LOSS_STREAK"
 
     def test_cycle44_trading_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             TradingSquadConsensus
         )
         squad = TradingSquadConsensus()
@@ -5411,7 +5411,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
 
     def test_cycle44_live_dispatch_permanently_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             Cycle44ExecutionEngine
         )
         e = Cycle44ExecutionEngine()
@@ -5419,7 +5419,7 @@ class TestCycle44StochasticVolterraLiquidityContagion:
             e.dispatch_live_order()
 
     def test_cycle44_execution_engine_telemetry(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_jump_diffusion_liquidity_engine import (
             Cycle44ExecutionEngine
         )
         e = Cycle44ExecutionEngine()
@@ -5437,7 +5437,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
     """Verifies Cycle 45 High-Frequency Optimal Stopping Boundaries, Hawkes Jumps, Lifted Rough Heston Surface Calibration, Dealer GEX Squeeze, and 4-Agent Consensus."""
 
     def test_cycle45_optimal_stopping_solution(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             solve_queue_optimal_stopping, MicrostructureParameters
         )
         params = MicrostructureParameters(lambda_fill=2.0, lambda_cancel=1.5, holding_cost_per_unit=0.01)
@@ -5446,7 +5446,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert res.action in {"WAIT", "PEG", "CANCEL"}
 
     def test_cycle45_hawkes_network_stability(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             HawkesNetwork
         )
         mu = [0.1, 0.15, 0.08, 0.05]
@@ -5461,7 +5461,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert all(spill["source_spillover"][a] >= 0.0 for a in spill["source_spillover"])
 
     def test_cycle45_rough_heston_exponential_lift(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             build_exponential_lift
         )
         lift = build_exponential_lift(hurst=0.07, n_factors=12)
@@ -5470,7 +5470,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert lift.relative_rmse < 0.05
 
     def test_cycle45_dealer_gex_and_squeeze_machine(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             map_dealer_gex, GammaPosition, GammaSqueezeMachine
         )
         positions = [
@@ -5486,7 +5486,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert isinstance(dec.quote_retreat, bool)
 
     def test_cycle45_greek_neutral_hedge_optimization(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             optimize_greek_neutral_hedge
         )
         cov = [[0.04, 0.01], [0.01, 0.05]]
@@ -5500,7 +5500,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert abs(res.vega_net) <= 1.0 + 1e-5
 
     def test_cycle45_statutory_fees_and_profitability(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             calculate_indian_statutory_fees, evaluate_net_alpha
         )
         fees = calculate_indian_statutory_fees(buy_turnover=5000.0, sell_turnover=6000.0, legs=2)
@@ -5513,7 +5513,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert gate.expected_net_alpha > 0
 
     def test_cycle45_adaptive_anti_tilt_throttle(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             AdaptiveAntiTiltThrottle
         )
         th = AdaptiveAntiTiltThrottle()
@@ -5525,7 +5525,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
         assert dec.reason == "three_consecutive_losses"
 
     def test_cycle45_trading_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             TradingSquad, TradeIntent
         )
         squad = TradingSquad()
@@ -5542,7 +5542,7 @@ class TestCycle45OptimalStoppingHawkesRoughHeston:
 
     def test_cycle45_fail_closed_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_rough_heston_engine import (
             dispatch_live_order, PaperLedger
         )
         with pytest.raises(PermissionError, match="live order dispatch is permanently disabled"):
@@ -5559,7 +5559,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
     """Comprehensive test suite verifying Cycle 46 Multi-Horizon Hawkes Actor-Critic Engine."""
 
     def test_cycle46_constants_and_safety_flags(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             ASSETS, INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             dispatch_live_order, PaperLedger
@@ -5582,7 +5582,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
 
     def test_cycle46_multi_horizon_hawkes_network(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             MultiHorizonHawkes, LAMBDA_STABILITY_LIMIT
         )
         mu = [1.0, 2.0, 1.5, 1.0]
@@ -5606,7 +5606,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
 
     def test_cycle46_continuous_actor_critic(self) -> None:
         import math, numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             ContinuousActorCritic, encode_actor_state
         )
         ac = ContinuousActorCritic(seed=42)
@@ -5631,7 +5631,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
         assert math.isfinite(upd.value_before) and math.isfinite(upd.value_after)
 
     def test_cycle46_order_cancellation_hazard_and_survival(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             cancellation_hazard, cancellation_survival, order_revision_decision
         )
         h1 = cancellation_hazard(depth=100.0, age=2.0)
@@ -5649,7 +5649,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
 
     def test_cycle46_rough_volterra_and_two_scale_realized_variance(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             rough_volterra_kernel, exponential_rough_lift, rough_lift_variance,
             two_scale_realized_variance, debiased_midquote_returns
         )
@@ -5675,7 +5675,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
         assert len(deb) == len(bids) - 1
 
     def test_cycle46_dealer_gex_and_gamma_squeeze_hazard(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             dealer_net_gamma, gamma_squeeze_hazard
         )
         oi = [10000.0, 8000.0]
@@ -5691,7 +5691,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
 
     def test_cycle46_greek_neutral_hedge_optimization(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             solve_greek_neutral_hedge
         )
         base = [0.01, 0.02, 0.2]
@@ -5704,7 +5704,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
         assert abs(h_res.net_vega) <= 1.0002
 
     def test_cycle46_indian_statutory_fees_and_net_alpha_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             IndianFeeSchedule, net_alpha_gate, research_preflight
         )
         sched = IndianFeeSchedule()
@@ -5729,7 +5729,7 @@ class TestCycle46MultiHorizonHawkesActorCritic:
         assert preflight["live_dispatch_enabled"] is False
 
     def test_cycle46_anti_tilt_controller_and_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
+        from agents.IVA.engine.agi17.finance.multi_horizon_hawkes_actor_critic_engine import (
             AntiTiltController, TradingSquad
         )
         ctrl = AntiTiltController()
@@ -5755,7 +5755,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
     """Comprehensive test suite verifying Cycle 47 Deep Neural Optimal Stopping Snell Envelopes."""
 
     def test_cycle47_constants_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             ASSETS, INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             dispatch_live_order, PaperLedger
@@ -5778,7 +5778,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
 
     def test_cycle47_multi_horizon_hawkes_network(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             default_hawkes_model
         )
         h = default_hawkes_model()
@@ -5790,7 +5790,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
 
     def test_cycle47_gaussian_actor_critic_and_snell_envelope(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             GaussianActorCritic, snell_envelope, actor_action_interpretation
         )
         ac = GaussianActorCritic(seed=42)
@@ -5809,7 +5809,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
         assert "size_dampener" in interp
 
     def test_cycle47_order_cancellation_hazard_and_survival(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             cancellation_hazard, order_survival_and_revision
         )
         haz = cancellation_hazard(depth=50.0, age=2.0)
@@ -5821,7 +5821,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
 
     def test_cycle47_rough_volterra_and_two_scale_realized_variance(self) -> None:
         import math, numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             rough_volterra_kernel, markovian_exponential_lift, two_scale_realized_variance,
             debias_tick_returns
         )
@@ -5840,7 +5840,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
         assert len(deb) == len(fast_ret) // 2
 
     def test_cycle47_dealer_net_gamma_and_squeeze_hazard(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             dealer_net_gamma_exposure, gamma_squeeze_hazard, quote_retreat_decision
         )
         oi = [10000.0, 8000.0]
@@ -5856,7 +5856,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
 
     def test_cycle47_greek_neutral_hedge_optimization(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             greek_neutral_hedge
         )
         cov = np.eye(3)
@@ -5870,7 +5870,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
         assert abs(res.vega_net) <= 1.0002 + 1e-6
 
     def test_cycle47_indian_statutory_fees_and_net_alpha_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             indian_statutory_fees, net_alpha_gate
         )
         fees = indian_statutory_fees(buy_turnover=5000.0, sell_turnover=6000.0, legs=2)
@@ -5885,7 +5885,7 @@ class TestCycle47OptimalStoppingHawkesDeepHedger:
         assert gate_no["approved"] is False
 
     def test_cycle47_anti_tilt_controller_and_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.optimal_stopping_hawkes_deep_hedger_engine import (
             AntiTiltController, squad_consensus
         )
         ctrl = AntiTiltController()
@@ -5905,7 +5905,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
     """Comprehensive test suite verifying Cycle 48 Volterra-Hawkes Pegger & Greek Hedger Engine."""
 
     def test_cycle48_constants_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             ASSETS, INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             dispatch_live_order, PaperLedger
@@ -5928,7 +5928,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
 
     def test_cycle48_multi_horizon_hawkes_network(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             default_hawkes_model, information_leadership_index
         )
         h = default_hawkes_model()
@@ -5946,7 +5946,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
 
     def test_cycle48_gaussian_actor_critic_and_snell_envelope(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             GaussianActorCritic, snell_envelope, actor_action_interpretation, STATE_DIM
         )
         ac = GaussianActorCritic(seed=42)
@@ -5965,7 +5965,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
         assert "size_dampener" in interp
 
     def test_cycle48_order_cancellation_hazard_and_survival(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             cancellation_hazard, order_survival_and_revision
         )
         haz = cancellation_hazard(depth=50.0, age=2.0)
@@ -5977,7 +5977,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
 
     def test_cycle48_rough_volterra_jump_diffusion_and_tsrv(self) -> None:
         import math, numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             rough_volterra_kernel, markovian_exponential_lift, tsrv_estimate,
             midquote_log_returns, simulate_rough_volterra_jump_diffusion,
             jump_diffusion_total_variance_proxy, validate_total_variance_surface
@@ -6014,7 +6014,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
         assert checks["calendar_monotone"] is True
 
     def test_cycle48_dealer_net_gamma_and_squeeze_hazard(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             dealer_net_gamma_exposure, gamma_squeeze_hazard, quote_retreat_decision
         )
         oi = [10000.0, 8000.0]
@@ -6030,7 +6030,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
 
     def test_cycle48_greek_neutral_hedge_optimization(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             greek_neutral_hedge
         )
         cov = np.eye(3)
@@ -6044,7 +6044,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
         assert abs(res.vega_net) <= 1.0002 + 1e-6
 
     def test_cycle48_indian_statutory_fees_and_net_alpha_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             indian_statutory_fees, net_alpha_gate
         )
         fees = indian_statutory_fees(buy_turnover=5000.0, sell_turnover=6000.0, legs=2)
@@ -6059,7 +6059,7 @@ class TestCycle48VolterraHawkesPeggerHedger:
         assert gate_no["approved"] is False
 
     def test_cycle48_anti_tilt_controller_and_squad_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.volterra_hawkes_pegger_hedger_engine import (
             AntiTiltController, squad_consensus, run_cycle48_example
         )
         ctrl = AntiTiltController()
@@ -6086,7 +6086,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
     """Comprehensive test suite verifying Cycle 49 Regime-Switching Volterra-Hawkes Pegger & Hedger Engine."""
 
     def test_cycle49_constants_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             ASSETS, INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             dispatch_live_order, AGENT_SQUAD, REGIMES
@@ -6105,7 +6105,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
 
     def test_cycle49_hmm_belief_tracker_and_regime_hawkes(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             HMMBeliefTracker, RegimeSwitchingHawkesNetwork
         )
         hmm = HMMBeliefTracker()
@@ -6121,7 +6121,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
 
     def test_cycle49_continuous_actor_critic_and_snell_envelope(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             ContinuousActorCritic, snell_envelope_step, STATE_DIM, ACTION_DIM
         )
         ac = ContinuousActorCritic(seed=49)
@@ -6135,7 +6135,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
         assert snell["value"] >= 0.8
 
     def test_cycle49_order_hazard_and_queue_decision(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             cancellation_hazard, order_survival_probability, queue_revision_decision
         )
         haz = cancellation_hazard(depth=50.0, age=2.0)
@@ -6149,7 +6149,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
 
     def test_cycle49_volterra_jump_diffusion_and_tsrv(self) -> None:
         import math
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             midquote_log_returns, two_scale_realized_variance,
             simulate_volterra_jump_diffusion, synthetic_total_variance_surface, validate_vol_surface
         )
@@ -6174,7 +6174,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
         assert v_res["butterfly_convex"] is True
 
     def test_cycle49_dealer_gex_and_gamma_squeeze(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             dealer_net_gamma_exposure, gamma_squeeze_hazard, quote_retreat_decision
         )
         gex = dealer_net_gamma_exposure([10000.0], [0.002], 24000.0)
@@ -6188,7 +6188,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
 
     def test_cycle49_greek_neutral_convex_hedger(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             greek_neutral_hedge
         )
         cov = np.eye(3)
@@ -6200,7 +6200,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
         assert np.all(np.abs(h_res["net_greeks"]) <= np.array([1.02e-4, 1.02e-3, 1.0002]) + 1e-6)
 
     def test_cycle49_statutory_fees_and_bayesian_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             IndianStatutoryFees, expected_net_alpha_gate, bayesian_kelly_fraction
         )
         fees = IndianStatutoryFees().calculate(buy_turnover=5000.0, sell_turnover=5000.0, executed_legs=2)
@@ -6218,7 +6218,7 @@ class TestCycle49RegimeSwitchingVolterraHawkesPeggerHedger:
         assert 0.0 <= k["fractional_kelly_fraction"] <= 0.1
 
     def test_cycle49_squad_consensus_and_example(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.regime_switching_volterra_hawkes_pegger_hedger_engine import (
             squad_consensus, run_cycle49_example
         )
         s_ok = squad_consensus(manager_approved=True, capital_approved=True, queue_safe=True, regime_safe=True, alpha_approved=True, risk_safe=True)
@@ -6241,7 +6241,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
     """Verifies Cycle 50 Grand Unified Microstructure-Macro Quantum-Jump Execution Engine (GUMMEE)."""
 
     def test_cycle50_identity_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             GUMMEE_NAME, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR, dispatch_live_order,
             ASSETS, AGENT_SQUAD,
@@ -6259,7 +6259,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
 
     def test_cycle50_cross_asset_impact_and_centrality(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             CrossAssetImpactModel,
         )
         model = CrossAssetImpactModel()
@@ -6285,7 +6285,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
 
     def test_cycle50_regime_marked_jump_diffusion(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             simulate_regime_marked_jumps,
         )
         j1 = simulate_regime_marked_jumps(steps=30, dt=0.01, seed=42)
@@ -6300,7 +6300,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
 
     def test_cycle50_hmm_belief_and_regime_switching_hawkes(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             HMMBeliefTracker, RegimeSwitchingHawkesNetwork, normalize_probabilities,
         )
         tracker = HMMBeliefTracker()
@@ -6322,7 +6322,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
 
     def test_cycle50_continuous_actor_critic_and_friction_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             ContinuousActorCritic, build_state_vector, friction_aware_advantage,
         )
         policy = ContinuousActorCritic(seed=50)
@@ -6357,7 +6357,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
         assert adv["inventory_risk_penalty"] == 0.1
 
     def test_cycle50_snell_envelope_and_queue_survival(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             snell_envelope_step, order_survival_probability, queue_revision_decision,
         )
         step = snell_envelope_step(0.8, 0.95, rate=0.01, dt=0.1, holding_cost_rate=0.02)
@@ -6372,7 +6372,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
 
     def test_cycle50_surface_validation_and_dealer_gex(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             synthetic_total_variance_surface, validate_vol_surface,
             dealer_net_gamma_exposure, gamma_squeeze_hazard, quote_retreat_decision,
         )
@@ -6394,7 +6394,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
         assert quote_dec in {"QUOTE", "RETREAT"}
 
     def test_cycle50_statutory_fees_and_bayesian_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             IndianStatutoryFees, expected_net_alpha_gate, bayesian_kelly_fraction,
         )
         fees = IndianStatutoryFees().calculate(buy_turnover=50000.0, sell_turnover=50000.0, executed_legs=2)
@@ -6409,7 +6409,7 @@ class TestCycle50GUMMEEVolterraHawkesPeggerHedger:
         assert 0.0 <= kelly["fractional_kelly_fraction"] <= 0.1
 
     def test_cycle50_squad_consensus_and_example(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
+        from agents.IVA.engine.agi17.finance.gummee_volterra_hawkes_pegger_hedger_engine import (
             squad_consensus, run_cycle50_example,
         )
         sc = squad_consensus(
@@ -6439,7 +6439,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
     """Verifies Cycle 51 High-Frequency Limit Order Book Cointegration and Volterra-Hawkes Utility Indifference Pricer."""
 
     def test_cycle51_identity_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             HFLOB_VIP_NAME, VECM_ASSETS, ASSETS, LIVE_ORDER_DISPATCH_ENABLED,
             REAL_BROKER_FILLS_LOCKED, PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR,
             dispatch_live_order, AGENT_SQUAD,
@@ -6458,7 +6458,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
 
     def test_cycle51_synthetic_forward_and_vecm_cointegration(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             synthetic_forward_price, cointegration_spread, VECMSpreadModel,
             estimate_vecm_cointegration,
         )
@@ -6500,7 +6500,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
         assert 0.0 < fit["phi"] < 1.0
 
     def test_cycle51_top5_ofi_and_toxicity_decomposition(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             decompose_top5_ofi, flow_toxicity_index,
         )
         bid_fills = [10.0, 5.0, 2.0, 1.0, 0.0]
@@ -6520,7 +6520,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
 
     def test_cycle51_nonlinear_quadratic_hawkes(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             NonlinearQuadraticHawkesNetwork,
         )
         hawkes = NonlinearQuadraticHawkesNetwork()
@@ -6536,7 +6536,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
 
     def test_cycle51_utility_indifference_pricer(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             UtilityIndifferencePricer,
         )
         pricer = UtilityIndifferencePricer(
@@ -6559,7 +6559,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
         assert quotes["inventory"] == 2.0
 
     def test_cycle51_statutory_fees_and_bayesian_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             IndianStatutoryFees, expected_net_alpha_gate, bayesian_kelly_fraction,
         )
         fees = IndianStatutoryFees().calculate(buy_turnover=50000.0, sell_turnover=50000.0, executed_legs=2)
@@ -6574,7 +6574,7 @@ class TestCycle51HFLOBVIPVolterraHawkes:
         assert 0.0 <= kelly["fractional_kelly_fraction"] <= 0.10
 
     def test_cycle51_squad_consensus_and_example(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.hflob_vip_volterra_hawkes_engine import (
             squad_consensus, run_cycle51_example,
         )
         sc = squad_consensus(
@@ -6604,7 +6604,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
     """Verifies Cycle 52 Fractional Path Signatures, Expiry Pinning Gamma Vacuums, and Liquidity Contagion."""
 
     def test_cycle52_identity_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             ASSETS, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR, dispatch_live_order,
             engine_manifest_summary,
@@ -6624,7 +6624,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
 
     def test_cycle52_path_signature_and_chen_identity(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             PathSignature, path_signature, signature_features, signature_predictability_features,
         )
         p1 = np.array([[0.0, 100.0], [1.0, 102.0], [2.0, 101.0]])
@@ -6651,7 +6651,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
         assert pred["geometric_area_norm"] >= 0.0
 
     def test_cycle52_exponential_volterra_lift(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             rough_volterra_kernel, build_exponential_volterra_lift,
         )
         k_val = rough_volterra_kernel(1.0, hurst=0.07)
@@ -6667,7 +6667,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
     def test_cycle52_expiry_pinning_and_gamma_vacuum(self) -> None:
         from datetime import datetime
         from zoneinfo import ZoneInfo
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             expiry_pinning_force, in_expiry_pin_window, gamma_vacuum_quote_action,
         )
         oi = {24000.0: 100000.0, 24100.0: 500000.0, 24200.0: 200000.0}
@@ -6696,7 +6696,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
 
     def test_cycle52_cross_asset_liquidity_depletion_and_resilience(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             cross_asset_liquidity_depletion, resilience_half_life,
         )
         coupling = np.array([[1.0, 0.2], [0.3, 1.0]])
@@ -6714,7 +6714,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
 
     def test_cycle52_path_signature_actor_critic_and_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             PathSignatureActorCritic, friction_aware_advantage,
         )
         ac = PathSignatureActorCritic(state_dim=16, seed=52)
@@ -6734,7 +6734,7 @@ class TestCycle52FPSEPGVVolterraHawkes:
         assert adv < 100.0 - 20.0 - 35.0
 
     def test_cycle52_statutory_fees_and_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.fps_epgv_volterra_hawkes_engine import (
             calculate_statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
             four_agent_consensus,
         )
@@ -6772,7 +6772,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
 
     def test_cycle53_forward_variance_and_rough_volterra(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             ForwardVarianceCurve, rough_volterra_kernel, build_volterra_lift, simulate_rough_variance_proxy,
         )
         times = np.array([0.0, 0.25, 0.5, 1.0])
@@ -6797,7 +6797,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
 
     def test_cycle53_ssvi_derivatives_and_butterfly_density(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             ssvi_total_variance, ssvi_derivatives, ssvi_butterfly_density,
             ssvi_wing_slopes, surface_diagnostics, calibrate_ssvi_grid,
         )
@@ -6830,7 +6830,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
 
     def test_cycle53_bocpd_changepoint_detection(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             BayesianOnlineChangepointDetector,
         )
         bocpd = BayesianOnlineChangepointDetector(hazard_lambda=40.0, max_run_length=50)
@@ -6848,7 +6848,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
 
     def test_cycle53_hawkes_bocpd_filter_and_stability(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             validate_hawkes_stability, HawkesBOCPDFilter,
         )
         alpha = np.array([
@@ -6876,7 +6876,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
         assert 0.0 <= up.system_changepoint_probability <= 1.0
 
     def test_cycle53_friction_aware_indifference_band(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             friction_aware_indifference_band, IndifferenceBand,
         )
         band = friction_aware_indifference_band(
@@ -6903,7 +6903,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
 
     def test_cycle53_actor_critic_and_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             ContinuousActorCritic, friction_aware_advantage,
         )
         ac = ContinuousActorCritic(seed=53)
@@ -6928,7 +6928,7 @@ class TestCycle53RBSVIBOCPDVolterraHawkes:
         assert adv < 50.0 - 10.0 - 15.0 + 12.0
 
     def test_cycle53_statutory_fees_consensus_and_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.rbsvi_bocpd_volterra_hawkes_engine import (
             calculate_statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
             four_agent_consensus, dispatch_live_order, LIVE_ORDER_DISPATCH_ENABLED,
             REAL_BROKER_FILLS_LOCKED,
@@ -6975,7 +6975,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
 
     def test_cycle54_rough_bergomi_simulation_and_volterra_lift(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             rough_volterra_kernel, build_volterra_lift, simulate_rough_bergomi_jump_sde,
         )
         k_val = rough_volterra_kernel(1.0, hurst=0.07)
@@ -6996,7 +6996,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
         assert np.all(sim.variance > 0.0)
 
     def test_cycle54_mlofi_top5_order_imbalance(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             mlofi_top5,
         )
         ofi = mlofi_top5(
@@ -7009,7 +7009,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
         assert ofi > 0.0
 
     def test_cycle54_cvar_and_hedging_error(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             hedging_error_scenarios, cvar_alpha,
         )
         errors = hedging_error_scenarios(
@@ -7024,7 +7024,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
         assert cvar >= min(errors)
 
     def test_cycle54_friction_aware_no_trade_band(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             friction_aware_no_trade_band, inventory_action, NoTradeBand,
         )
         band = friction_aware_no_trade_band(
@@ -7049,7 +7049,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
 
     def test_cycle54_actor_critic_and_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             ContinuousActorCritic, friction_aware_advantage, STATE_DIMENSION,
         )
         model = ContinuousActorCritic(seed=54)
@@ -7073,7 +7073,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
         assert adv < 25.0 - 5.0 - 10.0 + 6.0
 
     def test_cycle54_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             calculate_statutory_fees, pretrade_net_alpha_gate, beta_posterior_fractional_kelly,
         )
         fees = calculate_statutory_fees(125000.0, 110000.0, 2)
@@ -7091,7 +7091,7 @@ class TestCycle54DRHRBVNVolterraHawkes:
         assert 0.0 <= k["fraction"] <= 0.10
 
     def test_cycle54_consensus_and_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.drh_rbvn_volterra_hawkes_engine import (
             squad_consensus, dispatch_live_order, safety_invariants,
         )
         inv = safety_invariants()
@@ -7119,7 +7119,7 @@ class TestCycle55HFCEHLOSExecution:
     """Verifies Cycle 55 High-Frequency Cross-Impact Optimal Execution with Hawkes Price Impact (HF-CEH-LOS)."""
 
     def test_cycle55_safety_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             ASSETS, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR, dispatch_live_order,
         )
@@ -7134,7 +7134,7 @@ class TestCycle55HFCEHLOSExecution:
 
     def test_cycle55_regularize_impact_matrix_and_model(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             regularize_impact_matrix, CrossImpactModel,
         )
         raw_g = np.array([
@@ -7160,7 +7160,7 @@ class TestCycle55HFCEHLOSExecution:
 
     def test_cycle55_cancellation_intensity_and_mlofi(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             cancellation_intensity, adverse_selection_probability, mlofi_top5,
         )
         cancel = cancellation_intensity(0.2, 0.4, 2.0, [0.0, 0.1, 0.4], ofi=1.2, gamma=0.05)
@@ -7178,7 +7178,7 @@ class TestCycle55HFCEHLOSExecution:
 
     def test_cycle55_hawkes_stability_audit_and_cascade(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             hawkes_stability_audit, HawkesCascade,
         )
         alpha = np.eye(4) * 0.2
@@ -7194,7 +7194,7 @@ class TestCycle55HFCEHLOSExecution:
 
     def test_cycle55_almgren_chriss_and_no_trade_band(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             almgren_chriss_trajectory, compute_no_trade_band, inventory_action,
         )
         q0 = np.array([10.0, -4.0, 2.0, 1.0])
@@ -7213,7 +7213,7 @@ class TestCycle55HFCEHLOSExecution:
 
     def test_cycle55_actor_critic_and_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             ContinuousActorCritic, friction_aware_advantage,
         )
         ac = ContinuousActorCritic(seed=55)
@@ -7236,7 +7236,7 @@ class TestCycle55HFCEHLOSExecution:
         assert adv == 30.0 - 15.0 - 0.5 * (2.0**2) * 0.8
 
     def test_cycle55_statutory_fees_kelly_and_consensus(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.hf_ceh_los_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hf_ceh_los_execution_engine import (
             statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly, squad_consensus,
         )
         fees = statutory_fees(15000.0, 12000.0, 2)
@@ -7277,7 +7277,7 @@ class TestCycle56MHMFGTOFAExecution:
     """Verifies Cycle 56 Multi-Horizon Mean-Field Games for Liquidity Provision & Toxic Order Flow (MH-MFG-TOFA)."""
 
     def test_cycle56_safety_and_fail_closed_invariants(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             ASSETS, LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             PAPER_LEDGER_EPOCH, INITIAL_CAPITAL_INR, dispatch_live_order,
         )
@@ -7292,7 +7292,7 @@ class TestCycle56MHMFGTOFAExecution:
 
     def test_cycle56_mfg_hjb_fpk_solution_and_density(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             MFGConfig, solve_mean_field_game,
         )
         cfg = MFGConfig(horizon=0.3, n_steps=8, inventory_limit=3,
@@ -7309,7 +7309,7 @@ class TestCycle56MHMFGTOFAExecution:
 
     def test_cycle56_toxic_noise_split_and_hawkes(self) -> None:
         import math
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             split_toxic_and_noise_flow, ToxicFlowHawkes, mlofi_cancellation_hazard, toxic_spread_expansion,
         )
         split = split_toxic_and_noise_flow(noise_arrival_rate=0.2, toxic_intensity=0.4, directional_toxicity=0.5)
@@ -7330,7 +7330,7 @@ class TestCycle56MHMFGTOFAExecution:
 
     def test_cycle56_rough_volterra_lift_and_simulation(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             build_rough_volterra_lift, simulate_rough_volterra_jump_sde,
         )
         lift = build_rough_volterra_lift(n_factors=12, hurst=0.07)
@@ -7352,7 +7352,7 @@ class TestCycle56MHMFGTOFAExecution:
 
     def test_cycle56_actor_critic_and_mean_field_advantage(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             ContinuousActorCritic, mean_field_advantage,
         )
         ac = ContinuousActorCritic(seed=56)
@@ -7373,7 +7373,7 @@ class TestCycle56MHMFGTOFAExecution:
         assert adv == 1.5 - 0.2 - 0.3 * (1.0**2) * 0.5 - 0.1
 
     def test_cycle56_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
         )
         fee = statutory_fees(15000.0, 12000.0, 2)
@@ -7390,7 +7390,7 @@ class TestCycle56MHMFGTOFAExecution:
         assert 0.0 <= k <= 0.10
 
     def test_cycle56_squad_consensus_and_live_dispatch_locked(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
+        from agents.IVA.engine.agi17.finance.mh_mfg_tofa_execution_engine import (
             squad_consensus, dispatch_live_order,
         )
         c_ok = squad_consensus(
@@ -7424,7 +7424,7 @@ class TestCycle57QTNCSMExecution:
 
     def test_cycle57_tensor_train_svd_and_gamma_vacuum(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             tensor_train_svd, gamma_vacuum_detect, assert_calendar_monotone_surface,
         )
         x = np.arange(24, dtype=float).reshape(2, 3, 4)
@@ -7442,7 +7442,7 @@ class TestCycle57QTNCSMExecution:
 
     def test_cycle57_hawkes_and_liquidity_resilience(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             MultiScaleFractionalHawkes, LiquidityResilience,
         )
         mu = np.array([0.1, 0.1, 0.1, 0.1])
@@ -7459,7 +7459,7 @@ class TestCycle57QTNCSMExecution:
         assert lr.half_life > 0.0
 
     def test_cycle57_rough_volterra_lift_and_price_step(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             RoughVolterraLift, rough_vol_price_step,
         )
         lift = RoughVolterraLift(hurst=0.07, factors=12)
@@ -7474,7 +7474,7 @@ class TestCycle57QTNCSMExecution:
 
     def test_cycle57_actor_critic_and_inventory_band(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             ContinuousActorCritic, inventory_indifference_band, inventory_action,
             friction_aware_advantage,
         )
@@ -7497,7 +7497,7 @@ class TestCycle57QTNCSMExecution:
         assert adv == 2.0 - 0.3 - 0.4 * (1.0 ** 2) * (0.2 ** 2)
 
     def test_cycle57_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         fee = indian_statutory_fees(buy_turnover=25000.0, sell_turnover=30000.0, legs=2)
@@ -7517,7 +7517,7 @@ class TestCycle57QTNCSMExecution:
 
     def test_cycle57_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_csm_volterra_hawkes_engine import (
             squad_consensus, dispatch_live_order, AgentVote,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
         )
@@ -7552,7 +7552,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_volterra_lift_and_pricer(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             build_volterra_lift, RoughHestonLiftedPricer,
         )
         lift = build_volterra_lift(hurst=0.07)
@@ -7564,7 +7564,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_hawkes_l2_jump_clustering(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             NonMarkovianHawkesL2,
         )
         mu = [0.1, 0.1, 0.1, 0.1]
@@ -7578,7 +7578,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_path_signature_and_area(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             path_signature,
         )
         path = np.array([[0.0, 100.0, 200.0], [1.0, 102.0, 199.0], [2.0, 101.5, 201.0]])
@@ -7589,7 +7589,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_slippage_and_schedule(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             transient_market_impact, optimal_trade_schedule,
         )
         impact = transient_market_impact(trading_rate=10.0, elapsed=0.5, eta=0.01, alpha=1.0, kappa=1.5)
@@ -7600,7 +7600,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_actor_critic_and_inventory_band(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             ContinuousActorCritic, inventory_indifference_band, inventory_trade_decision,
             friction_aware_advantage,
         )
@@ -7618,7 +7618,7 @@ class TestCycle58DRHNMHExecution:
         assert adv == 150.0 - 45.0 - 0.5 * (2.0 ** 2) * 0.25
 
     def test_cycle58_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             calculate_statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
         )
         fees = calculate_statutory_fees(buy_turnover=25000.0, sell_turnover=30000.0, executed_legs=2)
@@ -7638,7 +7638,7 @@ class TestCycle58DRHNMHExecution:
 
     def test_cycle58_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.drh_nmh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.drh_nmh_execution_engine import (
             four_agent_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
         )
@@ -7663,7 +7663,7 @@ class TestCycle59FSVDHExecution:
 
     def test_cycle59_neural_vector_field_and_lift(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             build_volterra_lift, FractionalNeuralVectorField,
         )
         lift = build_volterra_lift(hurst=0.07)
@@ -7678,7 +7678,7 @@ class TestCycle59FSVDHExecution:
 
     def test_cycle59_deep_hawkes_microstructure(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             DeepHawkesMicrostructure,
         )
         base = [0.1, 0.1, 0.1, 0.1]
@@ -7691,7 +7691,7 @@ class TestCycle59FSVDHExecution:
 
     def test_cycle59_lead_lag_and_transfer_entropy(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             cross_asset_lead_lag, transfer_entropy_matrix,
         )
         returns = np.zeros((16, 4))
@@ -7703,7 +7703,7 @@ class TestCycle59FSVDHExecution:
         assert te.shape == (4, 4)
 
     def test_cycle59_asymmetric_impact_and_slippage(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             asymmetric_transient_impact,
         )
         buy_imp = asymmetric_transient_impact(10.0, 0.5, eta_buy=0.01, eta_sell=0.015, kappa=1.5)
@@ -7712,7 +7712,7 @@ class TestCycle59FSVDHExecution:
         assert sell_imp < 0.0
 
     def test_cycle59_adverse_selection_gate(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             adverse_selection_probability, quote_action_for_adverse_selection,
         )
         p_adv = adverse_selection_probability(cancellation_intensity=0.3, fill_horizon=0.25)
@@ -7721,7 +7721,7 @@ class TestCycle59FSVDHExecution:
         assert quote_action_for_adverse_selection(0.6, retreat_threshold=0.5) == "RETREAT"
 
     def test_cycle59_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             calculate_statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
         )
         fees = calculate_statutory_fees(buy_turnover=25000.0, sell_turnover=30000.0, executed_legs=2)
@@ -7737,7 +7737,7 @@ class TestCycle59FSVDHExecution:
 
     def test_cycle59_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.fsv_dh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.fsv_dh_execution_engine import (
             four_agent_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
         )
@@ -7760,7 +7760,7 @@ class TestCycle60QTNMOTExecution:
 
     def test_cycle60_tensor_train_svd_decomposition_and_reconstruction(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             tensor_train_decompose,
         )
         rng = np.random.default_rng(60)
@@ -7774,7 +7774,7 @@ class TestCycle60QTNMOTExecution:
     def test_cycle60_tensor_train_contract_and_local_greeks(self) -> None:
         import numpy as np
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             tensor_train_decompose, tensor_train_contract, tensor_greeks, tensor_train_greeks,
         )
         rng = np.random.default_rng(601)
@@ -7798,7 +7798,7 @@ class TestCycle60QTNMOTExecution:
     def test_cycle60_martingale_optimal_transport_dual_bounds(self) -> None:
         import numpy as np
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             solve_martingale_transport_bounds,
         )
         x = np.array([0.0, 1.0, 2.0])
@@ -7812,7 +7812,7 @@ class TestCycle60QTNMOTExecution:
         assert res.upper_dual_constraint_violation <= 1e-8
 
     def test_cycle60_multi_agent_hawkes_game_and_toxicity_spread(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             optimal_toxic_spread, adverse_selection_probability, should_retreat_quote,
             solve_spread_nash_equilibrium,
         )
@@ -7841,7 +7841,7 @@ class TestCycle60QTNMOTExecution:
         assert all(s > 0.0 for s in nash)
 
     def test_cycle60_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
         )
         fees = indian_statutory_fees(buy_turnover=200000.0, sell_turnover=250000.0, executed_legs=2)
@@ -7857,7 +7857,7 @@ class TestCycle60QTNMOTExecution:
 
     def test_cycle60_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.qtn_mot_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_mot_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             AGENT_ROLES,
@@ -7883,7 +7883,7 @@ class TestCycle61RBFSKDOFIExecution:
 
     def test_cycle61_volterra_lift_and_forward_variance_curve(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             fit_volterra_lift, forward_variance_curve, cumulative_total_variance,
             validate_calendar_total_variance, validate_butterfly_convexity,
         )
@@ -7917,7 +7917,7 @@ class TestCycle61RBFSKDOFIExecution:
 
     def test_cycle61_path_signatures_and_area_tensor(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             path_signature, chen_concatenate, geometric_area_tensor, randomized_signature_kernel,
         )
         rng = np.random.default_rng(61)
@@ -7937,7 +7937,7 @@ class TestCycle61RBFSKDOFIExecution:
         assert abs(kernel_val - 1.0) < 1e-6
 
     def test_cycle61_deep_cancellation_shocks_and_quote_action(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             multi_level_ofi, cancellation_intensity, queue_priority_degradation,
             adverse_selection_probability, quote_action,
         )
@@ -7967,7 +7967,7 @@ class TestCycle61RBFSKDOFIExecution:
 
     def test_cycle61_cross_expiry_dislocation_and_martingale_bounds(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             detect_cross_expiry_dislocation, discrete_martingale_bounds,
         )
         weekly = [0.10, 0.12, 0.14]
@@ -7987,7 +7987,7 @@ class TestCycle61RBFSKDOFIExecution:
         assert mot.martingale_residual <= 1e-8
 
     def test_cycle61_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             statutory_fees, net_alpha_gate, beta_posterior_fractional_kelly,
         )
         f = statutory_fees(buy_turnover=100000.0, sell_turnover=150000.0, executed_legs=2, exercise_turnover=10000.0)
@@ -8004,7 +8004,7 @@ class TestCycle61RBFSKDOFIExecution:
 
     def test_cycle61_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
+        from agents.IVA.engine.agi17.finance.rb_fsk_dofi_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             AGENT_ROLES,
@@ -8028,7 +8028,7 @@ class TestCycle62DHJDOLExecution:
 
     def test_cycle62_mlofi_and_hawkes_spectral_radius(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             multi_level_ofi, MarkedHawkes4, ASSETS,
         )
         assert len(ASSETS) == 4
@@ -8052,7 +8052,7 @@ class TestCycle62DHJDOLExecution:
 
     def test_cycle62_path_signature_and_levy_area(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             path_signature, levy_area, signature_random_features,
         )
         path = np.array([[0.0, 0.0, 0.0], [0.1, -0.05, 0.02], [0.2, 0.02, 0.03]])
@@ -8068,7 +8068,7 @@ class TestCycle62DHJDOLExecution:
         assert rf["min_eigenvalue"] >= -1e-10
 
     def test_cycle62_optimal_liquidation_and_toxicity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             optimal_liquidation_schedule, quote_action_for_toxicity,
         )
         sched = optimal_liquidation_schedule(q0=10.0, horizon=1.0, n_steps=20, impact=0.2, risk_aversion=0.5, volatility=0.2, jump_intensity=0.1, jump_variance=0.03)
@@ -8083,7 +8083,7 @@ class TestCycle62DHJDOLExecution:
 
     def test_cycle62_surface_dislocations_and_martingale_bounds(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             cross_index_surface_dislocations, martingale_transport_bounds,
         )
         t = [0.1, 0.2, 0.3]
@@ -8103,7 +8103,7 @@ class TestCycle62DHJDOLExecution:
         assert mot["martingale_residual"] <= 1e-8
 
     def test_cycle62_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             calculate_indian_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = calculate_indian_fees(buy_turnover=100000.0, sell_turnover=150000.0, executed_legs=2, exercise_turnover=10000.0)
@@ -8119,7 +8119,7 @@ class TestCycle62DHJDOLExecution:
 
     def test_cycle62_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.dh_jd_ol_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dh_jd_ol_execution_engine import (
             agent_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8145,7 +8145,7 @@ class TestCycle63NMHFVTTCALCExecution:
 
     def test_cycle63_non_markovian_hawkes_and_mlofi(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             power_law_kernel, signed_mlofi, hawkes_intensity, multivariate_hawkes_intensity,
         )
         # Power-law kernel
@@ -8172,7 +8172,7 @@ class TestCycle63NMHFVTTCALCExecution:
 
     def test_cycle63_fractional_volterra_and_tt_svd(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             volterra_kernel, tt_svd, tt_reconstruct,
         )
         k = volterra_kernel(1.0, 0.5, H=0.15)
@@ -8185,7 +8185,7 @@ class TestCycle63NMHFVTTCALCExecution:
         assert np.allclose(tensor, recon, atol=1e-6)
 
     def test_cycle63_contagion_matrix_and_sldi(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             verify_contagion_matrix, scale_contagion_matrix, systemic_liquidity_drain_index,
         )
         W = [
@@ -8206,7 +8206,7 @@ class TestCycle63NMHFVTTCALCExecution:
         assert sldi["amplification"] >= 1.0
 
     def test_cycle63_optimal_liquidation_and_toxicity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             optimal_liquidation_schedule, adverse_jump_probability, toxicity_action,
         )
         times = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -8223,7 +8223,7 @@ class TestCycle63NMHFVTTCALCExecution:
         assert toxicity_action(intensity=5.0, horizon=1.0, threshold=0.60) == "RETREAT"
 
     def test_cycle63_statutory_fees_and_kelly(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             calculate_indian_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = calculate_indian_fees(buy_turnover=50000.0, sell_turnover=75000.0, executed_legs=2)
@@ -8242,7 +8242,7 @@ class TestCycle63NMHFVTTCALCExecution:
 
     def test_cycle63_four_agent_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_fvtt_calc_execution_engine import (
             four_agent_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8285,7 +8285,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_graph_attention_and_network_intensity(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             build_graph_attention, hawkes_network_intensity, spectral_radius,
         )
         z = np.zeros((4, 4))
@@ -8305,7 +8305,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_tensor_ring_svd_and_reconstruction(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             tensor_ring_svd, reconstruct_tensor_ring,
         )
         rng = np.random.default_rng(64)
@@ -8318,7 +8318,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_surface_dislocation_and_toxicity(self) -> None:
         import math
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             surface_dislocation, toxicity_probability,
         )
         result = surface_dislocation([[0.1, 0.12, 0.14], [0.08, 0.09, 0.11]], [0.2, 0.25], [0.2, 0.31], 0.03)
@@ -8332,7 +8332,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_position_stress_testing_and_almgren_chriss(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             almgren_chriss_unwind, stress_test_positions,
         )
         unwind = almgren_chriss_unwind(8.0, horizon_steps=12, intensity=1.2, tau=1.0)
@@ -8353,7 +8353,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_statutory_fees_and_kelly(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = indian_statutory_fees(100000.0, 100000.0, 2)
@@ -8372,7 +8372,7 @@ class TestCycle64HDHVGATTRExecution:
 
     def test_cycle64_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
+        from agents.IVA.engine.agi17.finance.hd_hv_gat_tr_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8396,7 +8396,7 @@ class TestCycle65DNSDEMLTExecution:
 
     def test_cycle65_dnsde_simulation_and_lipschitz(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import simulate_dnsde
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import simulate_dnsde
         
         dim = 2
         sig_dim = 1
@@ -8430,7 +8430,7 @@ class TestCycle65DNSDEMLTExecution:
 
     def test_cycle65_optimal_liquidity_transport(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import optimal_liquidity_transport
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import optimal_liquidity_transport
 
         src = np.array([100.0, 150.0, 200.0, 120.0, 80.0])
         tgt = np.array([90.0, 130.0, 210.0, 140.0, 80.0])
@@ -8443,7 +8443,7 @@ class TestCycle65DNSDEMLTExecution:
         assert res["transport_cost"] >= 0.0
 
     def test_cycle65_almgren_chriss_unwind_and_toxicity(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import almgren_chriss_unwind
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import almgren_chriss_unwind
 
         u_calm = almgren_chriss_unwind(inventory=100.0, horizon_steps=10, intensity=0.1, tau=1.0)
         assert u_calm["terminal_inventory"] == 0.0
@@ -8456,7 +8456,7 @@ class TestCycle65DNSDEMLTExecution:
         assert u_toxic["toxicity_prob"] > 0.60
 
     def test_cycle65_deep_intraday_stress_testing(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import stress_test_positions
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import stress_test_positions
 
         positions = [
             {
@@ -8489,7 +8489,7 @@ class TestCycle65DNSDEMLTExecution:
 
     def test_cycle65_statutory_fees_and_kelly(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = indian_statutory_fees(100000.0, 100000.0, 2)
@@ -8508,7 +8508,7 @@ class TestCycle65DNSDEMLTExecution:
 
     def test_cycle65_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.dnsde_mlt_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dnsde_mlt_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8532,7 +8532,7 @@ class TestCycle66CTFMVJDExecution:
 
     def test_cycle66_mckean_vlasov_system_simulation(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import simulate_mckean_vlasov_system
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import simulate_mckean_vlasov_system
 
         res = simulate_mckean_vlasov_system(
             n_particles=50,
@@ -8556,7 +8556,7 @@ class TestCycle66CTFMVJDExecution:
 
     def test_cycle66_cross_asset_nonlocal_impact(self) -> None:
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import cross_asset_nonlocal_impact
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import cross_asset_nonlocal_impact
 
         ofi = np.array([
             [1.2, -0.5],
@@ -8576,7 +8576,7 @@ class TestCycle66CTFMVJDExecution:
         assert impact["total_energy"] >= 0.0
 
     def test_cycle66_almgren_chriss_unwind(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import almgren_chriss_unwind
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import almgren_chriss_unwind
 
         u_calm = almgren_chriss_unwind(inventory=150.0, horizon_steps=12, intensity=0.1, tau=1.0)
         assert u_calm["terminal_inventory"] == 0.0
@@ -8589,7 +8589,7 @@ class TestCycle66CTFMVJDExecution:
         assert u_toxic["toxicity_prob"] > 0.60
 
     def test_cycle66_stress_test_positions(self) -> None:
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import stress_test_positions
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import stress_test_positions
 
         positions = [
             {
@@ -8618,7 +8618,7 @@ class TestCycle66CTFMVJDExecution:
 
     def test_cycle66_fees_kelly_and_gates(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import (
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = indian_statutory_fees(100000.0, 100000.0, 2)
@@ -8637,7 +8637,7 @@ class TestCycle66CTFMVJDExecution:
 
     def test_cycle66_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.ct_fmv_jd_execution_engine import (
+        from agents.IVA.engine.agi17.finance.ct_fmv_jd_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8682,7 +8682,7 @@ class TestCycle67NLFLFCELAExecution:
     def test_cycle67_tempered_levy_characteristic_and_simulation(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             tempered_levy_characteristic_function, simulate_levy_flight_path, sample_truncated_levy_flights,
         )
         phi_0 = tempered_levy_characteristic_function(0.0, 1.0, 1.5, 0.5)
@@ -8701,7 +8701,7 @@ class TestCycle67NLFLFCELAExecution:
 
     def test_cycle67_mlofi_and_toxic_intensity(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             compute_mlofi_5level, toxic_jump_intensity,
         )
         delta_bv = [10.0, 8.0, 6.0, 4.0, 2.0]
@@ -8718,7 +8718,7 @@ class TestCycle67NLFLFCELAExecution:
 
     def test_cycle67_term_structure_arbitrage_audit(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             term_structure_arbitrage_audit,
         )
         maturities = [0.1, 0.25, 0.5]
@@ -8735,7 +8735,7 @@ class TestCycle67NLFLFCELAExecution:
 
     def test_cycle67_multi_expiry_liquidation_and_indifference(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             multi_expiry_liquidation, friction_aware_indifference_width,
         )
         inv = [10.0, -5.0, 2.0]
@@ -8748,7 +8748,7 @@ class TestCycle67NLFLFCELAExecution:
 
     def test_cycle67_statutory_fees_and_kelly_limits(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         fees = indian_statutory_fees(100000.0, 100000.0, executed_legs=2)
@@ -8765,7 +8765,7 @@ class TestCycle67NLFLFCELAExecution:
 
     def test_cycle67_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nl_flf_cela_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nl_flf_cela_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8789,7 +8789,7 @@ class TestCycle68NMHVMVCEHExecution:
     def test_cycle68_particle_simulation_and_volterra(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             simulate_nmh_vmv_system, volterra_memory_kernel, volterra_increment_weights,
         )
         kernel_val = volterra_memory_kernel(0.1, 0.0, 0.15)
@@ -8807,7 +8807,7 @@ class TestCycle68NMHVMVCEHExecution:
     def test_cycle68_cross_hedge_beta_and_mlofi(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             dynamic_cross_hedge_beta, compute_top5_mlofi, hawkes_mlofi_toxicity,
         )
         returns = np.array([[0.01, 0.02], [-0.01, -0.015], [0.005, 0.01], [0.02, 0.025]], dtype=float)
@@ -8830,7 +8830,7 @@ class TestCycle68NMHVMVCEHExecution:
     def test_cycle68_surface_arbitrage_audit(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             audit_cross_expiry_surface, require_static_arbitrage_free_surface,
         )
         strikes = np.linspace(-1.0, 1.0, 9)
@@ -8845,7 +8845,7 @@ class TestCycle68NMHVMVCEHExecution:
 
     def test_cycle68_unwind_and_indifference_width(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             almgren_chriss_multi_expiry_unwind, cubic_root_indifference_width,
         )
         inv = [10.0, -5.0]
@@ -8859,7 +8859,7 @@ class TestCycle68NMHVMVCEHExecution:
 
     def test_cycle68_fees_alpha_gate_and_kelly(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly,
         )
         f = indian_statutory_fees(100000.0, 100000.0, executed_legs=2)
@@ -8876,7 +8876,7 @@ class TestCycle68NMHVMVCEHExecution:
 
     def test_cycle68_squad_consensus_and_live_dispatch_locked(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
+        from agents.IVA.engine.agi17.finance.nmh_vmv_ceh_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, PAPER_LEDGER_EPOCH,
@@ -8899,7 +8899,7 @@ class TestCycle69DFRHTTAHFExecution:
     def test_cycle69_lifted_rough_heston_and_volterra(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             simulate_rough_heston, build_volterra_lift
         )
         l = build_volterra_lift(hurst=0.15, n_modes=8, horizon=0.5, dt=0.005)
@@ -8915,7 +8915,7 @@ class TestCycle69DFRHTTAHFExecution:
     def test_cycle69_tensor_train_svd_and_surface_audit(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             tt_svd_decompose, audit_volatility_surface, cross_surface_relative_value
         )
         k = np.linspace(-1.0, 1.0, 21)
@@ -8938,7 +8938,7 @@ class TestCycle69DFRHTTAHFExecution:
     def test_cycle69_mlofi_and_hawkes_toxicity(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             compute_mlofi_top5, hawkes_toxicity_gate
         )
         dbv = np.array([2., 1., 4., -1., 3.])
@@ -8955,7 +8955,7 @@ class TestCycle69DFRHTTAHFExecution:
     def test_cycle69_optimal_unwind_and_terminal_zero(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             almgren_chriss_multi_expiry_unwind
         )
         inventory = np.array([[2.0, -1.0], [0.5, 3.0]])
@@ -8966,7 +8966,7 @@ class TestCycle69DFRHTTAHFExecution:
 
     def test_cycle69_fees_and_beta_kelly(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly
         )
         fees = indian_statutory_fees(100_000.0, 150_000.0, executed_legs=4)
@@ -8982,7 +8982,7 @@ class TestCycle69DFRHTTAHFExecution:
 
     def test_cycle69_squad_consensus_and_fail_closed_dispatch(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.dfrh_tt_ahf_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, DISPATCH_ERROR
@@ -9005,7 +9005,7 @@ class TestCycle70QTNMENLFExecution:
     def test_cycle70_lindblad_master_equation_and_mpo(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_me_nlf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_me_nlf_execution_engine import (
             lindblad_rhs, simulate_lindblad_master_equation, mpo_decompose_density
         )
         h = np.array([[0, 0.2], [0.2, 0]], dtype=complex)
@@ -9035,7 +9035,7 @@ class TestCycle70QTNMENLFExecution:
     def test_cycle70_tempered_levy_and_surface_audit(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_me_nlf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_me_nlf_execution_engine import (
             tempered_levy_characteristic, sample_truncated_levy_flight,
             volatility_surface_audit, cross_surface_relative_value
         )
@@ -9064,7 +9064,7 @@ class TestCycle70QTNMENLFExecution:
     def test_cycle70_mlofi_hawkes_and_contagion(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_me_nlf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_me_nlf_execution_engine import (
             mlofi_top5, hawkes_intensity, toxicity_gate, contagion_routing
         )
         vb = np.array([10, 8, 6, 4, 2.])
@@ -9087,7 +9087,7 @@ class TestCycle70QTNMENLFExecution:
     def test_cycle70_unwind_fees_and_fail_closed_dispatch(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.qtn_me_nlf_execution_engine import (
+        from agents.IVA.engine.agi17.finance.qtn_me_nlf_execution_engine import (
             almgren_chriss_multi_expiry_unwind, indian_statutory_fees,
             net_alpha_gate, beta_fractional_kelly, squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
@@ -9126,7 +9126,7 @@ class TestCycle71NPISOCRBTNExecution:
     def test_cycle71_path_integral_and_fbsde(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.npisoc_rbtn_execution_engine import (
+        from agents.IVA.engine.agi17.finance.npisoc_rbtn_execution_engine import (
             path_integral_stochastic_control, solve_neural_fbsde
         )
         out = path_integral_stochastic_control(n_samples=96, horizon_steps=16, seed=123)
@@ -9145,7 +9145,7 @@ class TestCycle71NPISOCRBTNExecution:
     def test_cycle71_rough_bergomi_and_tt(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.npisoc_rbtn_execution_engine import (
+        from agents.IVA.engine.agi17.finance.npisoc_rbtn_execution_engine import (
             exponential_lift_kernel, simulate_rough_bergomi, tt_svd, reconstruct_tt,
             volatility_surface_audit
         )
@@ -9178,7 +9178,7 @@ class TestCycle71NPISOCRBTNExecution:
     def test_cycle71_mlofi_hawkes_and_fees(self) -> None:
         import pytest
         import numpy as np
-        from agents.AGI_1_7.engine.agi17.finance.npisoc_rbtn_execution_engine import (
+        from agents.IVA.engine.agi17.finance.npisoc_rbtn_execution_engine import (
             compute_mlofi, hawkes_toxicity_gate, almgren_chriss_multi_expiry_unwind,
             indian_statutory_fees, net_alpha_gate, beta_fractional_kelly
         )
@@ -9204,7 +9204,7 @@ class TestCycle71NPISOCRBTNExecution:
 
     def test_cycle71_squad_and_fail_closed_dispatch(self) -> None:
         import pytest
-        from agents.AGI_1_7.engine.agi17.finance.npisoc_rbtn_execution_engine import (
+        from agents.IVA.engine.agi17.finance.npisoc_rbtn_execution_engine import (
             squad_consensus, dispatch_live_order,
             LIVE_ORDER_DISPATCH_ENABLED, REAL_BROKER_FILLS_LOCKED,
             INITIAL_CAPITAL_INR, AGENT_NAMES

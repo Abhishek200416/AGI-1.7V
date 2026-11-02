@@ -1095,7 +1095,7 @@ class SessionPreflightService:
         provenance = "AUTHENTIC_READONLY_FEED" if paytm_active else "SYNTHETIC_REPLAY_ACTIVE"
         bhav_count = 0
         try:
-            from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import EvaluationDatasetRegistry
+            from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import EvaluationDatasetRegistry
             reg = EvaluationDatasetRegistry()
             bhav_count = len(reg.list_datasets())
         except Exception:
@@ -1167,7 +1167,7 @@ class SessionPreflightService:
             ))
 
         # Check 9: Decision Trace Recorder & Memory Storage
-        trace_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "AGI_1_7" / "runtime_storage\traces"))
+        trace_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "IVA" / "runtime_storage\traces"))
         trace_ok = trace_dir.exists() or True
         checks.append(PreflightCheckResult(
             check_name="Decision Trace & Memory Engine",
@@ -1202,7 +1202,7 @@ class SessionPreflightService:
 
         # Check 11: Secret & Credential Redaction Hygiene
         try:
-            from agents.AGI_1_7.engine.agi17.adapters.model_adapter import redact_sensitive_text
+            from agents.IVA.engine.agi17.adapters.model_adapter import redact_sensitive_text
             test_leak = "Bearer test_bearer_token_123456 and api_secret=super_secret_key_12345"
             redacted = redact_sensitive_text(test_leak)
             scrub_ok = ("test_bearer_token" not in redacted) and ("super_secret_key" not in redacted)
@@ -1227,7 +1227,7 @@ class SessionPreflightService:
 
         # Check 12: Browser DOM Scraping Hard Safety Gate
         try:
-            from agents.AGI_1_7.finance.paytm_persistent_overlay_daemon import BROWSER_DOM_EXTRACTION_ENABLED
+            from agents.IVA.finance.paytm_persistent_overlay_daemon import BROWSER_DOM_EXTRACTION_ENABLED
             dom_safe = not BROWSER_DOM_EXTRACTION_ENABLED
         except Exception:
             dom_safe = True
@@ -1270,7 +1270,7 @@ class SessionStore:
     """Persists session configurations, lifecycle state transitions, and audit logs."""
 
     def __init__(self, base_dir: Optional[Path] = None):
-        self.base_dir = base_dir or Path(str(Path(__file__).resolve().parents[3] / "agents" / "AGI_1_7" / "runtime_storage\session"))
+        self.base_dir = base_dir or Path(str(Path(__file__).resolve().parents[3] / "agents" / "IVA" / "runtime_storage\session"))
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.current_session_file = self.base_dir / "current_session.json"
         self.session_history_file = self.base_dir / "session_history.jsonl"

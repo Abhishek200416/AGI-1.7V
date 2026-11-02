@@ -17,32 +17,32 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.context.context_engine import (
+from agents.IVA.engine.agi17.context.context_engine import (
     ContextEngine,
     ContextManifest,
     EpistemicStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import (
     BankNiftyContractSpec,
     BankNiftyMarketCalendar,
     NSE_HOLIDAYS_2026,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_engine import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_engine import (
     BankNiftyPaperEngine,
     FinancialSafetyViolationError,
     PaperOrder,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_math import OptionsMath
-from agents.AGI_1_7.engine.agi17.finance.signal_contract import (
+from agents.IVA.engine.agi17.finance.options_math import OptionsMath
+from agents.IVA.engine.agi17.finance.signal_contract import (
     MarketRegime,
     SignalDecision,
     SignalStatus,
 )
-from agents.AGI_1_7.engine.agi17.process_supervision.continuous_supervisor import (
+from agents.IVA.engine.agi17.process_supervision.continuous_supervisor import (
     ContinuousSupervisor,
     SupervisorState,
 )
-from agents.AGI_1_7.engine.agi17.telemetry.token_economy import (
+from agents.IVA.engine.agi17.telemetry.token_economy import (
     AdaptiveTokenController,
     TokenBudgetExceededError,
 )
@@ -322,7 +322,7 @@ class TestOmegaCommandMission(unittest.TestCase):
     # 7. PersistentSupervisor with Adapter & Mission Run State
     def test_07_persistent_supervisor_adapter_integration(self) -> None:
         import json
-        from agents.AGI_1_7.engine.agi17.supervisor.persistent_supervisor import (
+        from agents.IVA.engine.agi17.supervisor.persistent_supervisor import (
             PersistentSupervisor,
             TaskPriority,
         )

@@ -12,7 +12,7 @@ Verifies:
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.multi_day_walk_forward import (
+from agents.IVA.engine.agi17.finance.multi_day_walk_forward import (
     DailySessionSummary,
     MultiDayWalkForwardEngine,
     MultiDayWalkForwardReport,

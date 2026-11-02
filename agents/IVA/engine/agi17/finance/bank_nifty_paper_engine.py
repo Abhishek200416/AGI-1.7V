@@ -73,7 +73,7 @@ class BankNiftyPaperEngine:
         self.spec = spec or BankNiftyContractSpec()
         self.calendar = calendar or BankNiftyMarketCalendar(self.spec)
 
-        self.ledger_path = Path(ledger_path) if ledger_path else Path("agents/AGI_1_7/state_fallback/storage/paper_ledger.jsonl")
+        self.ledger_path = Path(ledger_path) if ledger_path else Path("agents/IVA/state_fallback/storage/paper_ledger.jsonl")
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
 
         self._lock = threading.RLock()

@@ -17,13 +17,13 @@ root_dir = Path(__file__).resolve().parents[3]
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
-from agents.AGI_1_7.engine.agi17.browser import (
+from agents.IVA.engine.agi17.browser import (
     ActivityOverlayConfig,
     AgentActivityState,
     AuthenticChromeController,
     launch_authentic_chrome,
 )
-from agents.AGI_1_7.engine.agi17.browser.authentic_chrome import (
+from agents.IVA.engine.agi17.browser.authentic_chrome import (
     AUTHENTIC_CHROME_OVERLAY_JS,
     CDPWebSocket,
 )

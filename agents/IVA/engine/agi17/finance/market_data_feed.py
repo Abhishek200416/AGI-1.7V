@@ -125,7 +125,7 @@ class MarketDataFeed:
         if storage_dir:
             self.storage_dir = Path(storage_dir)
         else:
-            self.storage_dir = Path("agents/AGI_1_7/runtime_storage/finance/data")
+            self.storage_dir = Path("agents/IVA/runtime_storage/finance/data")
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         self.calendar = BankNiftyMarketCalendar()
 

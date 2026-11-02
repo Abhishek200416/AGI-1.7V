@@ -25,21 +25,21 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_discovery_engine import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_discovery_engine import (
     AutonomousGoalDiscoveryEngine,
     DiscoveredGoalCandidate,
     get_goal_discovery_engine,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_runner import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_runner import (
     AutonomousGoalRunner,
     get_autonomous_goal_runner,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_goal_system import (
+from agents.IVA.engine.agi17.orchestration.autonomous_goal_system import (
     AutonomousGoalStore,
     Goal,
     GoalStatus,
 )
-from agents.AGI_1_7.engine.agi17.security.least_privilege_enforcer import SecretsHygieneAuditor
+from agents.IVA.engine.agi17.security.least_privilege_enforcer import SecretsHygieneAuditor
 
 
 class TestAutonomousGoalDiscoveryEngine(unittest.TestCase):

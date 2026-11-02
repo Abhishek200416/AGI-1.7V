@@ -257,7 +257,7 @@ class AutonomousGoalStore:
                 priority=1,
                 status=GoalStatus.COMPLETED.value,
                 verification_criteria="Pass rate 100% on Phase 17 test suites, operational goal store, verified Control Center API.",
-                evidence_references=["file:///agents/AGI_1_7/tests/test_omega_phase17_24_autonomous_identity.py", "99/99 passed in 29.39s"],
+                evidence_references=["file:///agents/IVA/tests/test_omega_phase17_24_autonomous_identity.py", "99/99 passed in 29.39s"],
                 next_action="Maintain 100% test pass rate and expand autonomy dimensions.",
             ),
             Goal(

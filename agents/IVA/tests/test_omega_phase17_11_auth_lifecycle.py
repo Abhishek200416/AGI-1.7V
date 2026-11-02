@@ -31,20 +31,20 @@ from http import HTTPStatus
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_callback_server import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_callback_server import (
     PaytmAuthCallbackServer,
     PaytmTokenStore,
     redact_query_string,
     redact_token,
 )
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_state_machine import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_state_machine import (
     PaytmAuthState,
     PaytmAuthStateMachine,
     redact_sensitive_payload,
     redact_sensitive_value,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import SessionState
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.engine.agi17.finance.trading_session_control_plane import SessionState
+from agents.IVA.ui.standalone_dashboard_server import (
     LIVE_ORDER_DISPATCH_ENABLED,
     StandaloneDashboardServer,
 )

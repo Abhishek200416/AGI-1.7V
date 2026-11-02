@@ -50,7 +50,7 @@ class SystemIdentity:
     persona: str = "FEMALE_AUTONOMOUS_PARTNER"
     operator_name: str = "Abhi"
     fail_closed_safety: bool = True
-    authoritative_doc: str = "agents/AGI_1_7/docs/01_AUTHORITATIVE_IDENTITY_AND_PERSONA.md"
+    authoritative_doc: str = "agents/IVA/docs/01_AUTHORITATIVE_IDENTITY_AND_PERSONA.md"
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

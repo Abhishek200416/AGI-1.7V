@@ -23,8 +23,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agents.AGI_1_7.ecosystem.agent_registry.ecosystem_coordinator import EcosystemCoordinator
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.ecosystem.agent_registry.ecosystem_coordinator import EcosystemCoordinator
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
 from ..adapters.model_adapter import (
     ModelAdapter,
     ModelCostBudgetExceededError,

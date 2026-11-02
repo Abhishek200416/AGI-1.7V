@@ -23,28 +23,28 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_alpha_stream_engine import (
+from agents.IVA.engine.agi17.finance.autonomous_alpha_stream_engine import (
     AutonomousAlphaStreamEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.autonomous_wealth_engine import (
+from agents.IVA.engine.agi17.finance.autonomous_wealth_engine import (
     AutonomousWealthEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_month_forward_paper_soak import (
+from agents.IVA.engine.agi17.finance.multi_month_forward_paper_soak import (
     MarketRegimeType,
     MultiMonthForwardPaperSoakHarness,
     ProductionReadinessCertificate,
     SessionDailyResult,
     get_forward_paper_soak_harness,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_agent_factory import (
+from agents.IVA.engine.agi17.orchestration.autonomous_agent_factory import (
     AutonomousAgentFactory,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_forward_paper_soak_harness as cc_get_soak,
 )
 

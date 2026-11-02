@@ -49,7 +49,7 @@ class PROCESS_INFORMATION(ctypes.Structure):
 
 def launch_browser(target_url: str | None = None):
     chrome_exe = str(Path.home() / "AppData" / "Local" / "ms-playwright"\chromium-1243\chrome-win64\chrome.exe"
-    profile_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "AGI_1_7" / "runtime_storage\browser\profiles\omega_persistent_profile"))
+    profile_dir = Path(str(Path(__file__).resolve().parents[3] / "agents" / "IVA" / "runtime_storage\browser\profiles\omega_persistent_profile"))
     profile_dir.mkdir(parents=True, exist_ok=True)
 
     # Clear stale lock if any

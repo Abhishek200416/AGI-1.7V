@@ -21,17 +21,17 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.task_control.task_store import TaskStore
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.task_control.task_store import TaskStore
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     AlgorithmCatalogService,
     AgentCatalogService,
     OrchestrationServiceProvider,
     get_algorithm_catalog,
     get_agent_catalog,
 )
-from agents.AGI_1_7.engine.agi17.finance.trading_supervisor import update_trailing_stops
-from agents.AGI_1_7.engine.agi17.ml.volatility_transformer import VolatilityTransformerModel
-from agents.AGI_1_7.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
+from agents.IVA.engine.agi17.finance.trading_supervisor import update_trailing_stops
+from agents.IVA.engine.agi17.ml.volatility_transformer import VolatilityTransformerModel
+from agents.IVA.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
 
 
 class TestOmegaPhase1722TrustAndEvidence(unittest.TestCase):

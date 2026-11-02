@@ -26,9 +26,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
-from agents.AGI_1_7.engine.agi17.orchestration.self_evolution_engine import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.engine.agi17.orchestration.self_evolution_engine import (
     AutonomousSelfEvolutionEngine,
 )
 
@@ -61,7 +61,7 @@ def run_continuous_evolution(
         print(f"\n[Loop Iteration {iteration} | Elapsed: {int(time.time() - start_time)}s / {duration_seconds}s]")
 
         # 1. Update AST Knowledge Graph on engine files
-        engine_dir = PROJECT_ROOT / "agents" / "AGI_1_7" / "engine" / "agi17"
+        engine_dir = PROJECT_ROOT / "agents" / "IVA" / "engine" / "agi17"
         entities_indexed = 0
         if engine_dir.exists():
             for py_file in engine_dir.rglob("*.py"):

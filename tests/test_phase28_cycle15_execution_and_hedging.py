@@ -14,7 +14,7 @@ import math
 import numpy as np
 import pytest
 
-from agents.AGI_1_7.engine.agi17.finance.jump_kelly_hedging_execution_engine import (
+from agents.IVA.engine.agi17.finance.jump_kelly_hedging_execution_engine import (
     ContinuousJumpKellySizer,
     JumpMark,
     KellySizingResult,
@@ -24,7 +24,7 @@ from agents.AGI_1_7.engine.agi17.finance.jump_kelly_hedging_execution_engine imp
     ExecutionScheduleResult,
     LIVE_ORDER_DISPATCH_ENABLED,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
+from agents.IVA.engine.agi17.orchestration.dual_critic_regularized_evolution_gate import (
     DualCriticRegularizedEvolutionGate,
     MutationProposal,
     CriticDecision,
@@ -289,12 +289,12 @@ class TestDualCriticRegularizedEvolutionCycle15:
             delta_j=0.01,
         )
 
-        with open("agents/AGI_1_7/engine/agi17/finance/jump_kelly_hedging_execution_engine.py", "r", encoding="utf-8") as f:
+        with open("agents/IVA/engine/agi17/finance/jump_kelly_hedging_execution_engine.py", "r", encoding="utf-8") as f:
             code = f.read()
 
         proposal = MutationProposal(
             proposal_id="CYCLE_15_JUMP_KELLY_EXECUTION_001",
-            target_filepath="agents/AGI_1_7/engine/agi17/finance/jump_kelly_hedging_execution_engine.py",
+            target_filepath="agents/IVA/engine/agi17/finance/jump_kelly_hedging_execution_engine.py",
             hypothesis="Phase 28 Cycle 15: Jump-Penalized Kelly Sizer, Joint Greek Hedger, PSD Transient Impact Planner",
             original_code="",
             candidate_code=code,

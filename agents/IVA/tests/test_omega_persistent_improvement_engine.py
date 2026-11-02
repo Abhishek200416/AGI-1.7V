@@ -35,31 +35,31 @@ import sys
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import (
+from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import (
     CentralizedLLMGateway,
     GatewayResponse,
     GatewayRoute,
 )
-from agents.AGI_1_7.engine.agi17.memory.persistent_memory_subsystem import (
+from agents.IVA.engine.agi17.memory.persistent_memory_subsystem import (
     MemoryCategory,
     PersistentMemorySubsystem,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import (
+from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import (
     CycleCheckpoint,
     DuplicateWorkerError,
     PersistentImprovementWorker,
     WorkerState,
 )
-from agents.AGI_1_7.engine.agi17.research.grounded_research import (
+from agents.IVA.engine.agi17.research.grounded_research import (
     GroundedResearchEngine,
     ResearchCitation,
     SSRFBlockedError,
 )
-from agents.AGI_1_7.engine.agi17.runtime.authoritative_brain_config import (
+from agents.IVA.engine.agi17.runtime.authoritative_brain_config import (
     AuthoritativeBrainConfig,
 )
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandIntent,
     CommandRouter,
 )
@@ -262,10 +262,10 @@ class TestOmegaPersistentImprovementEngine(unittest.TestCase):
 
     def test_15_financial_safety_locks_preserved(self):
         """Item 15: Physical safety lock permanently asserts LIVE_ORDER_DISPATCH_ENABLED == False."""
-        from agents.AGI_1_7.engine.agi17.orchestration.persistent_improvement_worker import (
+        from agents.IVA.engine.agi17.orchestration.persistent_improvement_worker import (
             LIVE_ORDER_DISPATCH_ENABLED as WORKER_ORDER_GATE,
         )
-        from agents.AGI_1_7.ui.standalone_dashboard_server import (
+        from agents.IVA.ui.standalone_dashboard_server import (
             LIVE_ORDER_DISPATCH_ENABLED as SERVER_ORDER_GATE,
         )
         self.assertFalse(WORKER_ORDER_GATE)

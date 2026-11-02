@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     AlgorithmCatalogService,
     AgentCatalogService,
     OrchestrationServiceProvider,

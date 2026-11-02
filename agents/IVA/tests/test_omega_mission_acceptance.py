@@ -21,12 +21,12 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
-from agents.AGI_1_7.engine.agi17.context.context_engine import (
+from agents.IVA.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
+from agents.IVA.engine.agi17.context.context_engine import (
     ContextEngine,
     EpistemicStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import (
     BankNiftyContractSpec,
     BankNiftyPaperTrader,
     BlackScholesCalculator,
@@ -37,7 +37,7 @@ from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
     OrderType,
     SignalStatus,
 )
-from agents.AGI_1_7.engine.agi17.supervisor.persistent_supervisor import (
+from agents.IVA.engine.agi17.supervisor.persistent_supervisor import (
     PersistentSupervisor,
     QueuedTask,
     SupervisorState,

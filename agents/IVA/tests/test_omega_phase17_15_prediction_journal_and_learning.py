@@ -15,7 +15,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.finance.prediction_journal import (
+from agents.IVA.engine.agi17.finance.prediction_journal import (
     ForecastHorizon,
     MarketForecastTicket,
     PredictionJournal,

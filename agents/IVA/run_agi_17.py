@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--code-task-dir",
         default=None,
-        help="Directory for live-model Python code & unit-test generation + self-healing verification (defaults to agents/AGI_1_7/live_code_mission_workspace unless --text-only is set)",
+        help="Directory for live-model Python code & unit-test generation + self-healing verification (defaults to agents/IVA/live_code_mission_workspace unless --text-only is set)",
     )
     parser.add_argument("--text-only", action="store_true", help="Run text-only mission without writing/testing code files")
     parser.add_argument("--module-filename", default="token_bucket.py", help="Target Python module filename for coding workflow")

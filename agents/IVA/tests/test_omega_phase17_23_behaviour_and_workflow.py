@@ -16,19 +16,19 @@ import time
 import pytest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandIntent,
     CommandRouter,
     TradingProfile,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.omega_self_improvement_workflow import (
+from agents.IVA.engine.agi17.orchestration.omega_self_improvement_workflow import (
     ImprovementObjective,
     OmegaSelfImprovementWorkflow,
     UpgradeTrackRecord,
     WorkflowStage,
     get_omega_self_improvement_workflow,
 )
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
@@ -153,7 +153,7 @@ class TestOmegaSelfImprovementWorkflowStages:
                 "evidence": 5.0,
                 "cost": 1.0,
                 "reversibility": 5.0,
-                "files_modified": ["agents/AGI_1_7/engine/agi17/runtime/command_router.py"],
+                "files_modified": ["agents/IVA/engine/agi17/runtime/command_router.py"],
                 "acceptance_criteria": ["Deterministic routing < 50ms"],
             }
         ]

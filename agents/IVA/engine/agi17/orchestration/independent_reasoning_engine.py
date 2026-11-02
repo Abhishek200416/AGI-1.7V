@@ -157,7 +157,7 @@ class IndependentReasoningEngine:
 
         # Log decision into PersistentSelfModel
         try:
-            from agents.AGI_1_7.engine.agi17.runtime.self_model import get_self_model
+            from agents.IVA.engine.agi17.runtime.self_model import get_self_model
             get_self_model().record_decision(
                 decision=revised_conclusion,
                 justification=f"Independent deliberation (uncertainty {uncertainty:.2f}); Counterargument: {strongest_counter[:100]}",
@@ -178,7 +178,7 @@ class IndependentReasoningEngine:
 
         # Check in PersistentSelfModel
         try:
-            from agents.AGI_1_7.engine.agi17.runtime.self_model import get_self_model
+            from agents.IVA.engine.agi17.runtime.self_model import get_self_model
             caps = get_self_model().get_capabilities()
             for name, entry in caps.items():
                 if norm_cap in name.lower() or name.lower() in norm_cap:

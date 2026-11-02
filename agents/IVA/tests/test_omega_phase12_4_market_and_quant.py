@@ -31,7 +31,7 @@ import unittest
 from pathlib import Path
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
+from agents.IVA.engine.agi17.finance.canonical_market_data import (
     CanonicalMarketDataPipeline,
     CanonicalMarketObservation,
     ConnectionState,
@@ -42,29 +42,29 @@ from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
     OptionType,
     ValidationOutcome,
 )
-from agents.AGI_1_7.engine.agi17.finance.deterministic_paper_replay import (
+from agents.IVA.engine.agi17.finance.deterministic_paper_replay import (
     DeterministicPaperReplayEngine,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_data_health import (
+from agents.IVA.engine.agi17.finance.market_data_health import (
     MarketDataHealthMonitor,
     MarketSourceHealthStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.quantitative_evaluation_harness import (
+from agents.IVA.engine.agi17.finance.quantitative_evaluation_harness import (
     QuantitativeEvaluationHarness,
 )
-from agents.AGI_1_7.engine.agi17.finance.research_provenance import (
+from agents.IVA.engine.agi17.finance.research_provenance import (
     ResearchProvenanceRepository,
     SourceAuthorityLevel,
     StructuredResearchRecord,
     VerificationState,
 )
-from agents.AGI_1_7.engine.agi17.finance.decision_trace_engine import (
+from agents.IVA.engine.agi17.finance.decision_trace_engine import (
     DecisionOutcome,
     DecisionTraceRepository,
     StrategyDecisionTrace,
 )
-from agents.AGI_1_7.engine.agi17.telemetry.omega_tracer import OmegaTracer
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.engine.agi17.telemetry.omega_tracer import OmegaTracer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30), name="IST")
 

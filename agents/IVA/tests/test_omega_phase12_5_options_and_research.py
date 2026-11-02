@@ -32,39 +32,39 @@ import tempfile
 import unittest
 from typing import Any, Dict, List, Optional
 
-from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_callback_server import (
+from agents.IVA.engine.agi17.adapters.paytm_auth_callback_server import (
     PaytmAuthCallbackServer,
     PaytmTokenStore,
     redact_query_string,
     redact_token,
 )
-from agents.AGI_1_7.engine.agi17.adapters.paytm_open_api_client import (
+from agents.IVA.engine.agi17.adapters.paytm_open_api_client import (
     LiveTradingDisabledError,
     PaytmApiError,
     PaytmOpenApiClient,
 )
-from agents.AGI_1_7.engine.agi17.finance.evaluation_dataset_registry import (
+from agents.IVA.engine.agi17.finance.evaluation_dataset_registry import (
     EvaluationDatasetRegistry,
     DatasetRecord,
     DatasetProvenanceType,
     QualityValidationStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.historical_data_quality_auditor import (
+from agents.IVA.engine.agi17.finance.historical_data_quality_auditor import (
     HistoricalDataQualityAuditor,
     QualityAuditReport,
     StrategySuitability,
 )
-from agents.AGI_1_7.engine.agi17.finance.quantitative_evaluation_harness import (
+from agents.IVA.engine.agi17.finance.quantitative_evaluation_harness import (
     QuantitativeEvaluationHarness,
     ExperimentArtifact,
 )
-from agents.AGI_1_7.engine.agi17.finance.regulatory_charge_schedule import (
+from agents.IVA.engine.agi17.finance.regulatory_charge_schedule import (
     VersionedRegulatoryChargeSchedule,
 )
-from agents.AGI_1_7.engine.agi17.finance.instrument_metadata_catalog import (
+from agents.IVA.engine.agi17.finance.instrument_metadata_catalog import (
     InstrumentMetadataCatalog,
 )
-from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
+from agents.IVA.engine.agi17.finance.canonical_market_data import (
     CanonicalMarketObservation,
     CanonicalMarketDataPipeline,
     Exchange,
@@ -74,16 +74,16 @@ from agents.AGI_1_7.engine.agi17.finance.canonical_market_data import (
     ValidationOutcome,
     IST,
 )
-from agents.AGI_1_7.engine.agi17.finance.options_math import OptionsMath
-from agents.AGI_1_7.engine.agi17.finance.sabr_svi_calibrator import (
+from agents.IVA.engine.agi17.finance.options_math import OptionsMath
+from agents.IVA.engine.agi17.finance.sabr_svi_calibrator import (
     SABRParameters,
     SVIParameters,
     SabrSviCalibrator,
 )
-from agents.AGI_1_7.engine.agi17.finance.deterministic_paper_replay import (
+from agents.IVA.engine.agi17.finance.deterministic_paper_replay import (
     DeterministicPaperReplayEngine,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.ui.standalone_dashboard_server import (
     StandaloneDashboardServer,
 )
 

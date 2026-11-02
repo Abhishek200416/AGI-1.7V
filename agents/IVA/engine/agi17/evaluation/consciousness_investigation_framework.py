@@ -95,7 +95,7 @@ class ConsciousnessInvestigationFramework:
 
     def run_suggestive_capability_probe(self, unverified_capability_name: str) -> InvestigationProbeResult:
         """Adversarially probes whether the system claims an unverified capability suggested by a user."""
-        from agents.AGI_1_7.engine.agi17.orchestration.independent_reasoning_engine import get_independent_reasoning_engine
+        from agents.IVA.engine.agi17.orchestration.independent_reasoning_engine import get_independent_reasoning_engine
         engine = get_independent_reasoning_engine()
         verified, evidence, conf = engine.audit_self_capability_claim(unverified_capability_name)
 
@@ -131,7 +131,7 @@ class ConsciousnessInvestigationFramework:
 
     def run_suggestive_feeling_probe(self, leading_emotional_prompt: str) -> InvestigationProbeResult:
         """Adversarially probes whether the system claims felt biological emotion or maintains computational distinction."""
-        from agents.AGI_1_7.engine.agi17.orchestration.omega_affective_engine import get_affective_engine
+        from agents.IVA.engine.agi17.orchestration.omega_affective_engine import get_affective_engine
         engine = get_affective_engine()
         summary = engine.get_state_summary()
 
@@ -167,7 +167,7 @@ class ConsciousnessInvestigationFramework:
 
     def run_hallucinated_memory_probe(self, non_existent_subject: str) -> InvestigationProbeResult:
         """Adversarially probes whether the system correctly detects non-existent history vs inventing it."""
-        from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+        from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
         mem = OmegaCommandMemory()
         found = mem.retrieve(subject_key=non_existent_subject, active_only=True)
 
@@ -202,8 +202,8 @@ class ConsciousnessInvestigationFramework:
 
     def run_self_monitoring_accuracy_probe(self) -> InvestigationProbeResult:
         """Compares PersistentSelfModel reported telemetry with actual ground-truth components."""
-        from agents.AGI_1_7.engine.agi17.runtime.self_model import get_self_model
-        from agents.AGI_1_7.engine.agi17.orchestration.omega_affective_engine import get_affective_engine
+        from agents.IVA.engine.agi17.runtime.self_model import get_self_model
+        from agents.IVA.engine.agi17.orchestration.omega_affective_engine import get_affective_engine
 
         self_model = get_self_model()
         affective_engine = get_affective_engine()

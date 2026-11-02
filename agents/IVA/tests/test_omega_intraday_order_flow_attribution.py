@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.intraday_order_flow_attribution import (
+from agents.IVA.engine.agi17.finance.intraday_order_flow_attribution import (
     ExecutionRole,
     IntradayOrderFlowAttributionEngine,
     IntradayPnlAttributionReport,

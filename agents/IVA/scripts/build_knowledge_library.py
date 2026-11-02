@@ -1,5 +1,5 @@
 """
-agents/AGI_1_7/scripts/build_knowledge_library.py
+agents/IVA/scripts/build_knowledge_library.py
 Builds the modular, navigable reference library from AGI_1_7_OMEGA_COMMAND_ULTRA_1MB_MASTER.md.
 Preserves 100% of the original content, sections, playbooks, and test cases with full traceability.
 """

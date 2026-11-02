@@ -14,17 +14,17 @@ import json
 from pathlib import Path
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
+from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyContractSpec
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import (
     BankNiftyPaperTrader,
     OrderSide,
     OrderType,
 )
-from agents.AGI_1_7.engine.agi17.finance.order_book_simulator import (
+from agents.IVA.engine.agi17.finance.order_book_simulator import (
     OrderBookFactory,
     SimulatedOrderBook,
 )
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_backtest import (
+from agents.IVA.engine.agi17.finance.bank_nifty_backtest import (
     BankNiftyBacktestEngine,
     DynamicRegimeAdaptiveStrategy,
     MarketBar,
@@ -32,7 +32,7 @@ from agents.AGI_1_7.engine.agi17.finance.bank_nifty_backtest import (
     OptionChainQuote,
     VWAPEMAStrategy,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_data_feed import MarketDataFeed
+from agents.IVA.engine.agi17.finance.market_data_feed import MarketDataFeed
 
 
 class TestOmegaAdaptiveAndLiveBook(unittest.TestCase):
@@ -163,7 +163,7 @@ class TestOmegaAdaptiveAndLiveBook(unittest.TestCase):
 
     def test_atr_trailing_stop_hedger_monotonicity_and_execution(self) -> None:
         """Verifies ATR Trailing Stop calculation, monotonicity, and strategy integration."""
-        from agents.AGI_1_7.engine.agi17.finance.bank_nifty_backtest import ATRTrailingStopHedger
+        from agents.IVA.engine.agi17.finance.bank_nifty_backtest import ATRTrailingStopHedger
 
         hedger = ATRTrailingStopHedger(atr_period=3, multiplier=1.5)
         # Bar 1: 100-110, close 108
@@ -192,7 +192,7 @@ class TestOmegaAdaptiveAndLiveBook(unittest.TestCase):
     def test_market_calendar_expiry_chain_and_contract_roll(self) -> None:
         """Verifies multi-week expiry chain generation, DTE calculation, and roll triggers."""
         import datetime
-        from agents.AGI_1_7.engine.agi17.finance.bank_nifty_market import BankNiftyMarketCalendar
+        from agents.IVA.engine.agi17.finance.bank_nifty_market import BankNiftyMarketCalendar
 
         cal = BankNiftyMarketCalendar()
         ref = datetime.date(2026, 10, 5)  # A Monday

@@ -21,7 +21,7 @@ import unittest
 import urllib.request
 import urllib.error
 
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase9OperatorConsole(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestOmegaPhase9OperatorConsole(unittest.TestCase):
         self.server.emergency_stop_active = False
         self.server.transition_log.clear()
         if hasattr(self.server, "session_supervisor") and self.server.session_supervisor:
-            from agents.AGI_1_7.engine.agi17.finance.trading_session_control_plane import SessionState
+            from agents.IVA.engine.agi17.finance.trading_session_control_plane import SessionState
             self.server.session_supervisor.intake_controller.load_safe_defaults()
             self.server.session_supervisor.current_config = self.server.session_supervisor.intake_controller.cached_config
             self.server.session_supervisor.state = SessionState.READY_FOR_SUPERVISED_PAPER

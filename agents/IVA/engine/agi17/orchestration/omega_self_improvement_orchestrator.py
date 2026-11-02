@@ -212,8 +212,8 @@ class OmegaSelfImprovementOrchestrator:
 
         # 3. REGRESSION CHECK (Track 29)
         test_paths = regression_test_paths or [
-            "agents/AGI_1_7/tests/test_omega_phase17_21_control_center.py",
-            "agents/AGI_1_7/tests/test_omega_phase17_20_chat_entry_fast_path.py",
+            "agents/IVA/tests/test_omega_phase17_21_control_center.py",
+            "agents/IVA/tests/test_omega_phase17_20_chat_entry_fast_path.py",
         ]
         reg_passed, run_count, fail_count, reg_output = self.run_regression_suite(test_paths)
 

@@ -26,23 +26,23 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict
 
-from agents.AGI_1_7.engine.agi17.context.context_engine import (
+from agents.IVA.engine.agi17.context.context_engine import (
     ContextEngine,
     EpistemicStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.market_observation_engine import (
+from agents.IVA.engine.agi17.finance.market_observation_engine import (
     MarketObservationEngine,
     ObservationProvenanceType,
 )
-from agents.AGI_1_7.engine.agi17.process_supervision.continuous_supervisor import (
+from agents.IVA.engine.agi17.process_supervision.continuous_supervisor import (
     ContinuousSupervisor,
 )
-from agents.AGI_1_7.engine.agi17.supervisor.persistent_supervisor import (
+from agents.IVA.engine.agi17.supervisor.persistent_supervisor import (
     QueuedTask,
     SupervisorState,
     TaskPriority,
 )
-from agents.AGI_1_7.engine.agi17.telemetry.omega_tracer import OmegaTracer
+from agents.IVA.engine.agi17.telemetry.omega_tracer import OmegaTracer
 
 
 def get_current_process_memory_mb() -> float:

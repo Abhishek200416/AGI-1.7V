@@ -1,5 +1,5 @@
 """
-agents/AGI_1_7/scripts/run_gpqa_clean_189_agi17.py
+agents/IVA/scripts/run_gpqa_clean_189_agi17.py
 AGI 1.7 OMEGA COMMAND — Official GPQA Diamond Clean 1.2.2 (189-Question) Evaluator
 
 Strict Protocol:
@@ -782,7 +782,7 @@ def grade_and_generate_reports(
 
     for target_rep in [
         REPORT_MD,
-        os.path.abspath("agents/AGI_1_7/reports/AGI_1_7_GPQA_CLEAN_189_REPORT.md"),
+        os.path.abspath("agents/IVA/reports/AGI_1_7_GPQA_CLEAN_189_REPORT.md"),
         os.path.abspath("reports/AGI_1_7_GPQA_CLEAN_189_REPORT.md"),
     ]:
         os.makedirs(os.path.dirname(target_rep), exist_ok=True)
@@ -884,7 +884,7 @@ def main() -> int:
             },
             "item_results": fresh_results,
         }
-        out_file = os.path.abspath("agents/AGI_1_7/reports/GPQA_COLD_START_STRICT_SURFACE_RESULTS.json")
+        out_file = os.path.abspath("agents/IVA/reports/GPQA_COLD_START_STRICT_SURFACE_RESULTS.json")
         os.makedirs(os.path.dirname(out_file), exist_ok=True)
         with open(out_file, "w", encoding="utf-8") as f:
             json.dump(cold_payload, f, indent=2)

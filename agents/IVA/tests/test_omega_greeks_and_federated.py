@@ -13,13 +13,13 @@ from __future__ import annotations
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.bank_nifty_paper_trader import (
+from agents.IVA.engine.agi17.finance.bank_nifty_paper_trader import (
     BlackScholesCalculator,
     OptionGreeks,
     OptionType,
     BankNiftyContractSpec,
 )
-from agents.AGI_1_7.engine.agi17.adapters.model_adapter import (
+from agents.IVA.engine.agi17.adapters.model_adapter import (
     ModelAdapter,
     ModelProviderConfig,
     DirectiveZeroViolationError,

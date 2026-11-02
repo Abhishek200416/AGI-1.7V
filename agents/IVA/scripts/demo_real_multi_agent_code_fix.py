@@ -28,8 +28,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
-from agents.AGI_1_7.engine.agi17.process_supervision.sandbox_runner import (
+from agents.IVA.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
+from agents.IVA.engine.agi17.process_supervision.sandbox_runner import (
     DisposableSandboxRunner,
     HighImpactApprovalGate,
     SandboxPolicy,
@@ -100,7 +100,7 @@ def _get_agy_cli_version(agy_path: Path) -> str:
 
 
 def main() -> int:
-    demo_root = REPO_ROOT / "agents" / "AGI_1_7" / "demo_workspace"
+    demo_root = REPO_ROOT / "agents" / "IVA" / "demo_workspace"
     demo_code_dir = demo_root / "src"
     demo_storage = demo_root / "runtime_storage"
     demo_eval = demo_root / "eval_env"
@@ -198,7 +198,7 @@ def main() -> int:
     if any_fallback or result.get("final_state") != "SUCCEEDED":
         report_path = demo_root / "DEMO_FALLBACK_EXECUTION_LOG.json"
     else:
-        report_path = REPO_ROOT / "agents" / "AGI_1_7" / "reports" / "LIVE_MULTI_AGENT_EXECUTION_LOG.json"
+        report_path = REPO_ROOT / "agents" / "IVA" / "reports" / "LIVE_MULTI_AGENT_EXECUTION_LOG.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report_payload, indent=2, default=str), encoding="utf-8")
 

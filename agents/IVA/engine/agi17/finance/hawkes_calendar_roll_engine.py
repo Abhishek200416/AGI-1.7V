@@ -392,7 +392,7 @@ class HawkesCalendarRollPolicy:
 # 4. Cycle 16 Reference Architecture Integration & Re-exports
 # ============================================================================
 
-from agents.AGI_1_7.engine.agi17.finance.term_structure_calendar_roller import (
+from agents.IVA.engine.agi17.finance.term_structure_calendar_roller import (
     EngineState,
     RollPolicy,
     RollSnapshot,

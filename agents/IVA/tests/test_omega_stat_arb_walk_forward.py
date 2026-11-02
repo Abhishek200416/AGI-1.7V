@@ -22,7 +22,7 @@ from __future__ import annotations
 import unittest
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.finance.stat_arb_walk_forward_simulator import (
+from agents.IVA.engine.agi17.finance.stat_arb_walk_forward_simulator import (
     DegradationClassification,
     FoldTrialResult,
     MarketSession,
@@ -37,12 +37,12 @@ from agents.AGI_1_7.engine.agi17.finance.stat_arb_walk_forward_simulator import 
     WalkForwardSessionConfig,
     WalkForwardSplit,
 )
-from agents.AGI_1_7.engine.agi17.finance.statistical_arbitrage_orchestrator import (
+from agents.IVA.engine.agi17.finance.statistical_arbitrage_orchestrator import (
     OrchestratorConfig,
     OrchestratorState,
     TradeExitReason,
 )
-from agents.AGI_1_7.engine.agi17.finance.strategy_optimizer import SplitMethod
+from agents.IVA.engine.agi17.finance.strategy_optimizer import SplitMethod
 
 
 class TestOmegaStatArbWalkForward(unittest.TestCase):

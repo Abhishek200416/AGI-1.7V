@@ -21,7 +21,7 @@ Synthesized by Max & Emily (AGI 1.7 OMEGA COMMAND) for High-Frequency Pairs Trad
 4. REST Control Surface & UI Integration:
    - Endpoints: /health, /api/stat_arb/state, /api/stat_arb/stream, /api/stat_arb/tick,
      /api/stat_arb/start_replay, /api/stat_arb/stop_replay, /api/stat_arb/step_replay, /api/stat_arb/reset.
-   - Seamless dashboard hosting for agents/AGI_1_7/ui/trading_dashboard.html.
+   - Seamless dashboard hosting for agents/IVA/ui/trading_dashboard.html.
 
 Zero external dependencies outside standard Python 3.11 libraries.
 """

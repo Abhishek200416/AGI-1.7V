@@ -304,7 +304,7 @@ class OmegaAffectiveEngine:
 
         # Notify self-model if available
         try:
-            from agents.AGI_1_7.engine.agi17.runtime.self_model import get_self_model
+            from agents.IVA.engine.agi17.runtime.self_model import get_self_model
             get_self_model().set_affective_state({
                 "dominant_state": target.value,
                 "variables": self._vars.to_dict(),

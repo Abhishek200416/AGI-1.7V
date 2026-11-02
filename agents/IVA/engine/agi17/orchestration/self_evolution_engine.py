@@ -17,8 +17,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agents.AGI_1_7.ecosystem.agent_registry.agent_contract import AgentContract
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.ecosystem.agent_registry.agent_contract import AgentContract
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
 from ..capabilities.resource_snapshot import ResourceSnapshot
 from ..memory.omega_command_memory import OmegaCommandMemory
 from ..memory.titans_virtual_memory import MemGPTPagedMemoryEngine

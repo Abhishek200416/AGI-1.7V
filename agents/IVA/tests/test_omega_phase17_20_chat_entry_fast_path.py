@@ -20,7 +20,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandIntent,
     CommandRouter,
     OperatingBehavior,

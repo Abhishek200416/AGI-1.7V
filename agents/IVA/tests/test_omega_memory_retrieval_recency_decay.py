@@ -18,18 +18,18 @@ import time
 from pathlib import Path
 import pytest
 
-from agents.AGI_1_7.engine.agi17.adapters.centralized_llm_gateway import (
+from agents.IVA.engine.agi17.adapters.centralized_llm_gateway import (
     CentralizedLLMGateway,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
-from agents.AGI_1_7.engine.agi17.memory.persistent_memory_subsystem import (
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.memory.persistent_memory_subsystem import (
     DEFAULT_CATEGORY_DECAY_LAMBDA,
     MemoryCategory,
     PersistentMemorySubsystem,
     StructuredMemoryRecord,
     VerificationStatus,
 )
-from agents.AGI_1_7.engine.agi17.runtime.authoritative_brain_config import (
+from agents.IVA.engine.agi17.runtime.authoritative_brain_config import (
     AuthoritativeBrainConfig,
 )
 

@@ -24,7 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SpecialistFactory
+from agents.IVA.ecosystem.agent_registry.specialist_factory import SpecialistFactory
 
 logger = logging.getLogger("OmegaEvaluationHarness")
 

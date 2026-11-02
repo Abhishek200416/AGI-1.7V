@@ -63,7 +63,7 @@ class ResourceWatchdogDaemon:
         if state_dir:
             self.state_dir = Path(state_dir)
         else:
-            self.state_dir = Path("agents/AGI_1_7/runtime_storage/state")
+            self.state_dir = Path("agents/IVA/runtime_storage/state")
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.state_file = self.state_dir / "resource_watchdog_state.json"
 

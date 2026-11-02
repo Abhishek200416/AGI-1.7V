@@ -18,11 +18,11 @@ import urllib.request
 from http import HTTPStatus
 from pathlib import Path
 
-from agents.AGI_1_7.finance.paytm_persistent_overlay_daemon import (
+from agents.IVA.finance.paytm_persistent_overlay_daemon import (
     BROWSER_DOM_EXTRACTION_ENABLED,
     main as daemon_main,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase126ATruthAndSafety(unittest.TestCase):

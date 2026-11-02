@@ -110,7 +110,7 @@ class AlgorithmCatalogService:
                 algorithm_id="STRAT-ORB-V1",
                 display_name="Opening Range Breakout (ORB-ATR)",
                 category="Trend & Momentum",
-                source_module="agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio",
+                source_module="agents.IVA.engine.agi17.finance.initial_strategy_portfolio",
                 entry_point="OpeningRangeBreakoutStrategy",
                 description="Directional range expansion strategy trading confirmed breakouts outside the opening 15-minute range with dynamic ATR volatility buffer.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -133,7 +133,7 @@ class AlgorithmCatalogService:
                 algorithm_id="STRAT-VOL-STRUCT-V1",
                 display_name="Defined-Risk Volatility Structures (Iron Condor / Strangle)",
                 category="Volatility & Options",
-                source_module="agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio",
+                source_module="agents.IVA.engine.agi17.finance.initial_strategy_portfolio",
                 entry_point="DefinedRiskVolatilityStructureStrategy",
                 description="Multi-leg defined-risk volatility harvesting. Enforces strict zero naked short exposure and analytical maximum loss boundary before order dispatch.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -156,7 +156,7 @@ class AlgorithmCatalogService:
                 algorithm_id="STRAT-REGIME-SEL-V1",
                 display_name="Regime-Aware Strategy Selector",
                 category="Regime & Meta-Optimization",
-                source_module="agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio",
+                source_module="agents.IVA.engine.agi17.finance.initial_strategy_portfolio",
                 entry_point="RegimeAwareStrategySelector",
                 description="Meta-strategy classifier categorizing market into Trending, Rangebound, High Volatility Shock, or Illiquid with 3-bar hysteresis against whipsawing.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -181,7 +181,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-BAYES-KELLY-V1",
                 display_name="Bayesian Posterior Kelly Position Sizer",
                 category="Position Sizing & Capital Allocation",
-                source_module="agents.AGI_1_7.engine.agi17.finance.bayesian_kelly_position_sizer",
+                source_module="agents.IVA.engine.agi17.finance.bayesian_kelly_position_sizer",
                 entry_point="BayesianKellyPositionSizer",
                 description="Conjugate Beta-Binomial posterior updating of win rates combined with fractional Kelly allocation, exponential drawdown dampening, and integer lot quantization.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -206,7 +206,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-STAT-ARB-V1",
                 display_name="Dual-Index Statistical Arbitrage Orchestrator",
                 category="Mean Reversion & Cointegration",
-                source_module="agents.AGI_1_7.engine.agi17.finance.statistical_arbitrage_orchestrator",
+                source_module="agents.IVA.engine.agi17.finance.statistical_arbitrage_orchestrator",
                 entry_point="StatisticalArbitrageOrchestrator",
                 description="Cointegration-based pairs trading model between NIFTY 50 and BANKNIFTY index derivatives with walk-forward Johansen eigenvalue tracking.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -231,7 +231,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-KALMAN-SPREAD-V1",
                 display_name="Adaptive Kalman Spread Filter",
                 category="Adaptive Filters & State-Space",
-                source_module="agents.AGI_1_7.engine.agi17.finance.kalman_spread_filter",
+                source_module="agents.IVA.engine.agi17.finance.kalman_spread_filter",
                 entry_point="KalmanSpreadFilter",
                 description="Online state-space Kalman filter dynamically estimating time-varying hedge ratios between NIFTY and BANKNIFTY with observation covariance adaptation.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -256,7 +256,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-SABR-SVI-V1",
                 display_name="SABR / SVI Volatility Surface Calibrator",
                 category="Volatility & Options",
-                source_module="agents.AGI_1_7.engine.agi17.finance.sabr_svi_calibrator",
+                source_module="agents.IVA.engine.agi17.finance.sabr_svi_calibrator",
                 entry_point="SabrSviCalibrator",
                 description="Arbitrage-free implied volatility surface calibration fitting Hagan SABR and Gatheral Quasi-Explicit SVI curves across Indian index options strikes.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -281,7 +281,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-PARABOLIC-SL-V1",
                 display_name="Trailing Parabolic Profit Lock & Stop Loss",
                 category="Risk & Execution Management",
-                source_module="agents.AGI_1_7.engine.agi17.finance.trading_supervisor",
+                source_module="agents.IVA.engine.agi17.finance.trading_supervisor",
                 entry_point="update_trailing_stops",
                 description="High-watermark ratcheting stop loss mechanism that converts paper gains to realized capital at +8% breakeven and monotonically tightens stops behind peak LTP.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -306,7 +306,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-ELAST-HEDGE-V1",
                 display_name="Elasticity Cross-Hedge Scalper",
                 category="Hedging & Microstructure",
-                source_module="agents.AGI_1_7.engine.agi17.finance.elasticity_cross_hedge_scalper",
+                source_module="agents.IVA.engine.agi17.finance.elasticity_cross_hedge_scalper",
                 entry_point="ElasticityCrossHedgeScalper",
                 description="Cross-asset elasticity matrix hedging high-beta constituent banking shocks against broad NIFTY 50 index options.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -331,7 +331,7 @@ class AlgorithmCatalogService:
                 algorithm_id="ALG-DEEP-VOL-TRANSFORMER-V1",
                 display_name="Temporal Attention Volatility Regime Transformer",
                 category="Deep Learning & Neural Forecasting",
-                source_module="agents.AGI_1_7.engine.agi17.ml.volatility_transformer",
+                source_module="agents.IVA.engine.agi17.ml.volatility_transformer",
                 entry_point="VolatilityTransformerModel",
                 description="Multi-head self-attention transformer forecasting derivative implied volatility regime shifts 15 minutes before underlying spot inflection.",
                 instruments=["NIFTY", "BANKNIFTY"],
@@ -636,7 +636,7 @@ class AgentCatalogService:
 
         # 2. Ingest 100 Embedded Specialists from specialist_factory
         try:
-            from agents.AGI_1_7.ecosystem.agent_registry.specialist_factory import SPECIALIST_SPECS
+            from agents.IVA.ecosystem.agent_registry.specialist_factory import SPECIALIST_SPECS
             for spec in SPECIALIST_SPECS:
                 family, agent_id, display_name, caps, tools, exec_mode, res_class, effort, max_tokens = spec
                 runtime_t = AgentRuntimeType.IN_PROCESS_TOOL_WORKER if "TOOL" in exec_mode else AgentRuntimeType.MODEL_SPECIALIST_WORKER
@@ -719,7 +719,7 @@ class AgentCatalogService:
 
         if "emily_execution_warden" in self._agents:
             # Emily executes when CDP is active AND market is open; outside hours she is in standby
-            from agents.AGI_1_7.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
+            from agents.IVA.engine.agi17.runtime.dual_index_pipeline import DualIndexEventPipeline
             is_after_hours = DualIndexEventPipeline().is_after_hours()
             if cdp_alive and not is_after_hours:
                 self._agents["emily_execution_warden"].status = AgentLifecycleState.EXECUTING
@@ -730,7 +730,7 @@ class AgentCatalogService:
 
         # 4. Check active tasks in TaskStore to see if any specialist is actively executing
         try:
-            from agents.AGI_1_7.engine.agi17.task_control.task_store import TaskStore
+            from agents.IVA.engine.agi17.task_control.task_store import TaskStore
             store = TaskStore()
             running_tasks = store.list_tasks(state="RUNNING")
             active_specialist_ids = {t.get("specialist_id") for t in running_tasks if not t.get("is_stale")}
@@ -799,7 +799,7 @@ class OrchestrationServiceProvider:
     """Connects dashboard APIs directly to durable TaskStore SQLite WAL."""
 
     def __init__(self, db_path: Optional[str | Path] = None):
-        from agents.AGI_1_7.engine.agi17.task_control.task_store import TaskStore
+        from agents.IVA.engine.agi17.task_control.task_store import TaskStore
         # Gracefully handle path resolution
         self.store = TaskStore(db_path=db_path or r"D:\AGI_Storage\AGI_1_7\state\tasks.db")
 
@@ -837,7 +837,7 @@ class OrchestrationServiceProvider:
         return self.store.record_heartbeat(task_id, timestamp, pid)
 
     def cancel_task(self, task_id: str) -> Dict[str, Any]:
-        from agents.AGI_1_7.engine.agi17.task_control.task_state_machine import TaskState
+        from agents.IVA.engine.agi17.task_control.task_state_machine import TaskState
         task = self.store.get_task(task_id)
         if not task:
             raise KeyError(f"Task {task_id} not found")
@@ -932,7 +932,7 @@ class DeploymentReadinessAssessor:
         # -------------------------------------------------------------
         # 1. Dependency Manifests
         pyproject = self.workspace_root / "pyproject.toml"
-        package_json = self.workspace_root / "agents" / "AGI_1_7" / "ui" / "react_app" / "package.json"
+        package_json = self.workspace_root / "agents" / "IVA" / "ui" / "react_app" / "package.json"
         deps_exist = pyproject.exists() and package_json.exists()
         items.append(ReadinessItem(
             item_id="DEP-01-MANIFESTS",
@@ -943,14 +943,14 @@ class DeploymentReadinessAssessor:
         ))
 
         # 2. Frontend Production Build
-        dist_index = self.workspace_root / "agents" / "AGI_1_7" / "ui" / "dist" / "index.html"
+        dist_index = self.workspace_root / "agents" / "IVA" / "ui" / "dist" / "index.html"
         dist_built = dist_index.exists()
         items.append(ReadinessItem(
             item_id="DEP-02-FRONTEND-BUILD",
             dimension="DEPLOYMENT_PACKAGE",
             name="Frontend Production Build Artifact",
             status="PASS" if dist_built else "FAIL",
-            details="React production bundle built cleanly in agents/AGI_1_7/ui/dist." if dist_built else "dist/index.html missing. Run `npm run build` in react_app."
+            details="React production bundle built cleanly in agents/IVA/ui/dist." if dist_built else "dist/index.html missing. Run `npm run build` in react_app."
         ))
 
         # 3. Loopback Port Bindings
@@ -978,7 +978,7 @@ class DeploymentReadinessAssessor:
         # 1. Live Order Dispatch Lock
         live_dispatch_enabled = False
         try:
-            from agents.AGI_1_7.ui.standalone_dashboard_server import LIVE_ORDER_DISPATCH_ENABLED
+            from agents.IVA.ui.standalone_dashboard_server import LIVE_ORDER_DISPATCH_ENABLED
             live_dispatch_enabled = LIVE_ORDER_DISPATCH_ENABLED
         except Exception:
             live_dispatch_enabled = False

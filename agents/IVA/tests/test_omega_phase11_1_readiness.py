@@ -21,24 +21,24 @@ import urllib.request
 from http import HTTPStatus
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.finance.dynamic_market_calendar import (
+from agents.IVA.engine.agi17.finance.dynamic_market_calendar import (
     CalendarSessionPhase,
     DynamicExchangeCalendar,
     IST,
 )
-from agents.AGI_1_7.engine.agi17.finance.live_accounting import (
+from agents.IVA.engine.agi17.finance.live_accounting import (
     calculate_statutory_charges,
 )
-from agents.AGI_1_7.engine.agi17.finance.watchlist_manager import WatchlistManager
-from agents.AGI_1_7.engine.agi17.voice.voice_interface import (
+from agents.IVA.engine.agi17.finance.watchlist_manager import WatchlistManager
+from agents.IVA.engine.agi17.voice.voice_interface import (
     VoiceIntent,
     VoiceInteractionController,
 )
-from agents.AGI_1_7.engine.agi17.adapters.omniroute_adapter import (
+from agents.IVA.engine.agi17.adapters.omniroute_adapter import (
     OmniRouteAdapter,
     TaskType,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import StandaloneDashboardServer
+from agents.IVA.ui.standalone_dashboard_server import StandaloneDashboardServer
 
 
 class TestOmegaPhase11Readiness(unittest.TestCase):

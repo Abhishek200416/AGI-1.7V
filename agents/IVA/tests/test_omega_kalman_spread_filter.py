@@ -16,7 +16,7 @@ import math
 import random
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.kalman_spread_filter import (
+from agents.IVA.engine.agi17.finance.kalman_spread_filter import (
     HalfLifeEstimation,
     KalmanSpreadAction,
     KalmanSpreadFilter,

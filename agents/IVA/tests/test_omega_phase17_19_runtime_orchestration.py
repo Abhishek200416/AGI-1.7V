@@ -18,7 +18,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agents.AGI_1_7.engine.agi17.runtime.command_router import (
+from agents.IVA.engine.agi17.runtime.command_router import (
     CommandIntent,
     CommandRouter,
     OperatingBehavior,
@@ -26,19 +26,19 @@ from agents.AGI_1_7.engine.agi17.runtime.command_router import (
     RiskSettings,
     TradingProfile,
 )
-from agents.AGI_1_7.engine.agi17.runtime.dual_index_pipeline import (
+from agents.IVA.engine.agi17.runtime.dual_index_pipeline import (
     DualIndexEventPipeline,
     MarketDataProvenance,
     NormalizedObservation,
 )
-from agents.AGI_1_7.engine.agi17.runtime.news_monitor import NewsMonitorService, NewsStory
-from agents.AGI_1_7.engine.agi17.runtime.runtime_supervisor import (
+from agents.IVA.engine.agi17.runtime.news_monitor import NewsMonitorService, NewsStory
+from agents.IVA.engine.agi17.runtime.runtime_supervisor import (
     RuntimeReadiness,
     RuntimeSupervisor,
     ServiceState,
     ServiceStatus,
 )
-from agents.AGI_1_7.engine.agi17.runtime.tri_tab_topology import (
+from agents.IVA.engine.agi17.runtime.tri_tab_topology import (
     BrowserTarget,
     TabRole,
     TriTabTopology,

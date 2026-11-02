@@ -6,7 +6,7 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "agents" / "AGI_1_7" / "engine"))
+sys.path.insert(0, str(REPO_ROOT / "agents" / "IVA" / "engine"))
 
 from agi17.finance.liquidity_sweep_reclaim_engine import LiquiditySweepReclaimEngine
 

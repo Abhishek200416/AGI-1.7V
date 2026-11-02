@@ -31,11 +31,11 @@ import re
 import threading
 from typing import Any, Dict, List, Optional, Tuple
 
-from agents.AGI_1_7.engine.agi17.finance.instrument_metadata_catalog import (
+from agents.IVA.engine.agi17.finance.instrument_metadata_catalog import (
     InstrumentMetadataCatalog,
     InstrumentType,
 )
-from agents.AGI_1_7.engine.agi17.finance.authoritative_cost_calculator import (
+from agents.IVA.engine.agi17.finance.authoritative_cost_calculator import (
     AuthoritativeCostCalculator,
     BrokerageModel,
     InstrumentCategory,

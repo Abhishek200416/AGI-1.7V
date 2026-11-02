@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.trading_agents_debate import (
+from agents.IVA.engine.agi17.finance.trading_agents_debate import (
     AnalystReport,
     StrategyType,
     SynthesizedTradeDecision,

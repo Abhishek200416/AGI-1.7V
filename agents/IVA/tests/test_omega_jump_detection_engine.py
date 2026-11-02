@@ -3,7 +3,7 @@
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.jump_detection_engine import (
+from agents.IVA.engine.agi17.finance.jump_detection_engine import (
     CoJumpEvent,
     IntradayCoJumpEngine,
     JumpCircuitBreakerStatus,

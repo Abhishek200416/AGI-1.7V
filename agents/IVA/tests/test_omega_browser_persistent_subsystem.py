@@ -24,7 +24,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-from agents.AGI_1_7.engine.agi17.browser import (
+from agents.IVA.engine.agi17.browser import (
     ActionBatcher,
     BrowserAction,
     BrowserControlState,

@@ -15,7 +15,7 @@ import math
 import random
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.information_share_engine import (
+from agents.IVA.engine.agi17.finance.information_share_engine import (
     ExecutionRoutingAdvice,
     HasbrouckBounds,
     HighFrequencyInformationShareEngine,

@@ -23,7 +23,7 @@ import unittest
 from pathlib import Path
 from typing import Any, Dict, List
 
-from agents.AGI_1_7.engine.agi17.browser import (
+from agents.IVA.engine.agi17.browser import (
     ActionBatcher,
     ActionKind,
     AdaptiveObservationPolicy,

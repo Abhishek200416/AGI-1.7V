@@ -23,19 +23,19 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.metacognitive_steering_engine import (
+from agents.IVA.engine.agi17.orchestration.metacognitive_steering_engine import (
     BrainTuningRecord,
     MetacognitiveSteeringEngine,
     OutputFidelityReport,
     SteeringConstraintProfile,
     get_metacognitive_steering_engine,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_metacognitive_steering_engine as cc_get_steer,
 )
 

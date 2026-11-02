@@ -23,29 +23,29 @@ import time
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     CapabilityDomain,
     CapabilityState,
     get_unified_capability_registry,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_agent_factory import (
+from agents.IVA.engine.agi17.orchestration.autonomous_agent_factory import (
     AgentTaskOutput,
     AutonomousAgentFactory,
     SynthesizedAgentProfile,
     get_autonomous_agent_factory,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.autonomous_chronos_engine import (
+from agents.IVA.engine.agi17.orchestration.autonomous_chronos_engine import (
     AutonomousChronosEngine,
     AutonomousWakeSession,
     get_autonomous_chronos_engine,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.sovereign_vision_ledger import (
+from agents.IVA.engine.agi17.orchestration.sovereign_vision_ledger import (
     OperatorResourceRequest,
     SovereignVision,
     SovereignVisionLedger,
     get_sovereign_vision_ledger,
 )
-from agents.AGI_1_7.engine.agi17.runtime.omega_control_center import (
+from agents.IVA.engine.agi17.runtime.omega_control_center import (
     get_autonomous_agent_factory as cc_get_factory,
     get_autonomous_chronos_engine as cc_get_chronos,
     get_sovereign_vision_ledger as cc_get_vision_ledger,

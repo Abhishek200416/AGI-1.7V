@@ -15,7 +15,7 @@ from __future__ import annotations
 import math
 import unittest
 
-from agents.AGI_1_7.engine.agi17.finance.sabr_svi_calibrator import (
+from agents.IVA.engine.agi17.finance.sabr_svi_calibrator import (
     ArbitrageAuditResult,
     FrictionAwareKellyResult,
     LIVE_ORDER_DISPATCH_ENABLED,
@@ -360,7 +360,7 @@ class TestOmegaSabrSviCalibrator(unittest.TestCase):
 
     def test_fail_closed_live_order_dispatch_safety_invariant(self) -> None:
         """Verify strict adherence to fail-closed safety invariant: LIVE_ORDER_DISPATCH_ENABLED = False."""
-        from agents.AGI_1_7.engine.agi17.finance.sabr_svi_calibrator import LIVE_ORDER_DISPATCH_ENABLED
+        from agents.IVA.engine.agi17.finance.sabr_svi_calibrator import LIVE_ORDER_DISPATCH_ENABLED
 
         # System module safety lock must be permanently False
         self.assertFalse(LIVE_ORDER_DISPATCH_ENABLED)

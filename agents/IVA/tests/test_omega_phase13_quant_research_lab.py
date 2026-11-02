@@ -21,8 +21,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.finance.options_math import OptionsMath
-from agents.AGI_1_7.engine.agi17.finance.strategy_research_framework import (
+from agents.IVA.engine.agi17.finance.options_math import OptionsMath
+from agents.IVA.engine.agi17.finance.strategy_research_framework import (
     CanonicalBar,
     DatasetMetadata,
     DataProvenance,
@@ -34,25 +34,25 @@ from agents.AGI_1_7.engine.agi17.finance.strategy_research_framework import (
     SignalDirection,
     ValidationVerdict,
 )
-from agents.AGI_1_7.engine.agi17.finance.quantitative_evaluation_harness import (
+from agents.IVA.engine.agi17.finance.quantitative_evaluation_harness import (
     ExperimentArtifact,
 )
-from agents.AGI_1_7.engine.agi17.finance.initial_strategy_portfolio import (
+from agents.IVA.engine.agi17.finance.initial_strategy_portfolio import (
     OpeningRangeBreakoutStrategy,
     DefinedRiskVolatilityStrategy,
     RegimeAwareSelectorStrategy,
     get_initial_strategy_portfolio,
 )
-from agents.AGI_1_7.engine.agi17.finance.research_job_queue import (
+from agents.IVA.engine.agi17.finance.research_job_queue import (
     ResearchJobQueue,
     ResearchJob,
     JobStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.multi_agent_research_coordinator import (
+from agents.IVA.engine.agi17.finance.multi_agent_research_coordinator import (
     MultiAgentResearchCoordinator,
     ResearchProposal,
 )
-from agents.AGI_1_7.ui.standalone_dashboard_server import (
+from agents.IVA.ui.standalone_dashboard_server import (
     StandaloneDashboardServer,
     LIVE_ORDER_DISPATCH_ENABLED,
 )

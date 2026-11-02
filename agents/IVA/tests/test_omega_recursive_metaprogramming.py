@@ -15,13 +15,13 @@ import tempfile
 from pathlib import Path
 import pytest
 
-from agents.AGI_1_7.engine.agi17.orchestration.recursive_metaprogramming_engine import (
+from agents.IVA.engine.agi17.orchestration.recursive_metaprogramming_engine import (
     BenchmarkResult,
     SelfBenchmarkSuite,
     RecursiveMetaprogrammingOptimizer,
     ASTMutationRecord,
 )
-from agents.AGI_1_7.engine.agi17.capabilities.unified_capability_registry import (
+from agents.IVA.engine.agi17.capabilities.unified_capability_registry import (
     UnifiedCapabilityRegistry,
 )
 

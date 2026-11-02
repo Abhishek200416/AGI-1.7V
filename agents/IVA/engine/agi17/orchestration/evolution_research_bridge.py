@@ -16,13 +16,13 @@ from typing import Any, Dict, List, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 
-from agents.AGI_1_7.engine.agi17.research.continuous_research_harvester import (
+from agents.IVA.engine.agi17.research.continuous_research_harvester import (
     ContinuousResearchHarvester,
 )
-from agents.AGI_1_7.engine.agi17.orchestration.regularized_evolution_critic import (
+from agents.IVA.engine.agi17.orchestration.regularized_evolution_critic import (
     RegularizedEvolutionCritic,
 )
-from agents.AGI_1_7.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
+from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
 
 
 class EvolutionResearchBridge:

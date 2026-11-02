@@ -32,14 +32,14 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agents.AGI_1_7.benchmarks.heldout_coding_suite import (
+from agents.IVA.benchmarks.heldout_coding_suite import (
     HELDOUT_CODING_50_SUITE,
     HELDOUT_CODING_TASKS,
     HeldOutCodingTask,
 )
-from agents.AGI_1_7.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
-from agents.AGI_1_7.engine.agi17.adapters.model_adapter import redact_sensitive_text
-from agents.AGI_1_7.engine.agi17.orchestration.hierarchical_orchestrator import (
+from agents.IVA.engine.agi17.adapters.agi_17_adapter import AGI17Adapter
+from agents.IVA.engine.agi17.adapters.model_adapter import redact_sensitive_text
+from agents.IVA.engine.agi17.orchestration.hierarchical_orchestrator import (
     _extract_python_code,
     _is_valid_python_syntax,
 )
@@ -473,7 +473,7 @@ def main() -> int:
         preflight = estimate_preflight_budget(len(selected_tasks), configs_to_run, args.max_budget_usd)
     print("PRE-FLIGHT BUDGET ESTIMATE:", json.dumps(preflight, indent=2), flush=True)
 
-    bench_root = REPO_ROOT / "agents" / "AGI_1_7" / "heldout_benchmark_workspace"
+    bench_root = REPO_ROOT / "agents" / "IVA" / "heldout_benchmark_workspace"
     bench_root.mkdir(parents=True, exist_ok=True)
 
     adapter = AGI17Adapter(
@@ -482,7 +482,7 @@ def main() -> int:
     )
     cli_version = _get_cli_version(adapter.model_adapter.agy_path)
 
-    raw_out = REPO_ROOT / "agents" / "AGI_1_7" / "reports" / "HELDOUT_CODING_BENCHMARK_RAW_RESULTS.json"
+    raw_out = REPO_ROOT / "agents" / "IVA" / "reports" / "HELDOUT_CODING_BENCHMARK_RAW_RESULTS.json"
     existing_by_task: Dict[str, Dict[str, Any]] = {}
     old_data: Dict[str, Any] = {}
     if raw_out.exists():

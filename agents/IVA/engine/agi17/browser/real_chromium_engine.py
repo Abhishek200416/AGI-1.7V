@@ -28,8 +28,8 @@ from typing import Any, Dict, List, Optional, Tuple
 logger = logging.getLogger("RealChromiumEngine")
 
 CHROMIUM_CANDIDATES = [
-    str(Path.home() / "AppData" / "Local" / "ms-playwright"\chromium-1243\chrome-win64\chrome.exe",
-    str(Path.home() / "AppData" / "Local" / "ms-playwright"\chromium-1234\chrome-win64\chrome.exe",
+    str(Path.home() / "AppData" / "Local" / "ms-playwright" / "chromium-1243" / "chrome-win64" / "chrome.exe"),
+    str(Path.home() / "AppData" / "Local" / "ms-playwright" / "chromium-1234" / "chrome-win64" / "chrome.exe"),
 ]
 
 
@@ -684,7 +684,7 @@ class RealChromiumEngine:
                     f"Preserving operator login session without interference."
                 )
                 try:
-                    from agents.AGI_1_7.engine.agi17.adapters.paytm_auth_state_machine import (
+                    from agents.IVA.engine.agi17.adapters.paytm_auth_state_machine import (
                         PaytmAuthStateMachine,
                         PaytmAuthState,
                     )

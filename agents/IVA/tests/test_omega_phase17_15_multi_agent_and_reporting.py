@@ -14,16 +14,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agents.AGI_1_7.engine.agi17.finance.multi_agent_council import (
+from agents.IVA.engine.agi17.finance.multi_agent_council import (
     AgentRole,
     MultiAgentCouncilCoordinator,
     TaskStatus,
 )
-from agents.AGI_1_7.engine.agi17.finance.daily_operations_reporter import (
+from agents.IVA.engine.agi17.finance.daily_operations_reporter import (
     DailyOperationsReporter,
     DailyTradingReport,
 )
-from agents.AGI_1_7.engine.agi17.finance.source_and_url_audit import (
+from agents.IVA.engine.agi17.finance.source_and_url_audit import (
     OFFICIAL_SOURCE_REGISTRY,
     URLAuditService,
 )
@@ -52,7 +52,7 @@ class TestMultiAgentAndReporting(unittest.TestCase):
         self.assertEqual(task_approved.status, TaskStatus.IN_PROGRESS)
 
         # Matt completes the task with evidence
-        completed = council.complete_task(task.task_id, evidence_path="agents/AGI_1_7/reports/evidence.json", tests_added=5)
+        completed = council.complete_task(task.task_id, evidence_path="agents/IVA/reports/evidence.json", tests_added=5)
         self.assertEqual(completed.status, TaskStatus.COMPLETED)
 
         summary = council.get_council_summary()
