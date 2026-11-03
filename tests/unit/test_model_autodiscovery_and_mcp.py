@@ -230,11 +230,55 @@ def run_invariant_check() -> bool:
             self.assertIn("API key not valid", str(err))
 
     def test_10_detect_provider_from_key(self) -> None:
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("nvapi-Bh1lxXEbs12345"), "nvidia")
         self.assertEqual(UniversalAPIProvider.detect_provider_from_key("AIzaSy1234567890"), "gemini")
         self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-ant-api03-12345"), "anthropic")
         self.assertEqual(UniversalAPIProvider.detect_provider_from_key("gsk_1234567890"), "groq")
         self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-or-v1-12345"), "openrouter")
         self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-proj-12345"), "openai")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("unknown-custom-key"), "unknown")
+
+    def test_11_verify_and_fetch_models_nvidia_success(self) -> None:
+        mock_resp_data = {
+            "data": [
+                {"id": "nvidia/llama-3.1-nemotron-70b-instruct", "object": "model"},
+                {"id": "mistralai/mistral-large-2-instruct", "object": "model"},
+                {"id": "deepseek-ai/deepseek-coder-6.7b-instruct", "object": "model"},
+            ]
+        }
+        mock_resp = MagicMock()
+        mock_resp.status = 200
+        mock_resp.read.return_value = json.dumps(mock_resp_data).encode("utf-8")
+        mock_resp.__enter__.return_value = mock_resp
+
+        with patch("urllib.request.urlopen", return_value=mock_resp):
+            is_valid, prov, models, err = UniversalAPIProvider.verify_and_fetch_models("nvapi-MOCK_KEY_12345")
+            self.assertTrue(is_valid)
+            self.assertEqual(prov, "nvidia")
+            self.assertIn("nvidia/llama-3.1-nemotron-70b-instruct", models)
+            self.assertIn("mistralai/mistral-large-2-instruct", models)
+            self.assertIsNone(err)
+
+    def test_12_nvidia_auto_discover_optimal_model(self) -> None:
+        mock_resp_data = {
+            "data": [
+                {"id": "deepseek-ai/deepseek-coder-6.7b-instruct", "object": "model"},
+                {"id": "nvidia/llama-3.1-nemotron-70b-instruct", "object": "model"},
+                {"id": "01-ai/yi-large", "object": "model"},
+            ]
+        }
+        mock_resp = MagicMock()
+        mock_resp.status = 200
+        mock_resp.read.return_value = json.dumps(mock_resp_data).encode("utf-8")
+        mock_resp.__enter__.return_value = mock_resp
+
+        with patch("urllib.request.urlopen", return_value=mock_resp):
+            provider = UniversalAPIProvider(
+                api_key="nvapi-MOCK_NVIDIA_KEY_12345",
+                provider_type="nvidia",
+            )
+            self.assertEqual(provider.model_name, "nvidia/llama-3.1-nemotron-70b-instruct")
+            self.assertEqual(provider.base_url, "https://integrate.api.nvidia.com/v1")
 
 
 if __name__ == "__main__":

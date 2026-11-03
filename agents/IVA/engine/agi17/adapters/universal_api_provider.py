@@ -92,6 +92,7 @@ class UniversalAPIProvider(BaseModelProvider):
         # Resolve credentials and provider type
         gemini_key = api_key if (provider_type == "gemini") else (api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
         anthropic_key = api_key if (provider_type == "anthropic") else (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY"))
+        nvidia_key = api_key if (provider_type == "nvidia") else (os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_NIM_API_KEY"))
         openai_key = api_key if (provider_type == "openai") else os.environ.get("OPENAI_API_KEY")
         groq_key = os.environ.get("GROQ_API_KEY")
         deepseek_key = os.environ.get("DEEPSEEK_API_KEY")
@@ -100,16 +101,18 @@ class UniversalAPIProvider(BaseModelProvider):
 
         if provider_type:
             self.provider_type = provider_type.lower()
-        elif anthropic_key:
+        elif nvidia_key and (not api_key or api_key.startswith("nvapi-")):
+            self.provider_type = "nvidia"
+        elif anthropic_key and (not api_key or api_key.startswith("sk-ant-")):
             self.provider_type = "anthropic"
-        elif gemini_key:
-            self.provider_type = "gemini"
-        elif groq_key:
+        elif groq_key and (not api_key or api_key.startswith("gsk_")):
             self.provider_type = "groq"
-        elif deepseek_key:
+        elif deepseek_key and (not api_key or os.environ.get("ACTIVE_PROVIDER") == "deepseek"):
             self.provider_type = "deepseek"
-        elif openrouter_key:
+        elif openrouter_key and (not api_key or api_key.startswith("sk-or-")):
             self.provider_type = "openrouter"
+        elif gemini_key and (not api_key or api_key.startswith("AIza")):
+            self.provider_type = "gemini"
         elif openai_key or custom_base:
             self.provider_type = "openai"
         else:
@@ -129,6 +132,20 @@ class UniversalAPIProvider(BaseModelProvider):
                 or os.environ.get("GEMINI_BASE_URL")
                 or "https://generativelanguage.googleapis.com/v1beta"
             ).rstrip("/")
+        elif self.provider_type == "nvidia":
+            self.api_key = nvidia_key or api_key or ""
+            self.model_name = (
+                model_name
+                or os.environ.get("NVIDIA_MODEL")
+                or os.environ.get("IVA_MODEL")
+                or "nvidia/llama-3.1-nemotron-70b-instruct"
+            )
+            self.base_url = (
+                base_url
+                or os.environ.get("NVIDIA_BASE_URL")
+                or "https://integrate.api.nvidia.com/v1"
+            ).rstrip("/")
+            self.provider_type = "openai"  # NVIDIA NIM uses standard OpenAI completions wire protocol
         elif self.provider_type == "anthropic":
             self.api_key = anthropic_key or api_key or ""
             self.model_name = (
@@ -217,7 +234,9 @@ class UniversalAPIProvider(BaseModelProvider):
     def detect_provider_from_key(cls, api_key: str) -> str:
         """Autonomously infers provider type from API key format and known prefixes."""
         clean = (api_key or "").strip()
-        if clean.startswith("AIzaSy"):
+        if clean.startswith("nvapi-"):
+            return "nvidia"
+        elif clean.startswith("AIzaSy") or clean.startswith("AIza"):
             return "gemini"
         elif clean.startswith("sk-ant-"):
             return "anthropic"
@@ -225,9 +244,11 @@ class UniversalAPIProvider(BaseModelProvider):
             return "groq"
         elif clean.startswith("sk-or-"):
             return "openrouter"
+        elif clean.startswith("sk-proj-"):
+            return "openai"
         elif clean.startswith("sk-"):
             return "openai"
-        return "gemini"
+        return "unknown"
 
     @classmethod
     def verify_and_fetch_models(
@@ -313,6 +334,25 @@ class UniversalAPIProvider(BaseModelProvider):
                         return (True, "groq", models, None)
                     return (False, "groq", [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
 
+            elif prov == "nvidia" or clean_key.startswith("nvapi-") or "integrate.api.nvidia.com" in (base_url or ""):
+                root_url = (base_url or "https://integrate.api.nvidia.com/v1").rstrip("/")
+                endpoint = f"{root_url}/models"
+                req = urllib.request.Request(
+                    endpoint,
+                    headers={
+                        "Authorization": f"Bearer {clean_key}",
+                        "Accept": "application/json",
+                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                    },
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
+                    if _is_200(resp):
+                        data = json.loads(resp.read().decode("utf-8"))
+                        models = [m.get("id") for m in data.get("data", []) if m.get("id")]
+                        return (True, "nvidia", models, None)
+                    return (False, "nvidia", [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
+
             else:  # openai, deepseek, openrouter, or generic openai-compatible
                 if prov == "deepseek":
                     root_url = (base_url or "https://api.deepseek.com").rstrip("/")
@@ -386,9 +426,11 @@ class UniversalAPIProvider(BaseModelProvider):
                 "groq": "llama-3.3-70b-versatile",
                 "deepseek": "deepseek-chat",
                 "openrouter": "anthropic/claude-3.5-sonnet",
+                "nvidia": "nvidia/llama-3.1-nemotron-70b-instruct",
                 "openai": "gpt-4o-mini",
             }
-            return defaults.get(self.provider_type, "gemini-2.5-flash")
+            actual_prov = "nvidia" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else self.provider_type
+            return defaults.get(actual_prov, defaults.get(self.provider_type, "gemini-2.5-flash"))
 
         preferences = {
             "gemini": [
@@ -399,6 +441,15 @@ class UniversalAPIProvider(BaseModelProvider):
                 "gemini-1.5-pro",
                 "gemini-1.5-flash",
                 "gemini-1.5-flash-8b",
+            ],
+            "nvidia": [
+                "nvidia/llama-3.1-nemotron-70b-instruct",
+                "mistralai/mistral-large-2-instruct",
+                "deepseek-ai/deepseek-coder-6.7b-instruct",
+                "meta/llama-3.2-11b-vision-instruct",
+                "nvidia/llama-3.1-nemotron-51b-instruct",
+                "nvidia/nemotron-4-340b-instruct",
+                "meta/llama-3.2-90b-vision-instruct",
             ],
             "openai": [
                 "gpt-4o",
@@ -433,7 +484,8 @@ class UniversalAPIProvider(BaseModelProvider):
             ],
         }
 
-        pref_list = preferences.get(self.provider_type, preferences.get("openai", []))
+        actual_prov = "nvidia" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else self.provider_type
+        pref_list = preferences.get(actual_prov, preferences.get(self.provider_type, preferences.get("openai", [])))
         for pref in pref_list:
             if pref in candidates:
                 logger.info("Auto-discovered and selected optimal model: %s", pref)

@@ -61,6 +61,7 @@ def save_key_and_model_to_env(env_path: Path, key: str, provider: str, model: st
 
     key_var_map = {
         "gemini": "GEMINI_API_KEY",
+        "nvidia": "NVIDIA_API_KEY",
         "openai": "OPENAI_API_KEY",
         "anthropic": "ANTHROPIC_API_KEY",
         "groq": "GROQ_API_KEY",
@@ -68,7 +69,20 @@ def save_key_and_model_to_env(env_path: Path, key: str, provider: str, model: st
         "openrouter": "OPENROUTER_API_KEY",
     }
     target_var = key_var_map.get(provider.lower(), "GEMINI_API_KEY")
-    updated_keys = {target_var: key, "ACTIVE_MODEL": model, "IVA_MODEL": model}
+    updated_keys = {target_var: key, "ACTIVE_MODEL": model, "IVA_MODEL": model, "ACTIVE_PROVIDER": provider.lower()}
+
+    if provider.lower() == "nvidia":
+        updated_keys["OPENAI_API_KEY"] = key
+        updated_keys["OPENAI_BASE_URL"] = "https://integrate.api.nvidia.com/v1"
+    elif provider.lower() == "deepseek":
+        updated_keys["OPENAI_API_KEY"] = key
+        updated_keys["OPENAI_BASE_URL"] = "https://api.deepseek.com/v1"
+    elif provider.lower() == "openrouter":
+        updated_keys["OPENAI_API_KEY"] = key
+        updated_keys["OPENAI_BASE_URL"] = "https://openrouter.ai/api/v1"
+    elif provider.lower() == "groq":
+        updated_keys["OPENAI_API_KEY"] = key
+        updated_keys["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
 
     new_lines = []
     seen = set()
@@ -107,6 +121,31 @@ def check_python_version() -> bool:
     print(f"  ✅ Python {py_ver} ({platform.system()} {platform.machine()}) verified.")
     return True
 
+def select_provider_dialog() -> str:
+    """Prompts the operator to select their API provider when ambiguous or switching."""
+    print("\n  Select your API provider:")
+    print("     [1] NVIDIA NIM / NVIDIA Build (nvapi-... | integrate.api.nvidia.com)")
+    print("     [2] Google Gemini (AIzaSy... | Free 10s: https://aistudio.google.com/app/apikey)")
+    print("     [3] OpenAI / ChatGPT (sk-proj-... / sk-... | api.openai.com)")
+    print("     [4] DeepSeek (sk-... | api.deepseek.com)")
+    print("     [5] OpenRouter (sk-or-... | openrouter.ai)")
+    print("     [6] Groq (gsk_... | api.groq.com)")
+    print("     [7] Anthropic Claude (sk-ant-... | api.anthropic.com)")
+    try:
+        p_sel = input("     Select provider [1-7, default: 1]: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        p_sel = "1"
+    p_map = {
+        "1": "nvidia",
+        "2": "gemini",
+        "3": "openai",
+        "4": "deepseek",
+        "5": "openrouter",
+        "6": "groq",
+        "7": "anthropic",
+    }
+    return p_map.get(p_sel, "nvidia")
+
 def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Optional[str], Optional[str], str]:
     print("\n[2/6] Configuring API Key & Intelligent Model Target...")
     env_file = REPO_ROOT / ".env"
@@ -126,6 +165,7 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
     )
     load_repo_dotenv()
 
+    existing_nvidia = os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_NIM_API_KEY")
     existing_gemini = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     existing_openai = os.environ.get("OPENAI_API_KEY")
     existing_anthropic = os.environ.get("ANTHROPIC_API_KEY")
@@ -133,9 +173,10 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
     existing_deepseek = os.environ.get("DEEPSEEK_API_KEY")
     existing_openrouter = os.environ.get("OPENROUTER_API_KEY")
 
-    active_key = existing_gemini or existing_openai or existing_anthropic or existing_groq or existing_deepseek or existing_openrouter
+    active_key = existing_nvidia or existing_gemini or existing_openai or existing_anthropic or existing_groq or existing_deepseek or existing_openrouter
     active_prov = "none"
-    if existing_gemini: active_prov = "gemini"
+    if existing_nvidia: active_prov = "nvidia"
+    elif existing_gemini: active_prov = "gemini"
     elif existing_anthropic: active_prov = "anthropic"
     elif existing_groq: active_prov = "groq"
     elif existing_deepseek: active_prov = "deepseek"
@@ -163,41 +204,52 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
     selected_model = os.environ.get("ACTIVE_MODEL") or os.environ.get("IVA_MODEL")
 
     if needs_prompt and interactive:
+        current_entered_key = ""
+        current_prov = ""
         while True:
-            print("\n  " + "═" * 74)
-            print("  🔑 UNIVERSAL API KEY ONBOARDING")
-            print("  " + "═" * 74)
-            print("  Paste your API key below to enable autonomous model intelligence.")
-            print("  Supported providers: Google Gemini, OpenAI, Anthropic, Groq, DeepSeek.")
-            print("  👉 Free Google Gemini Key (Instant in 10s): https://aistudio.google.com/app/apikey")
-            print("  (Press Enter without key to continue in offline test mode)")
-            print("  " + "═" * 74)
-            try:
-                entered_key = input("  Paste your API Key: ").strip().strip("'\"")
-            except (KeyboardInterrupt, EOFError):
-                entered_key = ""
+            if not current_entered_key:
+                print("\n  " + "═" * 74)
+                print("  🔑 UNIVERSAL API KEY ONBOARDING")
+                print("  " + "═" * 74)
+                print("  Paste your API key below to enable autonomous model intelligence.")
+                print("  Supported providers: NVIDIA NIM / Build, OpenAI, DeepSeek, OpenRouter,")
+                print("                       Google Gemini, Groq, Anthropic Claude.")
+                print("  👉 Free Google Gemini Key (Instant in 10s): https://aistudio.google.com/app/apikey")
+                print("  (Press Enter without key to continue in offline test mode)")
+                print("  " + "═" * 74)
+                try:
+                    entered_key = input("  Paste your API Key: ").strip().strip("'\"")
+                except (KeyboardInterrupt, EOFError):
+                    entered_key = ""
 
-            if not entered_key:
-                print("  ℹ️  No API key entered. Running in offline sandbox test mode.")
-                active_key = None
-                active_prov = "offline"
-                selected_model = "gemini-2.5-flash"
-                break
+                if not entered_key:
+                    print("  ℹ️  No API key entered. Running in offline sandbox test mode.")
+                    active_key = None
+                    active_prov = "offline"
+                    selected_model = "gemini-2.5-flash"
+                    break
+                current_entered_key = entered_key
+                current_prov = UniversalAPIProvider.detect_provider_from_key(current_entered_key)
+                if current_prov == "unknown":
+                    current_prov = select_provider_dialog()
 
-            inferred_prov = UniversalAPIProvider.detect_provider_from_key(entered_key)
-            print(f"\n  ⏳ Verifying API key with {inferred_prov.upper()} endpoint...")
+            print(f"\n  ⏳ Verifying API key with {current_prov.upper()} endpoint...")
             is_valid, prov, models, err_msg = UniversalAPIProvider.verify_and_fetch_models(
-                entered_key, provider_type=inferred_prov
+                current_entered_key, provider_type=current_prov
             )
 
             if is_valid:
                 print(f"  ✅ API Key verified successfully! Connection confirmed with {prov.upper()}.")
-                active_key = entered_key
+                active_key = current_entered_key
                 active_prov = prov
 
                 if models:
                     print(f"\n  📋 Available Remote Models for your {prov.upper()} API Key:")
                     pref_order = [
+                        "nvidia/llama-3.1-nemotron-70b-instruct",
+                        "mistralai/mistral-large-2-instruct",
+                        "deepseek-ai/deepseek-coder-6.7b-instruct",
+                        "meta/llama-3.2-11b-vision-instruct",
                         "gemini-2.5-flash",
                         "claude-3-5-sonnet-20241022",
                         "gpt-4o",
@@ -238,21 +290,28 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                     else:
                         selected_model = sorted_models[0]
                 else:
-                    selected_model = "gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini"
+                    selected_model = "nvidia/llama-3.1-nemotron-70b-instruct" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
 
                 print(f"  ✅ Active Model Target set to: {selected_model}")
                 save_key_and_model_to_env(env_file, active_key, active_prov, selected_model)
                 print(f"  💾 Saved verified credentials and active model to .env")
                 break
             else:
-                print(f"\n  ❌ Verification Failed: {err_msg}")
-                print("     [1] Try pasting the key again")
-                print("     [2] Skip and continue in offline sandbox mode")
+                print(f"\n  ❌ Verification Failed with {current_prov.upper()} endpoint: {err_msg}")
+                print("     [1] Switch to a different provider endpoint for this key")
+                print("     [2] Re-enter a different API key")
+                print("     [3] Skip and continue in offline sandbox mode")
                 try:
-                    retry_choice = input("     Select [1/2, default: 1]: ").strip()
+                    retry_choice = input("     Select [1-3, default: 1]: ").strip()
                 except (KeyboardInterrupt, EOFError):
-                    retry_choice = "2"
-                if retry_choice == "2":
+                    retry_choice = "3"
+                if retry_choice == "1":
+                    current_prov = select_provider_dialog()
+                    # Loop re-verifies current_entered_key with newly selected provider
+                elif retry_choice == "2":
+                    current_entered_key = ""
+                    current_prov = ""
+                else:
                     print("  ℹ️  Continuing in offline sandbox test mode.")
                     active_key = None
                     active_prov = "offline"
