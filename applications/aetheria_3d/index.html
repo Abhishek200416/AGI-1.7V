@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AETHERIA 3D • Living Neural Cosmos & Generative Soundscape</title>
+    <title>AETHERIA 3D • Universal Scale Journey (240 FPS Ultra-Smooth)</title>
     <link rel="stylesheet" href="css/aetheria.css">
     <!-- Offline-First Local Three.js + OrbitControls -->
     <script src="js/three.min.js"></script>
@@ -20,22 +20,28 @@
     <!-- 3D WebGL Canvas Layer -->
     <div id="canvas-container"></div>
 
-    <!-- The 3-Second Hook: Cinematic Ingress Welcome Banner (Auto-fades on first interaction) -->
+    <!-- The 3-Second Hook: Cinematic Ingress Welcome Banner -->
     <div id="intro-hook-chip" class="intro-hook-chip glass-panel">
         <div class="hook-glow-orb"></div>
         <div class="hook-text-block">
-            <div class="hook-headline">AETHERIA 3D • Living Neural Cosmos</div>
-            <div class="hook-sub">Tap or drag anywhere to immerse • Soundscape & 3D Celestial Web</div>
+            <div class="hook-headline">AETHERIA 3D • Universal Scale Journey</div>
+            <div class="hook-sub">Planet → Solar System → Milky Way → Supercluster → Cosmic Web</div>
         </div>
-        <button id="dismiss-hook-btn" class="hook-enter-btn">ENTER ✦</button>
+        <button id="dismiss-hook-btn" class="hook-enter-btn">ENTER COSMOS ✦</button>
     </div>
 
-    <!-- Centered Floating Dynamic Capsule Navigation (Dynamic Island Pattern) -->
+    <!-- Floating Zen Mode Restore Button (Always Accessible When UI is Hidden) -->
+    <button id="zen-exit-floating-btn" class="zen-exit-floating-btn glass-panel" title="Restore Controls & View">
+        <span class="zen-icon">👁️</span>
+        <span class="zen-label">RESTORE HUD</span>
+    </button>
+
+    <!-- Centered Floating Dynamic Capsule Navigation (Dynamic Island) -->
     <header id="dynamic-capsule" class="dynamic-capsule glass-panel">
         <div class="capsule-brand">
             <span class="capsule-pulse-dot"></span>
             <span class="capsule-title">AETHERIA</span>
-            <span class="capsule-fps-badge" id="capsule-fps">60 FPS</span>
+            <span class="capsule-fps-badge" id="capsule-fps">240 FPS</span>
         </div>
         <div class="capsule-divider"></div>
         <div class="capsule-actions">
@@ -51,6 +57,36 @@
         </div>
     </header>
 
+    <!-- Universal Scale Selector Ribbon (Planet to Cosmic Web) -->
+    <div id="scale-ribbon" class="scale-ribbon glass-panel">
+        <button class="scale-btn" data-scale="planetary" title="Terrestrial Planet Scale (10^7 m)">
+            <span class="scale-icon">🌍</span><span class="scale-text">Planet</span>
+        </button>
+        <button class="scale-btn active" data-scale="solar_system" title="Heliosphere Solar System (10^13 m)">
+            <span class="scale-icon">☀️</span><span class="scale-text">Solar System</span>
+        </button>
+        <button class="scale-btn" data-scale="milky_way" title="Milky Way Galaxy (10^21 m)">
+            <span class="scale-icon">🌌</span><span class="scale-text">Milky Way</span>
+        </button>
+        <button class="scale-btn" data-scale="supercluster" title="Laniakea Supercluster (10^24 m)">
+            <span class="scale-icon">🌀</span><span class="scale-text">Supercluster</span>
+        </button>
+        <button class="scale-btn" data-scale="cosmic_web" title="Observable Cosmic Web (10^26 m)">
+            <span class="scale-icon">🕸️</span><span class="scale-text">Cosmic Web</span>
+        </button>
+    </div>
+
+    <!-- Scale Chronicle Card (Live Telemetry & NVIDIA Nemotron Chronicles) -->
+    <div id="scale-chronicle-card" class="scale-chronicle-card glass-panel collapsed">
+        <div class="scale-chronicle-header">
+            <div class="scale-badge" id="scale-badge-text">☀️ Heliosphere (10^13 m)</div>
+            <button id="close-chronicle-btn" class="chronicle-close-btn">✕</button>
+        </div>
+        <div class="scale-chronicle-text" id="scale-chronicle-text">
+            "A dance of worlds around a fiery heart, a miniature cosmos, a celestial art."
+        </div>
+    </div>
+
     <!-- Ergonomic Thumb-Zone Floating Bottom Dock -->
     <nav id="bottom-dock" class="bottom-dock glass-panel">
         <button class="dock-btn active" id="dock-explore-btn" title="Orbit Space View">
@@ -65,9 +101,9 @@
             <span class="dock-icon">⚡</span>
             <span class="dock-label">Warp</span>
         </button>
-        <button class="dock-btn" id="dock-anomalies-btn" title="Explore Celestial Anomalies">
-            <span class="dock-icon">🛰️</span>
-            <span class="dock-label">Anomalies</span>
+        <button class="dock-btn" id="dock-anomalies-btn" title="Planets & Celestial Anomalies">
+            <span class="dock-icon">🪐</span>
+            <span class="dock-label">Worlds</span>
         </button>
         <button class="dock-btn" id="dock-tune-btn" title="Universe Tuning & Themes">
             <span class="dock-icon">🎨</span>
@@ -75,7 +111,7 @@
         </button>
     </nav>
 
-    <!-- Collapsible Universe Tuning Deck (Slide-Up Card) -->
+    <!-- Collapsible Universe Tuning Deck -->
     <aside id="tuning-deck" class="slide-modal glass-panel collapsed">
         <div class="modal-handle-bar">
             <div class="drag-handle"></div>
@@ -116,29 +152,29 @@
             </div>
 
             <div class="tuning-actions">
-                <button id="reset-cam-btn" class="action-btn">🔄 Reset Camera View</button>
-                <button id="snapshot-btn" class="action-btn">📷 Capture 4K Snapshot</button>
+                <button id="reset-cam-btn" class="action-btn">🔄 Reset Camera</button>
+                <button id="snapshot-btn" class="action-btn">📷 4K Snapshot</button>
             </div>
         </div>
     </aside>
 
-    <!-- Collapsible Anomalies Quick-List Sheet -->
+    <!-- Collapsible Celestial Worlds & Planets Sheet -->
     <aside id="anomalies-sheet" class="slide-modal glass-panel collapsed">
         <div class="modal-handle-bar">
             <div class="drag-handle"></div>
         </div>
         <div class="modal-header">
-            <h3>🛰️ CELESTIAL BEACONS & SECTORS</h3>
+            <h3>🪐 SOLAR WORLDS & CELESTIAL BEACONS</h3>
             <button id="close-anomalies-btn" class="modal-close-btn" title="Close">✕</button>
         </div>
         <div class="modal-body">
             <div id="anomalies-list" class="anomalies-list">
-                <!-- Dynamically populated from API -->
+                <!-- Populated dynamically: Sun, Earth, Saturn, Jupiter, Chronos Weave, etc. -->
             </div>
         </div>
     </aside>
 
-    <!-- Celestial Inspector Modal (Inspection & NVIDIA Nemotron Oracle) -->
+    <!-- Celestial Inspector Modal -->
     <aside id="right-inspector" class="slide-modal inspector-modal glass-panel collapsed">
         <div class="modal-handle-bar">
             <div class="drag-handle"></div>
@@ -158,20 +194,20 @@
                     <div id="inspector-freq" class="telemetry-val">432.08 Hz</div>
                 </div>
                 <div class="telemetry-card">
-                    <div class="telemetry-label">Energy Metric</div>
+                    <div class="telemetry-label">Metric Horizon</div>
                     <div id="inspector-energy" class="telemetry-val">Class IV Temporal</div>
                 </div>
             </div>
 
             <div id="inspector-lore" class="inspector-lore">
-                Tap any celestial body in space to attune the harmonic sensors and inspect its lore.
+                Tap any celestial body or planet to inspect its lore and astrophysical coordinates.
             </div>
 
             <!-- NVIDIA Nemotron Cosmic Oracle -->
             <div class="oracle-box">
                 <div class="section-title">✨ Consult the Cosmic Oracle</div>
                 <form id="oracle-form" class="oracle-input-row">
-                    <input id="oracle-input" type="text" placeholder="Transmit a thought to the stars..." class="oracle-input" autocomplete="off">
+                    <input id="oracle-input" type="text" placeholder="Transmit a thought across the scales..." class="oracle-input" autocomplete="off">
                     <button type="submit" class="oracle-submit">Transmit</button>
                 </form>
                 <div id="oracle-output" class="oracle-output"></div>
@@ -179,12 +215,14 @@
         </div>
     </aside>
 
-    <!-- Micro-Telemetry Pill (Bottom Corner, Unobtrusive) -->
+    <!-- Micro-Telemetry Pill (Unobtrusive) -->
     <div id="micro-telemetry" class="micro-telemetry">
         <span class="micro-dot"></span>
-        <span id="micro-particles">25,000 Particles</span>
+        <span id="micro-scale">Scale: Solar System</span>
         <span class="micro-sep">•</span>
-        <span id="micro-model">NVIDIA Nemotron</span>
+        <span id="micro-particles">35,000 Stars</span>
+        <span class="micro-sep">•</span>
+        <span id="micro-fps">240 FPS Target</span>
     </div>
 
     <!-- Toast Notification -->

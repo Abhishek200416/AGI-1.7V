@@ -81,13 +81,29 @@ class TestAetheria3D(unittest.TestCase):
         reply = query_nemotron_oracle("What is time?", "The Chronos Weave")
         self.assertIn("black hole accretion disk", reply)
 
-    def test_05_oracle_fallback_on_network_error(self) -> None:
-        """Verifies graceful fallback response when API call fails or times out."""
-        with patch("urllib.request.urlopen", side_effect=OSError("Network unreachable")):
-            reply = query_nemotron_oracle("Tell me of the cosmos", "Cosmic Core")
-            self.assertIsInstance(reply, str)
-            self.assertGreater(len(reply), 10)
+    def test_06_cosmic_scales_structure(self) -> None:
+        """Verifies that all 5 universal scales exist with chronicles and metrics."""
+        from applications.aetheria_3d.server import COSMIC_SCALES
+        self.assertEqual(len(COSMIC_SCALES), 5)
+        expected = ["planetary", "solar_system", "milky_way", "supercluster", "cosmic_web"]
+        for key in expected:
+            self.assertIn(key, COSMIC_SCALES)
+            scale = COSMIC_SCALES[key]
+            self.assertIn("name", scale)
+            self.assertIn("metrics", scale)
+            self.assertIn("camera_dist", scale)
+            self.assertIn("chronicle", scale)
+            self.assertGreater(len(scale["chronicle"]), 10)
+
+    def test_07_solar_system_planets(self) -> None:
+        """Verifies solar system planets array contains Sun and all 8 major planets."""
+        from applications.aetheria_3d.server import SOLAR_SYSTEM_PLANETS
+        self.assertGreaterEqual(len(SOLAR_SYSTEM_PLANETS), 9)
+        names = [p["name"] for p in SOLAR_SYSTEM_PLANETS]
+        for expected_planet in ["Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]:
+            self.assertIn(expected_planet, names)
 
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -211,6 +211,79 @@ def query_nemotron_oracle(user_prompt: str, anomaly_name: str = "Aetheria Cosmos
     )
 
 
+# 5-Scale Universal Hierarchy (Planet -> Solar System -> Milky Way -> Superclusters -> Cosmic Web)
+COSMIC_SCALES: Dict[str, Dict[str, Any]] = {
+    "planetary": {
+        "id": "planetary",
+        "name": "Terrestrial Planetary Scale",
+        "order": 1,
+        "metrics": "10^7 m (7,000 km)",
+        "camera_dist": 22,
+        "fov": 50,
+        "chronicle": "A sapphire jewel, cradled in stellar grace, where life's delicate whispers find their place.",
+        "badge": "🌍 Terrestrial",
+        "particle_density": 6000
+    },
+    "solar_system": {
+        "id": "solar_system",
+        "name": "Heliosphere Solar System",
+        "order": 2,
+        "metrics": "10^13 m (100 AU)",
+        "camera_dist": 140,
+        "fov": 60,
+        "chronicle": "A dance of worlds around a fiery heart, a miniature cosmos, a celestial art.",
+        "badge": "☀️ Heliosphere",
+        "particle_density": 18000
+    },
+    "milky_way": {
+        "id": "milky_way",
+        "name": "Milky Way Galactic Spiral",
+        "order": 3,
+        "metrics": "10^21 m (100,000 Light Years)",
+        "camera_dist": 650,
+        "fov": 65,
+        "chronicle": "A spiral arm of starlight, vast and deep, where billions of suns their ancient vigil keep.",
+        "badge": "🌌 Galactic",
+        "particle_density": 35000
+    },
+    "supercluster": {
+        "id": "supercluster",
+        "name": "Laniakea Galactic Supercluster",
+        "order": 4,
+        "metrics": "10^24 m (520 Million Light Years)",
+        "camera_dist": 1800,
+        "fov": 70,
+        "chronicle": "Clusters gathered, a cosmic congregation grand, a tapestry woven across the stellar land.",
+        "badge": "🌀 Supercluster",
+        "particle_density": 45000
+    },
+    "cosmic_web": {
+        "id": "cosmic_web",
+        "name": "Observable Cosmic Web & Multiverse",
+        "order": 5,
+        "metrics": "10^26 m (93 Billion Light Years)",
+        "camera_dist": 4200,
+        "fov": 75,
+        "chronicle": "Filaments of matter, a web of infinite might, shaping the universe in eternal, cosmic light.",
+        "badge": "🕸️ Cosmic Web",
+        "particle_density": 55000
+    }
+}
+
+# Solar System Astronomical Bodies
+SOLAR_SYSTEM_PLANETS: List[Dict[str, Any]] = [
+    {"name": "Sun", "type": "star", "radius": 5.5, "color": "#ffa200", "orbit_radius": 0, "orbit_speed": 0, "lore": "The life-giving fusion furnace at the center of the heliosphere."},
+    {"name": "Mercury", "type": "planet", "radius": 0.55, "color": "#a8a8a8", "orbit_radius": 12, "orbit_speed": 0.038, "lore": "Sun-scorched iron world in rapid tidal resonance."},
+    {"name": "Venus", "type": "planet", "radius": 1.1, "color": "#e8c37d", "orbit_radius": 18, "orbit_speed": 0.028, "lore": "Shrouded in dense carbon dioxide with runaway greenhouse fury."},
+    {"name": "Earth", "type": "planet", "radius": 1.25, "color": "#2878d6", "orbit_radius": 26, "orbit_speed": 0.022, "has_moon": True, "moon_radius": 0.35, "moon_dist": 2.8, "lore": "The living oasis of liquid water, nitrogen atmosphere, and conscious life."},
+    {"name": "Mars", "type": "planet", "radius": 0.75, "color": "#d64527", "orbit_radius": 34, "orbit_speed": 0.018, "lore": "Rust-red dunes, ancient dry river valleys, and dormant volcanic giants."},
+    {"name": "Jupiter", "type": "planet", "radius": 3.4, "color": "#c98f4b", "orbit_radius": 52, "orbit_speed": 0.010, "has_bands": True, "lore": "The gas colossus whose gravity shields the inner worlds from cometary impacts."},
+    {"name": "Saturn", "type": "planet", "radius": 2.8, "color": "#e8cb8d", "orbit_radius": 74, "orbit_speed": 0.007, "has_rings": True, "ring_inner": 3.6, "ring_outer": 6.8, "lore": "Crowned by shimmering rings of crystalline water ice and silicates."},
+    {"name": "Uranus", "type": "planet", "radius": 1.9, "color": "#5297d4", "orbit_radius": 96, "orbit_speed": 0.005, "lore": "Tilted on its side, an icy world bathed in methane turquoise."},
+    {"name": "Neptune", "type": "planet", "radius": 1.85, "color": "#284db0", "orbit_radius": 118, "orbit_speed": 0.004, "lore": "Deep azure ice giant swept by supersonic storm winds."}
+]
+
+
 class AetheriaRequestHandler(SimpleHTTPRequestHandler):
     """Handles static assets and API requests for Aetheria 3D."""
 
@@ -232,6 +305,16 @@ class AetheriaRequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({
                 "status": "OK",
                 "anomalies": FOUNDATIONAL_LORE
+            })
+        elif self.path == "/api/scales":
+            self.send_json_response({
+                "status": "OK",
+                "scales": COSMIC_SCALES
+            })
+        elif self.path == "/api/planets":
+            self.send_json_response({
+                "status": "OK",
+                "planets": SOLAR_SYSTEM_PLANETS
             })
         elif self.path == "/api/presets":
             self.send_json_response(self.get_presets())
