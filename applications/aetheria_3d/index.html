@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERIA 3D • Living Neural Cosmos & Generative Soundscape</title>
+    <link rel="stylesheet" href="css/aetheria.css">
+    <!-- Local High-Performance Three.js + OrbitControls (100% Offline Ready) -->
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <!-- Graceful CDN Fallback if local files are missing -->
+    <script>
+        if (typeof THREE === "undefined") {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+            document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>');
+        }
+    </script>
+</head>
+<body>
+    <!-- 3D WebGL Canvas Layer -->
+    <div id="canvas-container"></div>
+
+    <!-- Top HUD Navigation -->
+    <header class="hud-header glass-panel">
+        <div class="hud-brand">
+            <div class="brand-icon"></div>
+            <div class="brand-title">
+                <h1>AETHERIA 3D</h1>
+                <span class="subtitle">LIVING NEURAL COSMOS • POWERED BY NVIDIA NEMOTRON</span>
+            </div>
+        </div>
+        <div class="hud-actions">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>NVIDIA NIM: ONLINE</span>
+            </div>
+            <button id="audio-toggle-btn" class="hud-btn">🔊 AUDIO: OFF</button>
+            <button id="warp-btn" class="hud-btn">⚡ WARP JUMP</button>
+            <button id="snapshot-btn" class="hud-btn">📷 SNAPSHOT</button>
+        </div>
+    </header>
+
+    <!-- Left Controls Panel -->
+    <aside class="left-controls glass-panel">
+        <div class="panel-section">
+            <div class="section-title">🌌 Cosmos Simulation</div>
+            
+            <div class="control-row">
+                <div class="control-label">
+                    <span>Cosmic Velocity</span>
+                    <span id="speed-val" class="control-val">1.0x</span>
+                </div>
+                <input id="speed-slider" type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="cyber-slider">
+            </div>
+
+            <div class="control-row">
+                <div class="control-label">
+                    <span>Gravitational Drift</span>
+                    <span id="gravity-val" class="control-val">1.0x</span>
+                </div>
+                <input id="gravity-slider" type="range" min="0.1" max="2.5" step="0.1" value="1.0" class="cyber-slider">
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">🎨 Chromatic Atmosphere</div>
+            <div class="theme-grid">
+                <div class="theme-pill active" data-theme="violet">Violet Horizon</div>
+                <div class="theme-pill" data-theme="aurora">Cyber Aurora</div>
+                <div class="theme-pill" data-theme="solar">Solar Flare</div>
+                <div class="theme-pill" data-theme="void">Deep Void</div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="section-title">🛰️ Camera Navigation</div>
+            <button id="reset-cam-btn" class="hud-btn" style="width: 100%; justify-content: center; margin-top: 6px;">
+                🔄 Reset Orbital View
+            </button>
+        </div>
+    </aside>
+
+    <!-- Right Celestial Inspector Card (Dynamic Raycast & AI Oracle) -->
+    <aside id="right-inspector" class="right-inspector glass-panel collapsed">
+        <div class="inspector-header">
+            <div>
+                <h2 id="inspector-title">Celestial Anomaly</h2>
+                <span id="inspector-sector" class="inspector-sector">Sector 01-A</span>
+            </div>
+            <button id="close-inspector-btn" class="close-btn" title="Close Panel">✕</button>
+        </div>
+
+        <div class="inspector-telemetry">
+            <div class="telemetry-card">
+                <div class="telemetry-label">Resonance Frequency</div>
+                <div id="inspector-freq" class="telemetry-val">432.08 Hz</div>
+            </div>
+            <div class="telemetry-card">
+                <div class="telemetry-label">Energy Metric</div>
+                <div id="inspector-energy" class="telemetry-val">Class IV Temporal</div>
+            </div>
+        </div>
+
+        <div id="inspector-lore" class="inspector-lore">
+            Click any pulsing celestial beacon in space to attune the harmonic sensors and inspect its astrophysical lore.
+        </div>
+
+        <!-- NVIDIA Nemotron Cosmic Oracle -->
+        <div class="oracle-box">
+            <div class="section-title" style="margin-bottom: 8px;">✨ Consult the Cosmic Oracle</div>
+            <form id="oracle-form" class="oracle-input-row">
+                <input id="oracle-input" type="text" placeholder="Transmit a thought to the stars..." class="oracle-input" autocomplete="off">
+                <button type="submit" class="oracle-submit">Transmit</button>
+            </form>
+            <div id="oracle-output" class="oracle-output"></div>
+        </div>
+    </aside>
+
+    <!-- Bottom Telemetry Bar -->
+    <footer class="bottom-bar glass-panel">
+        <div class="telemetry-pills">
+            <span>Particles: <strong id="particle-count-val">25,000</strong></span>
+            <span>Performance: <strong id="fps-val">60 FPS</strong></span>
+            <span>Synthesizer: <strong>432 Hz Pythagorean</strong></span>
+            <span>Engine: <strong>Three.js WebGL + NVIDIA Nemotron</strong></span>
+        </div>
+        <div class="shortcut-hints">
+            Drag: Orbit | Scroll: Zoom | Click: Inspect Anomaly
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast-notice" class="toast-notice">System Initialized</div>
+
+    <!-- Application Logic Scripts -->
+    <script src="js/aetheria_audio.js"></script>
+    <script src="js/aetheria_scene.js"></script>
+</body>
+</html>
