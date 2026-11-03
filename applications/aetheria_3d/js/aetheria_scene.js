@@ -267,7 +267,7 @@
         anomalies = [];
 
         // Fetch lore from server API
-        fetch("/api/lore")
+        fetch("/api/lore", { headers: { "ngrok-skip-browser-warning": "true" } })
             .then(res => res.json())
             .then(data => {
                 if (data.status === "OK") {
@@ -494,7 +494,10 @@
 
                 fetch("/api/transmit", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "ngrok-skip-browser-warning": "true"
+                    },
                     body: jsonString({ prompt: text, anomaly: anomalyName })
                 })
                 .then(res => res.json())
