@@ -113,6 +113,7 @@ class TerminalClient:
         self._session_mgr: Optional[Any] = None
         self._workspace_indexer: Optional[Any] = None
         self._design_store: Optional[Any] = None
+        self._skill_organizer: Optional[Any] = None
         self.execution_mode: str = os.environ.get("IVA_MODE", "AUTONOMOUS").upper()
 
     @property
@@ -136,6 +137,13 @@ class TerminalClient:
             from ..capabilities.frontier_design_engine import DesignSystemStore
             self._design_store = DesignSystemStore()
         return self._design_store
+
+    @property
+    def skill_organizer(self) -> Any:
+        if self._skill_organizer is None:
+            from ..skills.skill_organizer import SkillOrganizer
+            self._skill_organizer = SkillOrganizer()
+        return self._skill_organizer
 
     @property
     def adapter(self) -> Any:
@@ -1199,6 +1207,138 @@ class TerminalClient:
             print(f"      • Open URL      : {out_file.resolve().as_uri()}\n")
         else:
             print(yellow(f"\n   Unknown design subcommand '{sub}'. Type 'design list' to view available commands.\n"))
+
+    def print_skills(self, category_filter: Optional[str] = None) -> None:
+        """Displays categorized MCP tools and agent skills across 8 functional domains."""
+        grouped = self.skill_organizer.list_by_category()
+        total_skills = sum(len(skills) for skills in grouped.values())
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta(f"   🧰 IVA DYNAMIC SKILL & MCP ECOSYSTEM ({total_skills} Tools & Capabilities)")))
+        print(cyan("=" * 78))
+        print(dim("   Accurately organized across 8 functional domains with dynamic Git ingestion:\n"))
+
+        for cat_name, skills in grouped.items():
+            if category_filter and category_filter.lower() not in cat_name.lower():
+                continue
+            if not skills:
+                continue
+
+            print(bold(cyan(f"   📁 {cat_name.upper()} ({len(skills)} Skills):")))
+            for s in skills:
+                src_badge = green(f"[{s.source.upper()}]")
+                t_count = f"({s.tools_count} ops)"
+                print(f"      • {bold(s.name.ljust(34))} {src_badge.ljust(18)} {dim(t_count.ljust(8))}")
+                print(f"        {dim(s.description[:72])}")
+                if s.tools:
+                    print(f"        ↳ Tools: {cyan(', '.join(s.tools[:5]))}{' ...' if len(s.tools) > 5 else ''}")
+            print()
+
+        print("   " + dim("Commands:"))
+        print("   " + dim("• skill search <query>          : Instant search across all tools & capabilities"))
+        print("   " + dim("• skill import <path_or_git>    : Ingest external SKILL.md manifests or Git repos"))
+        print("   " + dim("• security audit [path]         : Run Red-Team Cyber Security Vulnerability Scan"))
+        print(cyan("=" * 78) + "\n")
+
+    def execute_skills_command(self, arg: str) -> None:
+        """Routes skills and MCP management subcommands."""
+        parts = arg.strip().split(maxsplit=1)
+        sub = parts[0].lower() if parts else "list"
+        param = parts[1].strip() if len(parts) > 1 else ""
+
+        if sub in ("list", ""):
+            self.print_skills(category_filter=param)
+        elif sub == "search":
+            if not param:
+                print(yellow("\n   Usage: skill search <query>\n"))
+                return
+            results = self.skill_organizer.search_skills(param)
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta(f"   🔍 SKILL SEARCH RESULTS: '{param}' ({len(results)} matches)")))
+            print(cyan("=" * 78) + "\n")
+            for s in results:
+                print(f"   • {bold(s.name)} [{cyan(s.category.value)}] {green(f'[{s.source}]')}")
+                print(f"     {dim(s.description[:76])}")
+                if s.tools:
+                    print(f"     Tools: {cyan(', '.join(s.tools[:6]))}")
+                print()
+            print(cyan("=" * 78) + "\n")
+        elif sub == "import":
+            if not param:
+                print(yellow("\n   Usage: skill import <directory_or_repo_path>\n"))
+                return
+            try:
+                imported = self.skill_organizer.import_skills_from_directory(param)
+                print(bold(green(f"\n   ✅ Successfully imported {len(imported)} skill(s) from: {param}")))
+                for s in imported:
+                    print(f"      • {bold(s.name)} [{cyan(s.category.value)}] ({s.path})")
+                print()
+            except Exception as e:
+                print(red(f"\n   Could not import skills: {e}\n"))
+        elif sub in ("info", "inspect"):
+            results = self.skill_organizer.search_skills(param)
+            if not results:
+                print(red(f"\n   Skill not found: {param}\n"))
+                return
+            s = results[0]
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta(f"   🧰 SKILL INSPECTION: {s.name} [{s.skill_id}]")))
+            print(cyan("=" * 78))
+            print(f"   • Category    : {s.category.value}")
+            print(f"   • Source      : {s.source} ({s.path})")
+            print(f"   • Description : {s.description}")
+            print(f"   • Operations  : {s.tools_count} tools ({', '.join(s.tools)})")
+            print(f"   • Tags        : {', '.join(s.tags)}")
+            print(cyan("=" * 78) + "\n")
+        else:
+            print(yellow(f"\n   Unknown skill command '{sub}'. Type 'skills' to list available skills.\n"))
+
+    def execute_security_audit_command(self, target_path: Optional[str] = None) -> None:
+        """Executes red-team application security scan & pre-production loophole verification."""
+        path_to_scan = target_path.strip() if target_path and target_path.strip() else "."
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🛡️ IVA AUTONOMOUS APPLICATION SECURITY & RED-TEAM AUDIT")))
+        print(cyan("=" * 78))
+        print(dim(f"   Auditing '{path_to_scan}' for OWASP Top 10 vulnerabilities before production launch...\n"))
+
+        try:
+            from ..security.application_security_auditor import (
+                ApplicationSecurityAuditor,
+                PreProductionSecurityGatekeeper,
+            )
+            is_approved, report = PreProductionSecurityGatekeeper.verify_readiness(path_to_scan)
+        except Exception as e:
+            print(red(f"   Security audit error: {e}"))
+            return
+
+        status_badge = bold(green("✅ APPROVED FOR PRODUCTION")) if is_approved else bold(red("❌ PRODUCTION LAUNCH BLOCKED (Fail-Closed)"))
+        score_color = green if report.security_score >= 80 else (yellow if report.security_score >= 60 else red)
+
+        print(f"   • Target Path           : {cyan(report.target_path)}")
+        print(f"   • Scanned Files / LOC   : {report.scanned_files_count} files ({report.scanned_loc_count:,} LOC)")
+        print(f"   • Security Posture Score: {score_color(f'{report.security_score:.1f}%')}")
+        print(f"   • Gatekeeper Status     : {status_badge}\n")
+
+        print("   " + bold("Vulnerability Summary:"))
+        print(f"     - Critical Severity   : {red(str(report.critical_count))} (Immediate RCE / Credential leak risks)")
+        print(f"     - High Severity       : {yellow(str(report.high_count))} (XSS / Path Traversal / Injection risks)")
+        print(f"     - Medium Severity     : {cyan(str(report.medium_count))} (CORS wildcard / Header misconfigurations)")
+        print(f"     - Low Severity        : {dim(str(report.low_count))} (Best practice notices)\n")
+
+        if report.vulnerabilities:
+            print(bold(red("   🚨 Discovered Loopholes & Exploitation Vectors:")))
+            for idx, v in enumerate(report.vulnerabilities[:10], 1):
+                sev_color = red if v.severity == "CRITICAL" else (yellow if v.severity == "HIGH" else cyan)
+                print(f"     [{idx:2d}] [{sev_color(v.severity)}] {bold(v.title)} ({dim(v.cwe_id)})")
+                print(f"          ↳ File: {cyan(v.file_path)}:{v.line_number}")
+                print(f"          ↳ Vector: {dim(v.attack_vector_description[:85])}")
+                print(f"          ↳ Fix: {green(v.remediation_patch[:85])}")
+            if len(report.vulnerabilities) > 10:
+                print(dim(f"     ... and {len(report.vulnerabilities) - 10} more findings."))
+            print()
+        else:
+            print(bold(green("   ✅ No high or critical security loopholes detected! Clean posture.\n")))
+
+        print(cyan("=" * 78) + "\n")
 
     def execute_evolve(self) -> None:
         """Runs the 24/7 continuous autonomous self-evolution cycle in terminal."""
@@ -2575,8 +2715,11 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 self.execute_remember(line[9:].strip())
             elif low.startswith("forget "):
                 self.execute_forget(line[7:].strip())
-            elif low in ("specialists", "specialist", "agents", "skills"):
+            elif low in ("specialists", "specialist", "agents"):
                 self.print_specialists()
+            elif low in ("skills", "skill") or low.startswith("skill "):
+                arg = line[5:].strip() if low.startswith("skill ") else ""
+                self.execute_skills_command(arg)
             elif low in ("plugins", "plugin", "agency", "ponytail"):
                 self.print_plugins_notice()
             elif low in ("7", "evolve", "loop", "24", "self-improve"):
@@ -2596,8 +2739,18 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                     print(json.dumps(res, indent=2, default=str))
                 except Exception as e:
                     print(red(f"CI-Repair error: {e}"))
-            elif low in ("audit", "security", "guard"):
-                self.print_audit()
+            elif low in ("audit", "security", "guard", "sec", "redteam", "hack") or low.startswith("security ") or low.startswith("audit ") or low.startswith("redteam "):
+                if low.startswith("security "):
+                    t_path = line[9:].strip()
+                    if t_path.startswith("audit "):
+                        t_path = t_path[6:].strip()
+                elif low.startswith("audit "):
+                    t_path = line[6:].strip()
+                elif low.startswith("redteam "):
+                    t_path = line[8:].strip()
+                else:
+                    t_path = "."
+                self.execute_security_audit_command(t_path)
             elif low in ("quant", "volatility", "alpha"):
                 self.print_quant()
             elif low in ("safety", "gate"):

@@ -9,12 +9,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
-SKILLS_DIR = Path(str(Path.home() / ".agents"\skills")
-VAULT_DIR = Path(str(Path.home() / ".agents"\skills_vault")
-CATALOG_FILE = Path(str(Path.home() / ".agents"\skills_budget_catalog.json")
+SKILLS_DIR = Path.home() / ".agents" / "skills"
+VAULT_DIR = Path.home() / ".agents" / "skills_vault"
+CATALOG_FILE = Path.home() / ".agents" / "skills_budget_catalog.json"
 
 
 class SkillBudgetManager:

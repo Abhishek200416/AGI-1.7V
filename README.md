@@ -8,7 +8,7 @@
 [![External Plugins](https://img.shields.io/badge/External_Plugins-0_Needed_(All--in--One)-success.svg)](#-zero-external-plugins-mandate)
 [![Interface Surface](https://img.shields.io/badge/Interface-Pure_Terminal_CLI-informational.svg)](#-interactive-terminal-client)
 [![Universal API](https://img.shields.io/badge/API_Access-Universal_(Gemini%20%2F%20OpenAI)-orange.svg)](#-universal-api-key-setup)
-[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-93%2F93_Passing_(100%25)-success.svg)](tests/)
+[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-99%2F99_Passing_(100%25)-success.svg)](tests/)
 [![Safety Railings](https://img.shields.io/badge/Live_Broker_Gate-LOCKED_(Fail--Closed)-red.svg)](#-fail-closed-safety-railings)
 
 **IVA** is an institutional-grade, resource-aware multi-agent engineering partner and automated **Python CI-Repair** runtime led by **Iva** ([`IVA_README.md`](IVA_README.md)). Designed to operate as a sovereign intellectual partner rather than a passive chatbot, IVA combines persistent cognitive self-modeling, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.
@@ -338,7 +338,7 @@ When you run the installer or `setup_iva.py`, IVA executes an **orchestrated, in
 ================================================================================
   NEXT ACTION:
   [1] Launch Interactive Autonomous Terminal (Recommended) — python run_iva.py
-  [2] Run Autonomous Self-Verification Suite (93 Tests) — python run_iva.py test
+  [2] Run Autonomous Self-Verification Suite (99 Tests) — python run_iva.py test
   [3] Complete 6-Dimension System Match Report — python run_iva.py sysmatch
   [4] Exit to command prompt
 
@@ -536,6 +536,8 @@ Inside the `iva> ` prompt, you can run single-word administrative commands:
 | `keys` / `key` | API Credentials | Inspects active API keys and grounded models, or adds new provider keys (`key add ...`). |
 | `diff [target]` | Codebase Diff | Displays colorized unified git diff (green adds, red deletes) with session file tracking. |
 | `design` / `designs` | Frontier Design | Bespoke design engine (`new`, `import <git>`, `inspect`, `export`, `lint`, `build` living apps). |
+| `skills` / `skill [search\|import]` | Skills & MCPs | Dynamic organizer across 8 domains (UI/UX Pro Max, Playwright, Maestro, Git skill ingestion). |
+| `security` / `redteam [path]` | Cyber Security | Application Security Auditor & Fail-Closed Gate (OWASP Top 10 SAST, RCE, SQLi, XSS audit). |
 | `chat <prompt>` | Intelligence | Natural language reasoning, code synthesis, and architectural discussion. |
 | `yuvay` / `tui` / `ui` | Interactive TUI | Full interactive terminal menu interface with live telemetry, specialists, accounts, and specs. |
 | `harness` / `compare` | Harness Matrix | Displays comparative matrix: IVA vs Claude Code, OpenAI Codex, Antigravity, DeepSeek. |

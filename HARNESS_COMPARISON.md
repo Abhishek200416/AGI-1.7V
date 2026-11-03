@@ -210,6 +210,40 @@ While standard harnesses emit unstructured prose that rots immediately, IVA's Re
      - Presents 2–3 concrete technical alternatives with a **★ (Recommended)** default.
      - The operator selects with a single keystroke (`1`, `2`, `3`) or presses Enter to proceed with the recommended path.
 
+### 2.15 Autonomous Application Security Auditor & Red-Team Gatekeeper
+- **The Competitor Flaw**:
+  Mainstream harnesses generate code without verifying security vulnerabilities. Developers frequently discover that AI-generated code introduces critical security flaws: unescaped SQL string interpolation, raw `os.system` / `subprocess(shell=True)` calls, unvalidated file path reads (path traversal), unescaped `innerHTML` (XSS), and permissive CORS wildcards (`*`).
+- **The IVA Solution**:
+  IVA incorporates the [`ApplicationSecurityAuditor`](agents/IVA/engine/agi17/security/application_security_auditor.py):
+  1. **AST Static Application Security Testing (SAST)**:
+     - Parses Python AST for Command Injection (CWE-78), Code Execution (CWE-95: `eval`/`exec`), Insecure Deserialization (CWE-502: `pickle`), Path Traversal (CWE-22), and SQL/NoSQL Injection (CWE-89).
+     - Scans frontend JavaScript and HTML for XSS (CWE-79) and CORS misconfigurations (CWE-942).
+     - Scans all files for exposed secrets and API tokens (CWE-798).
+  2. **Pre-Production Fail-Closed Security Gatekeeper**:
+     - Automatically audits the target project before launch (`security audit [path]`).
+     - Computes a Security Posture Score (0–100%).
+     - **Strict Fail-Closed Enforcement**: If any CRITICAL or HIGH severity vulnerability exists, IVA **blocks production launch** until the vulnerability is patched.
+     - Synthesizes and applies verified defensive remediation diffs.
+
+### 2.16 Dynamic Multi-Domain Skill & MCP Ingestion Architecture
+- **The Competitor Flaw**:
+  Claude Code, Codex, and DeepSeek harnesses either have hardcoded static tool lists or require complex JSON configurations that bloat the prompt context. They cannot dynamically ingest external Git repositories containing specialized skills without manual integration.
+- **The IVA Solution**:
+  IVA incorporates the [`SkillOrganizer`](agents/IVA/engine/agi17/skills/skill_organizer.py):
+  1. **8 Categorized Functional Domains**:
+     - *Frontend & UI/UX Design*: `uiux-mcp`, `context7`
+     - *Web & Browser Automation*: `playwright`, `chrome-devtools-mcp`, `wdio-mcp`
+     - *DevOps, Shell & Cloud*: `filesystem`, `cloudrun`, `firebase-mcp-server`, `github`
+     - *Mobile & Devices*: `mobile-mcp`, `maestro`
+     - *Cognitive Reasoning*: `sequential-thinking`, `gsd`, `gonkarouter`
+     - *Code Intelligence*: `ponytail`, `codegraphcontext`, `gemini-api_gemini-api-docs`
+     - *Data Science & Analytics*: `dak-notebook`, `dak-viz`, `memory`, `arize-tracing`
+     - *Cyber Security & Defense*: `application_security_auditor`, `pre_production_gatekeeper`
+  2. **Dynamic Git & Local Ingestion (`skill import <path_or_git>`)**:
+     - Recursively scans any directory or cloned Git repo for `SKILL.md` manifests.
+     - Parses YAML metadata and catalogs thousands of skills into persistent SQLite storage.
+     - Sub-10ms instant keyword search across all tool operations (`skill search <query>`).
+
 ---
 
 ## 3. Real-World Capability Demonstration: NexusMeet 3D
