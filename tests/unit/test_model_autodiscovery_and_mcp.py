@@ -272,7 +272,7 @@ def run_invariant_check() -> bool:
         mock_resp_data = {
             "data": [
                 {"id": "deepseek-ai/deepseek-coder-6.7b-instruct", "object": "model"},
-                {"id": "nvidia/llama-3.1-nemotron-70b-instruct", "object": "model"},
+                {"id": "nvidia/nemotron-3.5-bolt-e4b", "object": "model"},
                 {"id": "01-ai/yi-large", "object": "model"},
             ]
         }
@@ -286,7 +286,7 @@ def run_invariant_check() -> bool:
                 api_key="nvapi-MOCK_NVIDIA_KEY_12345",
                 provider_type="nvidia",
             )
-            self.assertEqual(provider.model_name, "nvidia/llama-3.1-nemotron-70b-instruct")
+            self.assertEqual(provider.model_name, "nvidia/nemotron-3.5-bolt-e4b")
             self.assertEqual(provider.base_url, "https://integrate.api.nvidia.com/v1")
 
 

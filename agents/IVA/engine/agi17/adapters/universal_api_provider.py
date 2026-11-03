@@ -446,6 +446,9 @@ class UniversalAPIProvider(BaseModelProvider):
                 "gemini-1.5-flash-8b",
             ],
             "nvidia": [
+                "nvidia/nemotron-3.5-bolt-e4b",
+                "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+                "nvidia/nemotron-3.5-lightning-30b-a3b",
                 "nvidia/llama-3.1-nemotron-70b-instruct",
                 "mistralai/mistral-large-2-instruct",
                 "deepseek-ai/deepseek-coder-6.7b-instruct",
