@@ -244,12 +244,25 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 active_prov = prov
 
                 if models:
-                    print(f"\n  📋 Available Remote Models for your {prov.upper()} API Key:")
+                    print(f"\n  📋 All {len(models)} Available Remote Models for your {prov.upper()} API Key:")
                     pref_order = [
                         "nvidia/llama-3.1-nemotron-70b-instruct",
-                        "mistralai/mistral-large-2-instruct",
+                        "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+                        "nvidia/nemotron-3-super-120b-a12b",
+                        "nvidia/nemotron-3-ultra-550b-a55b",
+                        "nvidia/nemotron-4-340b-instruct",
+                        "nvidia/llama-3.1-nemotron-51b-instruct",
+                        "openai/gpt-oss-20b",
+                        "deepseek-ai/deepseek-v4.1-flash",
                         "deepseek-ai/deepseek-coder-6.7b-instruct",
+                        "mistralai/mistral-large-2-instruct",
+                        "mistralai/mistral-large-4-1t-a52b",
                         "meta/llama-3.2-11b-vision-instruct",
+                        "meta/llama-3.2-90b-vision-instruct",
+                        "writer/palmyra-creative-122b",
+                        "writer/palmyra-fin-70b-32k",
+                        "writer/palmyra-med-70b-32k",
+                        "moonshotai/kimi-k2.6",
                         "gemini-2.5-flash",
                         "claude-3-5-sonnet-20241022",
                         "gpt-4o",
@@ -261,25 +274,28 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                         "claude-3-5-haiku-20241022",
                     ]
                     sorted_models: List[str] = []
+                    # First add preferred models in order
                     for pref in pref_order:
                         for m in models:
                             if (m == pref or m.startswith(pref)) and m not in sorted_models:
                                 sorted_models.append(m)
-                    for m in models:
-                        if m not in sorted_models and len(sorted_models) < 12:
-                            sorted_models.append(m)
+                    # Then append ALL remaining models sorted alphabetically
+                    remaining = sorted([m for m in models if m not in sorted_models])
+                    sorted_models.extend(remaining)
 
                     for idx, m_id in enumerate(sorted_models, 1):
                         rec_tag = " (Recommended)" if idx == 1 else ""
-                        print(f"     [{idx}] {m_id}{rec_tag}")
-                    print(f"     [C] Custom model identifier override")
+                        print(f"     [{idx:2d}] {m_id}{rec_tag}")
+                    print(f"     [ C] Custom model identifier override")
 
                     try:
-                        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, default: 1]: ").strip()
+                        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, model name, or Enter for 1]: ").strip()
                     except (KeyboardInterrupt, EOFError):
                         m_choice = "1"
 
-                    if m_choice.lower() == "c":
+                    if not m_choice:
+                        selected_model = sorted_models[0]
+                    elif m_choice.lower() == "c":
                         try:
                             custom_m = input("  Enter custom model name: ").strip()
                         except (KeyboardInterrupt, EOFError):
@@ -288,7 +304,22 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                     elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_models):
                         selected_model = sorted_models[int(m_choice) - 1]
                     else:
-                        selected_model = sorted_models[0]
+                        # Match by keyword or partial name
+                        matched = None
+                        for sm in sorted_models:
+                            if m_choice.lower() == sm.lower():
+                                matched = sm
+                                break
+                        if not matched:
+                            for sm in sorted_models:
+                                if m_choice.lower() in sm.lower():
+                                    matched = sm
+                                    break
+                        if matched:
+                            selected_model = matched
+                            print(f"  🎯 Selected: {selected_model}")
+                        else:
+                            selected_model = m_choice
                 else:
                     selected_model = "nvidia/llama-3.1-nemotron-70b-instruct" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
 

@@ -373,12 +373,10 @@ class TerminalClient:
             print(f"   • Zero User Prompting   : {green('Active (Zero friction, no manual selection required)')}")
             print(f"   • Available Models Count: {yellow(str(len(models)))}")
             if models:
-                print("\n   " + bold("Discovered Remote Models:"))
-                for m in models[:12]:
+                print("\n   " + bold(f"Discovered Remote Models ({len(models)} Total):"))
+                for idx, m in enumerate(models, 1):
                     marker = green("▶ (ACTIVE)") if m == active_m else dim("•")
-                    print(f"     {marker} {m}")
-                if len(models) > 12:
-                    print(dim(f"     ... and {len(models) - 12} additional models available."))
+                    print(f"     [{idx:2d}] {marker} {m}")
             else:
                 print(dim("   (Provider models list cached or endpoint returned default catalog)"))
         else:
