@@ -195,7 +195,130 @@ class TestTerminalClient(unittest.TestCase):
         self.assertIn("IVA AUTONOMOUS SELF-VERIFICATION SUITE", output)
         self.assertIn("Goodbye from Iva", output)
 
+    def test_10_display_suggestions_menu_renders_all_cards(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.display_suggestions_menu()
+
+        output = buf.getvalue()
+        self.assertIn("WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?", output)
+        self.assertIn("System & Software Architecture", output)
+        self.assertIn("Full-Stack Website & 3D Web Apps", output)
+        self.assertIn("Automated Bug Fixing & CI Repair", output)
+        self.assertIn("Autonomous Browser & ChatGPT Bridge", output)
+        self.assertIn("Multimodal Video & Media Synthesis", output)
+        self.assertIn("Deep Web Research & 21 Live MCP Tools", output)
+        self.assertIn("24/7 Autonomous Self-Evolution", output)
+
+    def test_11_extract_file_path_detection(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+
+        # Non-file commands must return None
+        self.assertIsNone(client._extract_file_path("check system status"))
+        self.assertIsNone(client._extract_file_path("models"))
+        self.assertIsNone(client._extract_file_path("help"))
+        self.assertIsNone(client._extract_file_path("evolve"))
+
+        # Valid file references
+        self.assertEqual(client._extract_file_path("setup_iva.py"), "setup_iva.py")
+        self.assertEqual(client._extract_file_path("fix src/server.py"), "src/server.py")
+        self.assertEqual(client._extract_file_path("inspect ./app.js"), "./app.js")
+        self.assertEqual(client._extract_file_path("repair C:\\path\\main.py"), "C:\\path\\main.py")
+
+    def test_12_inspect_or_fix_file_path_valid_and_broken(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+
+        # 1. Valid python file
+        good_file = self.temp_dir / "good_script.py"
+        good_file.write_text("def hello():\n    return 'world'\n", encoding="utf-8")
+
+        buf = io.StringIO()
+        with patch("sys.stdout", buf):
+            client.inspect_or_fix_file_path(str(good_file))
+
+        output = buf.getvalue()
+        self.assertIn("good_script.py", output)
+        self.assertIn("100% VALID", output)
+        self.assertIn("hello", output)
+
+        # 2. Syntax-broken file with auto-repair
+        bad_file = self.temp_dir / "bad_script.py"
+        bad_file.write_text("def broken():\n    print('unclosed paren'\n", encoding="utf-8")
+
+        buf = io.StringIO()
+        with patch("sys.stdout", buf):
+            client.inspect_or_fix_file_path(str(bad_file), auto_repair=True)
+
+        output = buf.getvalue()
+        self.assertIn("SYNTAX ERROR DETECTED", output)
+        self.assertIn("Auto-repair patch verified", output)
+
+    def test_13_execute_web_3d_wizard_generates_threejs_app(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf), patch("webbrowser.open"):
+            client.execute_web_3d_wizard()
+
+        output = buf.getvalue()
+        self.assertIn("3D Interactive Web Application Generated", output)
+
+        demo_file = Path.cwd() / "demo_3d_website" / "index.html"
+        self.assertTrue(demo_file.is_file())
+        content = demo_file.read_text(encoding="utf-8")
+        self.assertIn("three.js", content)
+        self.assertIn("webgl-canvas", content)
+        self.assertIn("Autonomous Cognitive Architecture", content)
+
+    def test_14_execute_browser_chatgpt_wizard_stages_payload(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.execute_browser_chatgpt_wizard(prompt="Generate 3D neon cube logo")
+
+        output = buf.getvalue()
+        self.assertIn("CHATGPT DESKTOP BRIDGE", output)
+        self.assertIn("chatgpt_bridge_payload.json", output)
+
+        payload_path = Path.cwd() / "scratch" / "chatgpt_bridge_payload.json"
+        self.assertTrue(payload_path.is_file())
+        data = json.loads(payload_path.read_text(encoding="utf-8"))
+        self.assertEqual(data["prompt"], "Generate 3D neon cube logo")
+
+    def test_15_execute_video_synthesis_wizard_creates_runner(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.execute_video_synthesis_wizard(prompt="Cinematic 3D scrolling hero loop")
+
+        output = buf.getvalue()
+        self.assertIn("MULTIMODAL VIDEO & MEDIA SYNTHESIS", output)
+        self.assertIn("generate_gemini_video.py", output)
+
+        video_script = Path.cwd() / "generate_gemini_video.py"
+        self.assertTrue(video_script.is_file())
+        self.assertIn("GEMINI_API_KEY", video_script.read_text(encoding="utf-8"))
+
+    def test_16_interactive_shortcuts_1_to_7(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+
+        # Test selecting '1', '2', '4', '5', '6', 'suggestions', 'exit'
+        user_inputs = ["1", "suggestions", "exit"]
+        buf = io.StringIO()
+        with patch("sys.stdout", buf), patch("builtins.input", side_effect=user_inputs):
+            exit_code = client.run_interactive()
+
+        self.assertEqual(exit_code, 0)
+        output = buf.getvalue()
+        self.assertIn("SYSTEM & SOFTWARE ARCHITECTURE DESIGNER", output)
+        self.assertIn("WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?", output)
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

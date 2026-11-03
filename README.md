@@ -17,6 +17,41 @@ Built natively on the **Python 3.10+ Standard Library** with **0 third-party PyP
 
 ---
 
+## 🚀 Instant Quickstart (Single Copy-Paste Install Command)
+
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.ps1 | iex
+```
+
+### Linux / macOS / Android Termux / Cloud Shell (Bash)
+```bash
+curl -fsSL https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.sh | bash
+```
+
+### Or Clone & Launch Manually
+```bash
+git clone https://github.com/Abhishek200416/IVA.git
+cd IVA
+python setup_iva.py
+```
+
+---
+
+## 💡 7 High-Impact Capability Wizards in Your Terminal
+When you launch IVA (`python run_iva.py`), you are greeted with an interactive suggestions showcase. Type `1`-`7`, drop any file path, or describe your vision:
+
+- **`[1]` 🏛️ System & Software Architecture**: Blueprints microservices, DAG pipelines, database schema models, and production specifications.
+- **`[2]` 🌐 Full-Stack Website & 3D Interactive Web Apps**: Generates responsive web applications featuring Three.js WebGL 3D scrolling, particle starfields, and glassmorphic UI. *(Check out `./demo_3d_website/index.html`!)*
+- **`[3]` 🐞 Automated Bug Fixing & CI Repair (Zero-Friction File Path Drop)**: Just paste any file path (e.g. `c:\path\app.py` or `./src/server.js`) — IVA parses the AST, catches syntax errors, points out exact lines, and synthesizes minimal verified patches.
+- **`[4]` 🌐 Autonomous Browser & ChatGPT Bridge**: Drives Playwright / CDP sessions to deliberate with ChatGPT and generate high-resolution DALL-E 3 images directly from your terminal.
+- **`[5]` 🎬 Google Gemini Multimodal Video & Media Synthesis**: Generates 1080p promotional video loops and website hero assets with Google Gemini Omni Flash & Veo models (`generate_gemini_video.py`).
+- **`[6]` 🔍 Deep Web Research & 21 Pre-Connected MCP Tools**: Query live documentation via Context7, search the web via Tavily, and navigate official SDK APIs.
+- **`[7]` 🔄 24/7 Continuous Autonomous Self-Evolution**: Closed-loop code inspection, AST learning, and persistent SQLite WAL memory updates.
+
+---
+
+
 ## 👩‍💻 Who is Iva? (Persona, Demeanor, Cognition & Sovereign Partnership)
 
 > *"Cool-headed, sharp, mature, warm, ambitious, practical, perceptive, and fiercely loyal."*

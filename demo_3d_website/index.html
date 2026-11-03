@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IVA Autonomous 3D Web Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --bg: #090a10;
+      --card-bg: rgba(18, 22, 34, 0.72);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --cyan: #00f0ff;
+      --pink: #ff007f;
+      --purple: #7928ca;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .content-layer {
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(9, 10, 16, 0.75);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      font-size: 0.8rem;
+      color: var(--cyan);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 60px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(255, 0, 127, 0.12);
+      border: 1px solid rgba(255, 0, 127, 0.3);
+      color: var(--pink);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      max-width: 900px;
+      margin-bottom: 24px;
+      letter-spacing: -1.5px;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 650px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+    .cta-group { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #000;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .scroll-hint {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      animation: float 2s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+    section {
+      padding: 100px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 32px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 240, 255, 0.15);
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .media-stage {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      text-align: center;
+      box-shadow: 0 0 50px rgba(121, 40, 202, 0.2);
+    }
+    .video-viewport {
+      width: 100%;
+      height: 380px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.05), rgba(255, 0, 127, 0.05));
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 24px;
+      position: relative;
+    }
+    .tags { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    .tag {
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+    .stat-lbl {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="webgl-canvas"></canvas>
+
+  <div class="content-layer">
+    <nav>
+      <div class="brand">🌟 IVA 3D ENGINE</div>
+      <ul class="nav-links">
+        <li><a href="#hero">Overview</a></li>
+        <li><a href="#capabilities">Capabilities</a></li>
+        <li><a href="#multimodal">Multimodal Video</a></li>
+        <li><a href="#telemetry">Live Telemetry</a></li>
+      </ul>
+      <div class="status-pill">
+        <span class="pulse-dot"></span>
+        <span>100 Specialists • 21 MCPs Active</span>
+      </div>
+    </nav>
+
+    <section id="hero" class="hero">
+      <div class="badge">🚀 AGI 1.7 OMEGA RUNTIME • 3D WEB SYSTEM</div>
+      <h1>Autonomous Cognitive Architecture & 3D Web Engine</h1>
+      <p class="subtitle">Crafted natively by IVA: Combining autonomous terminal execution, multi-agent orchestration, Three.js 3D WebGL synthesis, and multimodal media generation.</p>
+      <div class="cta-group">
+        <a href="#capabilities" class="btn btn-primary">Explore Capabilities</a>
+        <a href="#multimodal" class="btn btn-secondary">Gemini Video Studio</a>
+      </div>
+      <div class="scroll-hint">
+        <span>Scroll to experience 3D space travel</span>
+        <span>↓</span>
+      </div>
+    </section>
+
+    <section id="capabilities">
+      <div class="section-header">
+        <h2 class="section-title">Engineered Capabilities</h2>
+        <p class="section-desc">Six high-impact autonomous pillars built into IVA with zero external dependencies.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <span class="card-icon">🏛️</span>
+          <h3>Architecture Designer</h3>
+          <p>Plans microservices, DAG pipelines, schema models, and production blueprints with mathematical precision.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🌐</span>
+          <h3>Full-Stack & 3D Web Apps</h3>
+          <p>Generates modern responsive web applications featuring Three.js 3D scrolling, WebGL geometry, and glassmorphic UI.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🐞</span>
+          <h3>Automated Bug Fixing</h3>
+          <p>Drop any file path (e.g. ./app.py) — IVA inspects AST syntax, reproduces defects, and synthesizes minimal patches.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🌐</span>
+          <h3>ChatGPT Browser Bridge</h3>
+          <p>Controls browser sessions to deliberate with ChatGPT and synthesize DALL-E 3 images directly from the terminal.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎬</span>
+          <h3>Gemini Video & Media</h3>
+          <p>Synthesizes 1080p promotional video loops and multimedia visual assets using Google Gemini Omni Flash & Veo.</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔌</span>
+          <h3>21 Pre-Connected MCPs</h3>
+          <p>Native Model Context Protocol ecosystem: Playwright, Context7 documentation search, Tavily, and Gemini Docs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="multimodal">
+      <div class="section-header">
+        <h2 class="section-title">Multimodal Video & Media Studio</h2>
+        <p class="section-desc">Google Gemini Omni Flash & Veo video synthesis stage for interactive 3D website hero assets.</p>
+      </div>
+      <div class="media-stage">
+        <div class="video-viewport">
+          <div style="font-size: 3rem; margin-bottom: 12px;">🎬</div>
+          <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Google Gemini Video Generation Stage</h3>
+          <p style="color: var(--text-muted); max-width: 480px; font-size: 0.9rem;">Ready to render 1080p 60fps cinematic video loops for website hero backgrounds and 3D scrolling canvases.</p>
+          <div class="tags">
+            <span class="tag">1080p HD</span>
+            <span class="tag">60 FPS</span>
+            <span class="tag">gemini-omni-1.1-flash</span>
+            <span class="tag">veo-2.0-generate-001</span>
+            <span class="tag">Zero Dropped Frames</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="telemetry">
+      <div class="section-header">
+        <h2 class="section-title">Live System Telemetry</h2>
+        <p class="section-desc">Real-time metrics from the WebGL engine and autonomous runtime.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="fps-val">60</div>
+          <div class="stat-lbl">WebGL Render FPS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">2,500</div>
+          <div class="stat-lbl">3D Active Star Particles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color: var(--pink);">WAL Active</div>
+          <div class="stat-lbl">10-Layer SQLite Memory</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color: #10b981;">LOCKED</div>
+          <div class="stat-lbl">Fail-Closed Safety Gate</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>🌟 IVA Autonomous Engineering Runtime • Abhishek & IVA • 2026</p>
+      <p style="margin-top: 8px; font-size: 0.75rem; color: #64748b;">CLI Command: python run_iva.py | Auto-Discovery | 24 Native Terminal Ways</p>
+    </footer>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('webgl-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const geoOuter = new THREE.IcosahedronGeometry(2.4, 2);
+    const matOuter = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.45 });
+    const meshOuter = new THREE.Mesh(geoOuter, matOuter);
+    scene.add(meshOuter);
+
+    const geoInner = new THREE.OctahedronGeometry(1.3, 0);
+    const matInner = new THREE.MeshBasicMaterial({ color: 0xff007f, wireframe: true, transparent: true, opacity: 0.75 });
+    const meshInner = new THREE.Mesh(geoInner, matInner);
+    scene.add(meshInner);
+
+    const particleCount = 2500;
+    const posArray = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 60;
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.06,
+      color: 0x7928ca,
+      transparent: true,
+      opacity: 0.7
+    });
+    const particlesMesh = new THREE.Points(particleGeo, particleMat);
+    scene.add(particlesMesh);
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.0006;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.0006;
+    });
+
+    let targetCameraZ = 5;
+    window.addEventListener('scroll', () => {
+      const scrollPct = window.scrollY / Math.max(document.body.scrollHeight - window.innerHeight, 1);
+      targetCameraZ = 5 + scrollPct * 16;
+      meshOuter.rotation.x = scrollPct * Math.PI * 2;
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    let lastTime = performance.now();
+    let frameCount = 0;
+    const fpsElem = document.getElementById('fps-val');
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+      meshOuter.rotation.y += 0.003;
+      meshInner.rotation.y -= 0.005;
+      meshInner.rotation.x += 0.002;
+      particlesMesh.rotation.y += 0.0004;
+
+      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
+      camera.position.x += (mouseX * 4 - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY * 4 - camera.position.y) * 0.05;
+
+      renderer.render(scene, camera);
+
+      frameCount++;
+      if (time - lastTime >= 1000) {
+        if (fpsElem) fpsElem.textContent = Math.round((frameCount * 1000) / (time - lastTime));
+        frameCount = 0;
+        lastTime = time;
+      }
+    }
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

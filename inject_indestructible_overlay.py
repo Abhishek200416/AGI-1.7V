@@ -1,5 +1,5 @@
 import json, time, base64, urllib.request
-from agents.AGI_1_7.engine.agi17.browser.cdp_universal_mouse import _cdp_ws_send_and_recv
+from agents.IVA.engine.agi17.browser.cdp_universal_mouse import _cdp_ws_send_and_recv
 
 CONSCIOUS_OVERLAY_JS = r"""
 (function() {

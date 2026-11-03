@@ -33,7 +33,7 @@ NEWS_FILE = REPO_ROOT / "alexa_newspaper_intelligence.json"
 TV_STATE_FILE = REPO_ROOT / "scratch" / "tradingview_macro_state.json"
 
 try:
-    from agents.AGI_1_7.engine.agi17.finance.tradingview_macro_harvester import harvest_tradingview_macro_quotes
+    from agents.IVA.engine.agi17.finance.tradingview_macro_harvester import harvest_tradingview_macro_quotes
 except Exception:
     harvest_tradingview_macro_quotes = None
 
