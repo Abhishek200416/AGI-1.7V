@@ -36,6 +36,26 @@ cd IVA
 python setup_iva.py
 ```
 
+### 🔄 Already Installed? Update to Latest Version in 1 Step (Zero Re-cloning)
+If you already cloned or installed IVA previously, **you DO NOT need to re-clone or lose your files**. Your `.env` credentials and cognitive SQLite WAL memory are automatically safeguarded:
+
+- **Inside the IVA Terminal**: Type `update` at the prompt:
+  ```text
+  iva> update
+  ```
+- **From Terminal / Command Prompt**:
+  ```bash
+  python run_iva.py update
+  ```
+- **Via Git**:
+  ```bash
+  git pull origin main
+  python setup_iva.py
+  ```
+- **Via Single-Line Installer**: Re-running the installer automatically detects your existing installation and pulls the latest updates:
+  - Windows: `irm https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.ps1 | iex`
+  - Linux / macOS / Termux: `curl -fsSL https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.sh | bash`
+
 ---
 
 ## 💡 7 High-Impact Capability Wizards in Your Terminal

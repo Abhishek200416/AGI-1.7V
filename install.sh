@@ -45,12 +45,15 @@ if [ ! -f "setup_iva.py" ] || [ ! -f "run_iva.py" ]; then
         echo -e "\033[1;36m📦 Cloning IVA repository from GitHub...\033[0m"
         git clone https://github.com/Abhishek200416/IVA.git "$TARGET_DIR"
     else
-        echo -e "\033[1;36m📦 Existing IVA directory found. Fetching latest updates...\033[0m"
+        echo -e "\033[1;36m📦 Existing IVA directory found. Fetching latest updates from GitHub...\033[0m"
         cd "$TARGET_DIR"
         git pull origin main || true
         cd ..
     fi
     cd "$TARGET_DIR"
+else
+    echo -e "\033[1;36m📦 Inside existing IVA repository. Pulling latest updates from GitHub...\033[0m"
+    git pull origin main || true
 fi
 
 # 4. Launch Orchestrated Step-by-Step Interactive Setup

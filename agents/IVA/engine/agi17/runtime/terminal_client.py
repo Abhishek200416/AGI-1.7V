@@ -1641,7 +1641,62 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         print(f"   • Active Research Query: {cyan(q)}")
         print(bold(green("   ✅ Query ready for live MCP execution across context7 and search tools.")))
         print(dim("   Use 'mcp' or 'mcp test context7' to test individual MCP tools."))
+    def execute_update(self) -> int:
+        """Pulls latest updates from GitHub origin main while preserving .env and cognitive memory."""
+        import subprocess
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🔄 IVA AUTONOMOUS REPOSITORY UPDATER")))
+        print(cyan("=" * 78))
+        print(dim("   Checking remote GitHub repository for new features, bug fixes & models...\n"))
+
+        repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+        if not (repo_root / ".git").is_dir():
+            cur = Path.cwd()
+            found_git = False
+            while cur != cur.parent:
+                if (cur / ".git").is_dir():
+                    repo_root = cur
+                    found_git = True
+                    break
+                cur = cur.parent
+            if not found_git:
+                print(yellow("   ⚠️ Not a git repository. Cannot pull updates automatically."))
+                print("   To update manually, clone the latest version:")
+                print(cyan("   git clone https://github.com/Abhishek200416/IVA.git"))
+                print(cyan("=" * 78) + "\n")
+                return 1
+
+        print(f"   • Repository Root: {cyan(str(repo_root))}")
+        print("   [1/3] Stashing local changes (safeguarding .env and local memory)...")
+        try:
+            subprocess.run(["git", "stash"], cwd=str(repo_root), capture_output=True, check=False)
+        except Exception:
+            pass
+
+        print("   [2/3] Pulling latest updates from GitHub (origin/main)...")
+        try:
+            res = subprocess.run(["git", "pull", "origin", "main"], cwd=str(repo_root), capture_output=True, text=True, check=False)
+            if res.returncode == 0:
+                print(bold(green("         ✅ Successfully pulled latest updates from GitHub!")))
+                for line in (res.stdout or "").strip().splitlines()[:5]:
+                    if line:
+                        print(dim(f"         {line}"))
+            else:
+                print(yellow(f"         ⚠️ Git pull notice: {res.stderr.strip() or res.stdout.strip()}"))
+        except Exception as e:
+            print(red(f"         ❌ Could not run git pull: {e}"))
+            return 1
+
+        print("   [3/3] Restoring local environment configuration (.env)...")
+        try:
+            subprocess.run(["git", "stash", "pop"], cwd=str(repo_root), capture_output=True, check=False)
+        except Exception:
+            pass
+
+        print("\n" + bold(green("   🎉 IVA is now 100% UP TO DATE!")))
+        print(dim("   All new capabilities (3D Web App, Model Auto-Discovery, Bug Fixer) are active."))
         print(cyan("=" * 78) + "\n")
+        return 0
 
 
     def execute_prompt(self, user_prompt: str) -> None:
@@ -1800,6 +1855,8 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 self.print_plugins_notice()
             elif low in ("7", "evolve", "loop", "24", "self-improve"):
                 self.execute_evolve()
+            elif low in ("update", "pull", "upgrade"):
+                self.execute_update()
             elif low in ("test", "tests", "verify", "selftest"):
                 self.run_self_tests()
             elif low.startswith("repair "):

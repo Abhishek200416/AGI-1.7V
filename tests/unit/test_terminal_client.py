@@ -318,7 +318,26 @@ class TestTerminalClient(unittest.TestCase):
         self.assertIn("WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?", output)
 
 
+    def test_17_execute_update(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        mock_completed = MagicMock()
+        mock_completed.returncode = 0
+        mock_completed.stdout = "Already up to date."
+        mock_completed.stderr = ""
+
+        with patch("sys.stdout", buf), patch("subprocess.run", return_value=mock_completed):
+            code = client.execute_update()
+
+        self.assertEqual(code, 0)
+        output = buf.getvalue()
+        self.assertIn("IVA AUTONOMOUS REPOSITORY UPDATER", output)
+        self.assertIn("IVA is now 100% UP TO DATE", output)
+
+
 if __name__ == "__main__":
     unittest.main()
+
 
 

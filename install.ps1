@@ -47,15 +47,18 @@ if ((Test-Path "setup_iva.py") -and (Test-Path "run_iva.py")) {
     $inRepo = $true
 }
 
-if (-not $inRepo) {
+if ($inRepo) {
+    Write-Host "📦 Inside existing IVA repository. Pulling latest updates from GitHub..." -ForegroundColor Cyan
+    try { git pull origin main } catch { Write-Host "⚠️ Notice: git pull completed with warnings." -ForegroundColor Yellow }
+} else {
     $targetDir = "IVA"
     if (-not (Test-Path $targetDir)) {
         Write-Host "📦 Cloning IVA repository from GitHub..." -ForegroundColor Cyan
         git clone https://github.com/Abhishek200416/IVA.git $targetDir
     } else {
-        Write-Host "📦 Existing IVA directory found. Fetching latest updates..." -ForegroundColor Cyan
+        Write-Host "📦 Existing IVA directory found. Fetching latest updates from GitHub..." -ForegroundColor Cyan
         Push-Location $targetDir
-        try { git pull origin main } catch {}
+        try { git pull origin main } catch { Write-Host "⚠️ Notice: git pull completed with warnings." -ForegroundColor Yellow }
         Pop-Location
     }
     Set-Location $targetDir

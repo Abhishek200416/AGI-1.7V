@@ -409,6 +409,8 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd_low in ("profile", "hardware"):
             tc.print_profile()
             return 0
+        elif cmd_low in ("update", "pull", "upgrade"):
+            return tc.execute_update()
         elif cmd_low in ("test", "tests", "verify", "selftest"):
             return tc.run_self_tests()
         elif cmd_low in ("help", "?"):
