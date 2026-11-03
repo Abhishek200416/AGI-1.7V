@@ -159,53 +159,116 @@ When evaluated on the four standard real-world engineering benchmarks, IVA's con
 
 ---
 
-## 🚀 Quickstart: 60 Seconds to First Run
+## ⚡ Single Copy-Paste Installation (One Command)
 
-Get IVA running on your local machine, server, or container in four simple steps:
+Install, verify, and launch IVA on any device (Windows, Linux, macOS, Android Termux, Raspberry Pi, Docker) with a **single copy-paste command**:
 
-### 1. Clone the Repository
+### 🪟 Windows PowerShell (Copy & Paste):
+```powershell
+irm https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.ps1 | iex
+```
+*Or via Git Clone:*
+```powershell
+git clone https://github.com/Abhishek200416/IVA.git; cd IVA; py -3 setup_iva.py
+```
+
+### 🐧 Linux / macOS / Android Termux / WSL (Copy & Paste):
 ```bash
-git clone https://github.com/Abhishek200416/IVA.git
-cd IVA
+curl -fsSL https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.sh | bash
 ```
-
-### 2. Run Autonomous Setup
-Run the self-contained setup script. It automatically validates your Python runtime, creates your `.env` configuration file, and prepares your local persistent memory directory (`~/.iva/memory/`):
+*Or via Git Clone:*
 ```bash
-python setup_iva.py
+git clone https://github.com/Abhishek200416/IVA.git && cd IVA && python3 setup_iva.py
 ```
 
-### 3. Add Your Universal API Key
-Open the generated `.env` file and insert your API key:
-```env
-# Free Google Gemini API Key (https://aistudio.google.com/app/apikey)
-GEMINI_API_KEY="AIzaSyYourSecretKeyHere"
-```
-*(Alternatively, export it in your shell: `export GEMINI_API_KEY="AIzaSy..."` or pass it via CLI: `python run_iva.py --api-key "AIzaSy..."`)*
+---
 
-### 4. Launch IVA in Your Terminal
-```bash
-python run_iva.py
-```
-*You will immediately be greeted by Iva's interactive terminal REPL:*
+## 🎼 The Orchestrated Step-by-Step Installation Experience
+
+When you run the installer or `setup_iva.py`, IVA executes an **orchestrated, interactive step-by-step onboarding pipeline**:
+
 ```text
-==============================================================================
-   🌟 IVA — Autonomous Cognitive Engineering Partner & Terminal Runtime
-==============================================================================
-   "Cool-headed, sharp, mature, warm, ambitious, practical, and fiercely loyal."
-------------------------------------------------------------------------------
-   • Device / Platform    : Windows AMD64 (Python 3.12.13)
-   • Interface Surface   : Pure Terminal CLI (Zero GUI / Zero Voice Popups)
-   • Built-in Specialists: 100 embedded across 16 families (All-in-One)
-   • External Plugins   : 0 Required (Ponytail, Agency, Yux Pro Max — NOT needed)
-   • Active LLM Engine   : Google Gemini Direct API [gemini-3.8-flash-high]
-   • Physical Safety     : LOCKED (Fail-Closed)
-==============================================================================
-   Commands: help | specialists | plugins | status | profile | test | clear | exit
-   Or type any natural language prompt, question, or engineering task below.
-==============================================================================
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                     IVA ORCHESTRATED STEP-BY-STEP ONBOARDING                    │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  [1/6] Python Runtime Audit       : Validates Python 3.10+ (0 pip packages needed)│
+│  [2/6] API Key & Model Onboarding :                                             │
+│        • Prompts to paste your API Key (Gemini, OpenAI, Anthropic, Groq, etc.)  │
+│        • Instantly verifies key authenticity live with the remote provider       │
+│        • Fetches all available remote models under your key                      │
+│        • Presents a numbered model selector & saves selection to .env            │
+│  [3/6] Persistent Memory Setup    : Provisions 10-layer SQLite WAL database     │
+│  [4/6] Specialist & MCP Tooling   : Validates 100 specialists & 21 MCP servers  │
+│  [5/6] 6-Dimension System Match   : Verifies 100% cross-platform compatibility   │
+│  [6/6] Safety Boundary Invariants : Locks live broker order dispatch (Fail-Closed)│
+│  [🚀]  Direct Terminal Launch     : Seamlessly transitions into interactive CLI  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
 
-iva> 
+### Live Setup Walkthrough
+
+```text
+================================================================================
+   *  IVA — AUTONOMOUS COGNITIVE PARTNER & ENGINEERING RUNTIME SETUP
+================================================================================
+   "Cool-headed, sharp, mature, warm, ambitious, practical, and fiercely loyal."
+================================================================================
+
+[1/6] Checking Python Runtime...
+  ✅ Python 3.14.2 (Windows AMD64) verified.
+
+[2/6] Configuring API Key & Intelligent Model Target...
+  ══════════════════════════════════════════════════════════════════════════
+  🔑 UNIVERSAL API KEY ONBOARDING
+  ══════════════════════════════════════════════════════════════════════════
+  Paste your API key below to enable autonomous model intelligence.
+  Supported providers: Google Gemini, OpenAI, Anthropic, Groq, DeepSeek.
+  👉 Free Google Gemini Key (Instant in 10s): https://aistudio.google.com/app/apikey
+  (Press Enter without key to continue in offline test mode)
+  ══════════════════════════════════════════════════════════════════════════
+  Paste your API Key: AIzaSyD...
+
+  ⏳ Verifying API key with GEMINI endpoint...
+  ✅ API Key verified successfully! Connection confirmed with GEMINI.
+
+  📋 Available Remote Models for your GEMINI API Key:
+     [1] gemini-2.5-flash (Recommended)
+     [2] gemini-2.5-pro
+     [3] gemini-2.0-flash
+     [4] gemini-1.5-pro
+     [C] Custom model identifier override
+
+  Select active model target [1-4, default: 1]: 1
+  ✅ Active Model Target set to: gemini-2.5-flash
+  💾 Saved verified credentials and active model to .env
+
+[3/6] Provisioning Persistent Cognitive Memory (omega_memory.db)...
+  ✅ SQLite WAL memory active at: ~/.iva/memory/omega_memory.db
+  ✅ Memory schema verified (10 layers active, 765 stored entries).
+
+[4/6] Verifying 100-Specialist Ecosystem & 21-MCP Tool Registry...
+  ✅ Verified 100 specialist contracts active across 16 capability families.
+  ✅ Verified 21 embedded Model Context Protocol (MCP) servers (pre-installed).
+
+[5/6] Verifying Complete 6-Dimension System Match Matrix...
+  ✅ Complete System Match: 100% MATCHED & FULLY COMPATIBLE (6/6 Dimensions)
+
+[6/6] Auditing Physical Safety Invariants...
+  🔒 Physical Live Order Safety Gate: LOCKED (Safe Fail-Closed).
+
+================================================================================
+  🚀 IVA SETUP COMPLETE & FULLY OPERATIONAL ON YOUR SYSTEM!
+================================================================================
+  NEXT ACTION:
+  [1] Launch Interactive Autonomous Terminal (Recommended) — python run_iva.py
+  [2] Run Autonomous Self-Verification Suite (55 Tests) — python run_iva.py test
+  [3] Complete 6-Dimension System Match Report — python run_iva.py sysmatch
+  [4] Exit to command prompt
+
+  Select next action [1-4, default: 1]: 1
+
+  🚀 Launching IVA Interactive Autonomous Terminal...
+  iva> 
 ```
 
 ---

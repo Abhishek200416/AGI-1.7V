@@ -192,5 +192,51 @@ def run_invariant_check() -> bool:
         self.assertIn("IVA AUTONOMOUS ENGINEERING PARTNER", output)
 
 
+    def test_08_verify_and_fetch_models_gemini_success(self) -> None:
+        mock_resp_data = {
+            "models": [
+                {"name": "models/gemini-2.5-flash", "supportedGenerationMethods": ["generateContent"]},
+                {"name": "models/gemini-2.5-pro", "supportedGenerationMethods": ["generateContent"]},
+            ]
+        }
+        mock_resp = MagicMock()
+        mock_resp.status = 200
+        mock_resp.read.return_value = json.dumps(mock_resp_data).encode("utf-8")
+        mock_resp.__enter__.return_value = mock_resp
+
+        with patch("urllib.request.urlopen", return_value=mock_resp):
+            is_valid, prov, models, err = UniversalAPIProvider.verify_and_fetch_models("AIzaSy_VALID_TEST_KEY")
+            self.assertTrue(is_valid)
+            self.assertEqual(prov, "gemini")
+            self.assertIn("gemini-2.5-flash", models)
+            self.assertIn("gemini-2.5-pro", models)
+            self.assertIsNone(err)
+
+    def test_09_verify_and_fetch_models_failure_handling(self) -> None:
+        import urllib.error
+        err_body = json.dumps({"error": {"message": "API key not valid. Please pass a valid API key."}}).encode("utf-8")
+        http_err = urllib.error.HTTPError(
+            url="https://generativelanguage.googleapis.com",
+            code=400,
+            msg="Bad Request",
+            hdrs={},
+            fp=io.BytesIO(err_body),
+        )
+
+        with patch("urllib.request.urlopen", side_effect=http_err):
+            is_valid, prov, models, err = UniversalAPIProvider.verify_and_fetch_models("AIzaSy_BAD_KEY")
+            self.assertFalse(is_valid)
+            self.assertEqual(models, [])
+            self.assertIn("API key not valid", str(err))
+
+    def test_10_detect_provider_from_key(self) -> None:
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("AIzaSy1234567890"), "gemini")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-ant-api03-12345"), "anthropic")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("gsk_1234567890"), "groq")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-or-v1-12345"), "openrouter")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-proj-12345"), "openai")
+
+
 if __name__ == "__main__":
     unittest.main()
+

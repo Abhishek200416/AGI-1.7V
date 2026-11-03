@@ -4,12 +4,14 @@
   🌟 Iva — Autonomous Agent Setup & Cognitive Memory Initializer
 ==============================================================================
 Runs on any clean clone to initialize Iva for YOUR local system:
-1. Validates Python runtime (3.10+ stdlib).
-2. Generates local '.env' from '.env.example' if missing.
+1. Validates Python runtime (3.10+ stdlib, zero pip requirements).
+2. Interactively asks for & verifies API key, fetching live remote models.
 3. Automatically provisions a fresh, local SQLite WAL memory database
    (omega_memory.db) on your machine with 10-layer schema and identity bootstrap.
 4. Validates 100 specialist contracts in the agent ecosystem registry.
-5. Verifies write permissions and security boundaries (fail-closed locked).
+5. Verifies Complete 6-Dimension System Match Matrix.
+6. Audits physical fail-closed security boundaries.
+7. Orchestrates direct interactive handoff into Iva terminal.
 ==============================================================================
 """
 
@@ -19,6 +21,7 @@ import shutil
 import sqlite3
 import platform
 from pathlib import Path
+from typing import Optional, Tuple, List
 
 # Ensure UTF-8 output encoding across Windows command prompts
 if sys.platform == "win32":
@@ -42,6 +45,58 @@ BANNER = r"""
 ================================================================================
 """
 
+def mask_key(k: str) -> str:
+    """Masks key for secure display in console logs."""
+    if not k:
+        return ""
+    if len(k) <= 10:
+        return k[:3] + "..."
+    return k[:6] + "..." + k[-4:]
+
+def save_key_and_model_to_env(env_path: Path, key: str, provider: str, model: str) -> None:
+    """Safely records verified API key and model target into .env without clobbering existing settings."""
+    lines = []
+    if env_path.exists():
+        lines = env_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+
+    key_var_map = {
+        "gemini": "GEMINI_API_KEY",
+        "openai": "OPENAI_API_KEY",
+        "anthropic": "ANTHROPIC_API_KEY",
+        "groq": "GROQ_API_KEY",
+        "deepseek": "DEEPSEEK_API_KEY",
+        "openrouter": "OPENROUTER_API_KEY",
+    }
+    target_var = key_var_map.get(provider.lower(), "GEMINI_API_KEY")
+    updated_keys = {target_var: key, "ACTIVE_MODEL": model, "IVA_MODEL": model}
+
+    new_lines = []
+    seen = set()
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            new_lines.append(line)
+            continue
+        if "=" in stripped:
+            k = stripped.split("=", 1)[0].strip()
+            if k in updated_keys:
+                new_lines.append(f"{k}={updated_keys[k]}")
+                seen.add(k)
+            else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    for k, v in updated_keys.items():
+        if k not in seen:
+            new_lines.append(f"{k}={v}")
+
+    env_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+
+    # Update active os.environ for immediate child processes
+    for k, v in updated_keys.items():
+        os.environ[k] = v
+
 def check_python_version() -> bool:
     print("\n[1/6] Checking Python Runtime...")
     major, minor = sys.version_info[:2]
@@ -52,14 +107,12 @@ def check_python_version() -> bool:
     print(f"  ✅ Python {py_ver} ({platform.system()} {platform.machine()}) verified.")
     return True
 
-def setup_environment_file() -> Path:
-    print("\n[2/6] Checking Local Environment Configuration (.env & API Keys)...")
+def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Optional[str], Optional[str], str]:
+    print("\n[2/6] Configuring API Key & Intelligent Model Target...")
     env_file = REPO_ROOT / ".env"
     env_example = REPO_ROOT / ".env.example"
 
-    if env_file.exists():
-        print("  ✅ Local .env file already exists.")
-    else:
+    if not env_file.exists():
         if env_example.exists():
             shutil.copy(env_example, env_file)
             print("  ✅ Created fresh .env from template (.env.example).")
@@ -67,60 +120,168 @@ def setup_environment_file() -> Path:
             env_file.write_text("LIVE_ORDER_DISPATCH_ENABLED=false\n", encoding="utf-8")
             print("  ✅ Initialized baseline safe .env file.")
 
-    # Inspect Universal API Key access
-    try:
-        from agents.IVA.engine.agi17.adapters.universal_api_provider import load_repo_dotenv
-        load_repo_dotenv()
-    except Exception:
-        if env_file.is_file():
-            for line in env_file.read_text(encoding="utf-8", errors="ignore").splitlines():
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    k, v = line.split("=", 1)
-                    k, v = k.strip(), v.strip().strip("'\"")
-                    if k and k not in os.environ:
-                        os.environ[k] = v
+    from agents.IVA.engine.agi17.adapters.universal_api_provider import (
+        UniversalAPIProvider,
+        load_repo_dotenv,
+    )
+    load_repo_dotenv()
 
-    gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    openai_key = os.environ.get("OPENAI_API_KEY")
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
-    groq_key = os.environ.get("GROQ_API_KEY")
-    if gemini_key:
-        print("  ✅ Universal Google Gemini API Key detected (Universal access active everywhere).")
-    elif openai_key:
-        print("  ✅ Universal OpenAI-Compatible API Key detected (Universal access active everywhere).")
-    elif anthropic_key:
-        print("  ✅ Universal Anthropic API Key detected.")
-    elif groq_key:
-        print("  ✅ Universal Groq API Key detected.")
-    else:
-        print("  ℹ️  No API key detected in .env yet. To run IVA anywhere on any machine:")
-        print("     1. Open '.env' in this directory.")
-        print("     2. Add your GEMINI_API_KEY=your_key (Get a free key: https://aistudio.google.com/app/apikey).")
-        print("     (Antigravity CLI and offline test harnesses remain available).")
+    existing_gemini = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    existing_openai = os.environ.get("OPENAI_API_KEY")
+    existing_anthropic = os.environ.get("ANTHROPIC_API_KEY")
+    existing_groq = os.environ.get("GROQ_API_KEY")
+    existing_deepseek = os.environ.get("DEEPSEEK_API_KEY")
+    existing_openrouter = os.environ.get("OPENROUTER_API_KEY")
 
-    # Autonomously discover optimal model target without asking user
-    try:
-        from agents.IVA.engine.agi17.adapters.universal_api_provider import UniversalAPIProvider
-        provider = UniversalAPIProvider.create_from_env()
-        if provider:
-            status = provider.get_model_discovery_status()
-            active_m = status.get("active_model", "gemini-2.5-flash")
-            m_count = status.get("available_models_count", 0)
-            print(f"  ✅ Active Model Target Auto-Discovered: {active_m}")
-            print(f"     (Zero user prompting: queried provider REST endpoint directly and selected optimal model)")
-            if m_count > 0:
-                print(f"     ({m_count} remote model endpoints available for this key)")
-    except Exception as exc:
-        pass
+    active_key = existing_gemini or existing_openai or existing_anthropic or existing_groq or existing_deepseek or existing_openrouter
+    active_prov = "none"
+    if existing_gemini: active_prov = "gemini"
+    elif existing_anthropic: active_prov = "anthropic"
+    elif existing_groq: active_prov = "groq"
+    elif existing_deepseek: active_prov = "deepseek"
+    elif existing_openrouter: active_prov = "openrouter"
+    elif existing_openai: active_prov = "openai"
 
-    return env_file
+    needs_prompt = True
+    if active_key and active_prov != "none":
+        if interactive:
+            print(f"  ℹ️  Existing API key detected: {mask_key(active_key)} ({active_prov.upper()})")
+            print("     [1] Use existing key (Recommended)")
+            print("     [2] Paste a new API key")
+            try:
+                choice = input("     Select option [1-2, default: 1]: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                choice = "1"
+            if choice == "2":
+                active_key = None
+                active_prov = "none"
+            else:
+                needs_prompt = False
+        else:
+            needs_prompt = False
+
+    selected_model = os.environ.get("ACTIVE_MODEL") or os.environ.get("IVA_MODEL")
+
+    if needs_prompt and interactive:
+        while True:
+            print("\n  " + "═" * 74)
+            print("  🔑 UNIVERSAL API KEY ONBOARDING")
+            print("  " + "═" * 74)
+            print("  Paste your API key below to enable autonomous model intelligence.")
+            print("  Supported providers: Google Gemini, OpenAI, Anthropic, Groq, DeepSeek.")
+            print("  👉 Free Google Gemini Key (Instant in 10s): https://aistudio.google.com/app/apikey")
+            print("  (Press Enter without key to continue in offline test mode)")
+            print("  " + "═" * 74)
+            try:
+                entered_key = input("  Paste your API Key: ").strip().strip("'\"")
+            except (KeyboardInterrupt, EOFError):
+                entered_key = ""
+
+            if not entered_key:
+                print("  ℹ️  No API key entered. Running in offline sandbox test mode.")
+                active_key = None
+                active_prov = "offline"
+                selected_model = "gemini-2.5-flash"
+                break
+
+            inferred_prov = UniversalAPIProvider.detect_provider_from_key(entered_key)
+            print(f"\n  ⏳ Verifying API key with {inferred_prov.upper()} endpoint...")
+            is_valid, prov, models, err_msg = UniversalAPIProvider.verify_and_fetch_models(
+                entered_key, provider_type=inferred_prov
+            )
+
+            if is_valid:
+                print(f"  ✅ API Key verified successfully! Connection confirmed with {prov.upper()}.")
+                active_key = entered_key
+                active_prov = prov
+
+                if models:
+                    print(f"\n  📋 Available Remote Models for your {prov.upper()} API Key:")
+                    pref_order = [
+                        "gemini-2.5-flash",
+                        "claude-3-5-sonnet-20241022",
+                        "gpt-4o",
+                        "llama-3.3-70b-versatile",
+                        "gemini-2.5-pro",
+                        "gemini-2.0-flash",
+                        "gpt-4o-mini",
+                        "gemini-1.5-pro",
+                        "claude-3-5-haiku-20241022",
+                    ]
+                    sorted_models: List[str] = []
+                    for pref in pref_order:
+                        for m in models:
+                            if (m == pref or m.startswith(pref)) and m not in sorted_models:
+                                sorted_models.append(m)
+                    for m in models:
+                        if m not in sorted_models and len(sorted_models) < 12:
+                            sorted_models.append(m)
+
+                    for idx, m_id in enumerate(sorted_models, 1):
+                        rec_tag = " (Recommended)" if idx == 1 else ""
+                        print(f"     [{idx}] {m_id}{rec_tag}")
+                    print(f"     [C] Custom model identifier override")
+
+                    try:
+                        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, default: 1]: ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        m_choice = "1"
+
+                    if m_choice.lower() == "c":
+                        try:
+                            custom_m = input("  Enter custom model name: ").strip()
+                        except (KeyboardInterrupt, EOFError):
+                            custom_m = ""
+                        selected_model = custom_m or sorted_models[0]
+                    elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_models):
+                        selected_model = sorted_models[int(m_choice) - 1]
+                    else:
+                        selected_model = sorted_models[0]
+                else:
+                    selected_model = "gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini"
+
+                print(f"  ✅ Active Model Target set to: {selected_model}")
+                save_key_and_model_to_env(env_file, active_key, active_prov, selected_model)
+                print(f"  💾 Saved verified credentials and active model to .env")
+                break
+            else:
+                print(f"\n  ❌ Verification Failed: {err_msg}")
+                print("     [1] Try pasting the key again")
+                print("     [2] Skip and continue in offline sandbox mode")
+                try:
+                    retry_choice = input("     Select [1/2, default: 1]: ").strip()
+                except (KeyboardInterrupt, EOFError):
+                    retry_choice = "2"
+                if retry_choice == "2":
+                    print("  ℹ️  Continuing in offline sandbox test mode.")
+                    active_key = None
+                    active_prov = "offline"
+                    selected_model = "gemini-2.5-flash"
+                    break
+
+    # If existing key used, discover/verify model target
+    if active_key and active_prov != "none" and not selected_model:
+        try:
+            prov_obj = UniversalAPIProvider.create_from_env()
+            if prov_obj:
+                status = prov_obj.get_model_discovery_status()
+                selected_model = status.get("active_model", "gemini-2.5-flash")
+                m_count = status.get("available_models_count", 0)
+                print(f"  ✅ Active Model Target Auto-Discovered: {selected_model}")
+                if m_count > 0:
+                    print(f"     ({m_count} remote model endpoints available for this key)")
+        except Exception:
+            selected_model = "gemini-2.5-flash"
+
+    if not selected_model:
+        selected_model = "gemini-2.5-flash"
+
+    return env_file, active_key, selected_model, active_prov
 
 def initialize_local_memory() -> Path:
     print("\n[3/6] Provisioning Persistent Cognitive Memory (omega_memory.db)...")
     from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
 
-    # Determine user-specific memory directory
     custom_dir = os.environ.get("OMEGA_MEMORY_DIR")
     if custom_dir:
         target_dir = Path(custom_dir)
@@ -134,12 +295,10 @@ def initialize_local_memory() -> Path:
         db_path = mem.db_path
         print(f"  ✅ SQLite WAL memory active at: {db_path}")
 
-        # Check entry count
         profile = mem.get_corpus_profile()
         count = profile.active_entries_count
         print(f"  ✅ Memory schema verified (10 layers active, {count} stored entries).")
 
-        # If clean database, seed cognitive bootstrap
         if count == 0:
             mem.store(
                 layer=5,
@@ -210,11 +369,13 @@ def check_safety_invariants() -> None:
     else:
         print("  ⚠️ Notice: Operating under custom safety boundaries.")
 
-def print_ready_guide(db_path: Path):
+def print_ready_guide(db_path: Path, selected_model: str, provider: str, interactive: bool = True):
     print("\n" + "=" * 80)
     print("  🚀 IVA SETUP COMPLETE & FULLY OPERATIONAL ON YOUR SYSTEM!")
     print("=" * 80)
     print(f"  • Cognitive Memory Database : {db_path}")
+    print(f"  • Active Model Target       : {selected_model} ({provider.upper()})")
+    print(f"  • Operating Mode            : Fail-Closed Paper Simulation (Safe)")
     print(f"  • Repository Root Directory : {REPO_ROOT}")
     print("=" * 80)
     print("  24 TERMINAL WAYS — HOW TO OPERATE IVA:")
@@ -241,16 +402,50 @@ def print_ready_guide(db_path: Path):
     print("     python run_iva.py test")
     print("=" * 80 + "\n")
 
+    if interactive:
+        print("  NEXT ACTION:")
+        print("  [1] Launch Interactive Autonomous Terminal (Recommended) — python run_iva.py")
+        print("  [2] Run Autonomous Self-Verification Suite (52 Tests) — python run_iva.py test")
+        print("  [3] Complete 6-Dimension System Match Report — python run_iva.py sysmatch")
+        print("  [4] Exit to command prompt")
+        try:
+            action = input("\n  Select next action [1-4, default: 1]: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            action = "4"
+
+        if action in ("1", "", "terminal", "run"):
+            print("\n  🚀 Launching IVA Interactive Autonomous Terminal...\n")
+            from agents.IVA.engine.agi17.runtime.terminal_client import run_terminal_session
+            storage_root = db_path.parent.parent if db_path.parent.name == "memory" else REPO_ROOT
+            return run_terminal_session(storage_root=storage_root, model=selected_model)
+        elif action in ("2", "test"):
+            print("\n  🧪 Running Autonomous Self-Verification Suite...\n")
+            from agents.IVA.engine.agi17.runtime.terminal_client import TerminalClient
+            storage_root = db_path.parent.parent if db_path.parent.name == "memory" else REPO_ROOT
+            tc = TerminalClient(storage_root=storage_root, model=selected_model)
+            return tc.run_self_tests()
+        elif action in ("3", "sysmatch"):
+            print("\n  🔍 Complete 6-Dimension System Match Matrix...\n")
+            from agents.IVA.engine.agi17.runtime.terminal_client import TerminalClient
+            storage_root = db_path.parent.parent if db_path.parent.name == "memory" else REPO_ROOT
+            tc = TerminalClient(storage_root=storage_root, model=selected_model)
+            tc.print_sysmatch()
+            return 0
+        else:
+            print("\n  👋 Setup complete! Type 'python run_iva.py' whenever you are ready.\n")
+            return 0
+
 def main():
+    interactive = sys.stdin.isatty() and "--quiet" not in sys.argv and "--non-interactive" not in sys.argv
     print(BANNER)
     if not check_python_version():
         sys.exit(1)
-    setup_environment_file()
+    env_file, active_key, selected_model, active_prov = setup_environment_and_models(interactive=interactive)
     db_path = initialize_local_memory()
     verify_specialist_and_mcp_ecosystem()
     check_complete_system_match()
     check_safety_invariants()
-    print_ready_guide(db_path)
+    return print_ready_guide(db_path, selected_model or "gemini-2.5-flash", active_prov, interactive=interactive)
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

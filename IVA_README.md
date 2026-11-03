@@ -251,6 +251,22 @@ Iva's persistent memory is organized into 10 structured layers in SQLite WAL mod
 
 ---
 
+## ⚡ Single Copy-Paste Installation (One Command)
+
+Install, verify, and launch Iva on any platform with a single copy-paste command:
+
+### 🪟 Windows PowerShell:
+```powershell
+irm https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.ps1 | iex
+```
+
+### 🐧 Linux / macOS / Android Termux / WSL:
+```bash
+curl -fsSL https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.sh | bash
+```
+
+---
+
 ## 💻 Running Iva: 24 Native Terminal Operational Ways (Any Device)
 
 Iva is engineered first and foremost for the **terminal** — pure standard library console interaction suitable for **any device** (Android/Termux, Linux servers, SSH terminals, Raspberry Pi, macOS, Windows CMD/PowerShell, and headless Docker containers) with **zero GUI or voice popups required**.

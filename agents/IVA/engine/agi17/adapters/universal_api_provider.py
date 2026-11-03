@@ -213,70 +213,163 @@ class UniversalAPIProvider(BaseModelProvider):
             except Exception as exc:
                 logger.debug("Auto-discovery of optimal model deferred: %s", exc)
 
+    @classmethod
+    def detect_provider_from_key(cls, api_key: str) -> str:
+        """Autonomously infers provider type from API key format and known prefixes."""
+        clean = (api_key or "").strip()
+        if clean.startswith("AIzaSy"):
+            return "gemini"
+        elif clean.startswith("sk-ant-"):
+            return "anthropic"
+        elif clean.startswith("gsk_"):
+            return "groq"
+        elif clean.startswith("sk-or-"):
+            return "openrouter"
+        elif clean.startswith("sk-"):
+            return "openai"
+        return "gemini"
+
+    @classmethod
+    def verify_and_fetch_models(
+        cls,
+        api_key: str,
+        provider_type: Optional[str] = None,
+        base_url: Optional[str] = None,
+        timeout_sec: float = 6.0,
+    ) -> Tuple[bool, str, List[str], Optional[str]]:
+        """Queries the provider endpoint to verify API key authenticity and returns available models.
+        
+        Returns:
+            Tuple of (is_valid: bool, provider: str, models: List[str], error: Optional[str])
+        """
+        clean_key = (api_key or "").strip()
+        if not clean_key:
+            return (False, "none", [], "No API key provided.")
+
+        prov = (provider_type or cls.detect_provider_from_key(clean_key)).lower()
+        ctx = ssl.create_default_context()
+
+        def _is_200(r: Any) -> bool:
+            s = getattr(r, "status", None)
+            return True if (s is None or not isinstance(s, int)) else (s == 200)
+
+        try:
+            if prov == "gemini":
+                root_url = (base_url or "https://generativelanguage.googleapis.com/v1beta").rstrip("/")
+                endpoint = f"{root_url}/models?key={clean_key}"
+                req = urllib.request.Request(
+                    endpoint,
+                    headers={"User-Agent": "IVA-Autonomous-Partner/1.7.29"},
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
+                    if _is_200(resp):
+                        data = json.loads(resp.read().decode("utf-8"))
+                        models = []
+                        for m in data.get("models", []):
+                            m_name = m.get("name", "")
+                            if m_name.startswith("models/"):
+                                m_name = m_name[len("models/"):]
+                            methods = m.get("supportedGenerationMethods", [])
+                            if not methods or "generateContent" in methods:
+                                models.append(m_name)
+                        return (True, "gemini", models, None)
+                    return (False, "gemini", [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
+
+            elif prov == "anthropic":
+                root_url = (base_url or "https://api.anthropic.com/v1").rstrip("/")
+                endpoint = f"{root_url}/models"
+                req = urllib.request.Request(
+                    endpoint,
+                    headers={
+                        "x-api-key": clean_key,
+                        "anthropic-version": "2023-06-01",
+                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                    },
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
+                    if _is_200(resp):
+                        data = json.loads(resp.read().decode("utf-8"))
+                        models = [m.get("id") for m in data.get("data", []) if m.get("id")]
+                        return (True, "anthropic", models, None)
+                    return (False, "anthropic", [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
+
+            elif prov == "groq":
+                root_url = (base_url or "https://api.groq.com/openai/v1").rstrip("/")
+                endpoint = f"{root_url}/models"
+                req = urllib.request.Request(
+                    endpoint,
+                    headers={
+                        "Authorization": f"Bearer {clean_key}",
+                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                    },
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
+                    if _is_200(resp):
+                        data = json.loads(resp.read().decode("utf-8"))
+                        models = [m.get("id") for m in data.get("data", []) if m.get("id")]
+                        return (True, "groq", models, None)
+                    return (False, "groq", [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
+
+            else:  # openai, deepseek, openrouter, or generic openai-compatible
+                if prov == "deepseek":
+                    root_url = (base_url or "https://api.deepseek.com").rstrip("/")
+                elif prov == "openrouter":
+                    root_url = (base_url or "https://openrouter.ai/api/v1").rstrip("/")
+                else:
+                    root_url = (base_url or "https://api.openai.com/v1").rstrip("/")
+
+                endpoint = f"{root_url}/models"
+                req = urllib.request.Request(
+                    endpoint,
+                    headers={
+                        "Authorization": f"Bearer {clean_key}",
+                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                    },
+                    method="GET",
+                )
+                with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
+                    if _is_200(resp):
+                        data = json.loads(resp.read().decode("utf-8"))
+                        models = [m.get("id") for m in data.get("data", []) if m.get("id")]
+                        return (True, prov, models, None)
+                    return (False, prov, [], f"HTTP Status {getattr(resp, 'status', 'unknown')}")
+
+        except urllib.error.HTTPError as err:
+            err_msg = f"HTTP {err.code}: {err.reason}"
+            try:
+                body = err.read().decode("utf-8", errors="ignore")
+                j = json.loads(body)
+                if "error" in j and isinstance(j["error"], dict) and "message" in j["error"]:
+                    err_msg = f"HTTP {err.code}: {j['error']['message']}"
+                elif "error" in j and isinstance(j["error"], str):
+                    err_msg = f"HTTP {err.code}: {j['error']}"
+            except Exception:
+                pass
+            return (False, prov, [], err_msg)
+        except urllib.error.URLError as err:
+            return (False, prov, [], f"Network Connection Error: {err.reason}")
+        except Exception as err:
+            return (False, prov, [], f"Verification Error: {err}")
+
     def fetch_remote_models(self) -> List[str]:
         """Queries the upstream provider REST endpoint using the active API key to fetch available models.
         
         Uses 100% Python standard library urllib.request without external dependencies.
         Returns a list of model identifier strings.
         """
-        if not self.api_key and not (self.base_url and ("localhost" in self.base_url or "127.0.0.1" in self.base_url)):
-            return []
-
-        ctx = ssl.create_default_context()
-        try:
-            if self.provider_type == "gemini":
-                endpoint = f"{self.base_url}/models?key={self.api_key}"
-                req = urllib.request.Request(
-                    endpoint,
-                    headers={"User-Agent": "IVA-Autonomous-Partner/1.7.29"},
-                    method="GET",
-                )
-                with urllib.request.urlopen(req, timeout=4.0, context=ctx) as resp:
-                    data = json.loads(resp.read().decode("utf-8"))
-                    models = []
-                    for m in data.get("models", []):
-                        m_name = m.get("name", "")
-                        if m_name.startswith("models/"):
-                            m_name = m_name[len("models/"):]
-                        methods = m.get("supportedGenerationMethods", [])
-                        if not methods or "generateContent" in methods:
-                            models.append(m_name)
-                    self.available_models = models
-                    return models
-            elif self.provider_type == "anthropic":
-                endpoint = f"{self.base_url}/models"
-                req = urllib.request.Request(
-                    endpoint,
-                    headers={
-                        "x-api-key": self.api_key,
-                        "anthropic-version": "2023-06-01",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
-                    },
-                    method="GET",
-                )
-                with urllib.request.urlopen(req, timeout=4.0, context=ctx) as resp:
-                    data = json.loads(resp.read().decode("utf-8"))
-                    models = [m.get("id") for m in data.get("data", []) if m.get("id")]
-                    self.available_models = models
-                    return models
-            else:
-                endpoint = f"{self.base_url}/models"
-                req = urllib.request.Request(
-                    endpoint,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
-                    },
-                    method="GET",
-                )
-                with urllib.request.urlopen(req, timeout=4.0, context=ctx) as resp:
-                    data = json.loads(resp.read().decode("utf-8"))
-                    models = [m.get("id") for m in data.get("data", []) if m.get("id")]
-                    self.available_models = models
-                    return models
-        except Exception as exc:
-            logger.debug("Automatic remote model fetching for %s skipped/failed: %s", self.provider_type, exc)
-            return []
+        is_valid, _prov, models, _err = self.verify_and_fetch_models(
+            api_key=self.api_key,
+            provider_type=self.provider_type,
+            base_url=self.base_url,
+            timeout_sec=self.timeout_sec,
+        )
+        if is_valid and models:
+            self.available_models = models
+            return models
+        return []
 
     def auto_discover_optimal_model(self) -> str:
         """Autonomously inspects available remote models from the active API key and selects the best model.
