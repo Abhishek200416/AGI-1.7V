@@ -17,6 +17,13 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("iva.observatory.server")
 
@@ -117,15 +124,15 @@ def find_available_port(default_port: int = 8090) -> int:
 def run_server(port: int = 8090) -> None:
     """Starts the Threading HTTP Server."""
     effective_port = find_available_port(port)
-    server_address = ("127.0.0.1", effective_port)
+    server_address = ("0.0.0.0", effective_port)
     httpd = ThreadingHTTPServer(server_address, ObservatoryRequestHandler)
     print("\n" + "=" * 70)
-    print("   🌌 IVA 3D NEURAL OBSERVATORY SERVER ONLINE")
+    print("   [*] IVA 3D NEURAL OBSERVATORY SERVER ONLINE")
     print("=" * 70)
-    print(f"   • Local URL : http://localhost:{effective_port}")
-    print(f"   • API Status: http://localhost:{effective_port}/api/status")
-    print(f"   • API Nodes : http://localhost:{effective_port}/api/nodes")
-    print("   • Press Ctrl+C to terminate server.")
+    print(f"   * Local URL : http://localhost:{effective_port}")
+    print(f"   * API Status: http://localhost:{effective_port}/api/status")
+    print(f"   * API Nodes : http://localhost:{effective_port}/api/nodes")
+    print("   * Press Ctrl+C to terminate server.")
     print("=" * 70 + "\n")
     try:
         httpd.serve_forever()

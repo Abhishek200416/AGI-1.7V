@@ -18,6 +18,13 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 BASE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BASE_DIR.parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -187,15 +194,15 @@ def find_available_port(default_port: int = 8095) -> int:
 def run_server(port: int = 8095) -> None:
     """Starts the Threading HTTP Server for the Studio."""
     eff_port = find_available_port(port)
-    server_address = ("127.0.0.1", eff_port)
+    server_address = ("0.0.0.0", eff_port)
     httpd = ThreadingHTTPServer(server_address, StudioRequestHandler)
     print("\n" + "=" * 74)
-    print("   🟢 IVA SOVEREIGN STUDIO ONLINE (POWERED BY NVIDIA NIM)")
+    print("   [*] IVA SOVEREIGN STUDIO ONLINE (POWERED BY NVIDIA NIM)")
     print("=" * 74)
-    print(f"   • Local Studio URL: http://localhost:{eff_port}")
-    print(f"   • Active Model   : {DEFAULT_MODEL}")
-    print(f"   • Active API Key : {DEFAULT_API_KEY[:12]}...{DEFAULT_API_KEY[-4:]}")
-    print("   • Press Ctrl+C to stop.")
+    print(f"   * Local Studio URL: http://localhost:{eff_port}")
+    print(f"   * Active Model   : {DEFAULT_MODEL}")
+    print(f"   * Active API Key : {DEFAULT_API_KEY[:12]}...{DEFAULT_API_KEY[-4:]}")
+    print("   * Press Ctrl+C to stop.")
     print("=" * 74 + "\n")
     try:
         httpd.serve_forever()
