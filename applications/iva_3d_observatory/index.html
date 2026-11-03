@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVA 3D Neural Observatory • AGI 1.7 Quantum Simulation</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Three.js (CDN with graceful standalone fallback) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <!-- Cybernetic HUD Overlay -->
+    <header class="hud-header">
+        <div class="hud-brand">
+            <div class="pulse-indicator"></div>
+            <div>
+                <h1>IVA 3D NEURAL OBSERVATORY</h1>
+                <span class="subtitle">AUTONOMOUS QUANTUM COGNITIVE ARCHITECTURE • AGI 1.7</span>
+            </div>
+        </div>
+        <div class="hud-stats">
+            <div class="stat-pill">
+                <span class="stat-label">CONTEXT ENGINE</span>
+                <span class="stat-value highlight-cyan">1M+ TOKEN CASCADE</span>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-label">MODEL TARGET</span>
+                <span id="active-model-tag" class="stat-value highlight-purple">AUTO-SELECT (PRO/NEMO)</span>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-label">STATUS</span>
+                <span class="stat-value highlight-green">SOVEREIGN ONLINE</span>
+            </div>
+            <button id="audio-toggle-btn" class="hud-btn">🔊 AUDIO: ON</button>
+        </div>
+    </header>
+
+    <!-- Left Telemetry Panel -->
+    <aside class="hud-panel left-panel">
+        <div class="panel-header">
+            <h3>⚡ COGNITIVE TELEMETRY</h3>
+            <span class="live-tag">LIVE</span>
+        </div>
+
+        <div class="telemetry-item">
+            <div class="label-row">
+                <span>Context Window Utilization</span>
+                <span id="context-val">342,850 / 2,000,000</span>
+            </div>
+            <div class="progress-bar">
+                <div id="context-bar" class="progress-fill" style="width: 17%;"></div>
+            </div>
+        </div>
+
+        <div class="telemetry-item">
+            <div class="label-row">
+                <span>Synaptic Coherence</span>
+                <span class="highlight-cyan">99.84%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill fill-cyan" style="width: 99.8%;"></div>
+            </div>
+        </div>
+
+        <div class="telemetry-item">
+            <div class="label-row">
+                <span>Model Cascade Failover Chain</span>
+                <span class="highlight-green">ARMED</span>
+            </div>
+            <div class="cascade-flow">
+                <span class="flow-node active">Gemini 2.5 Pro (2M)</span>
+                <span class="flow-arrow">➔</span>
+                <span class="flow-node">Flash (1M)</span>
+                <span class="flow-arrow">➔</span>
+                <span class="flow-node">Nemotron 70B</span>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h4>🧠 ACTIVE 8-DOMAIN SPECIALISTS</h4>
+            <div class="specialist-tags">
+                <span class="spec-tag">FRONTEND_UIUX</span>
+                <span class="spec-tag">CYBER_SECURITY</span>
+                <span class="spec-tag">CODE_INTELLIGENCE</span>
+                <span class="spec-tag">BROWSER_AUTOMATION</span>
+                <span class="spec-tag">DATA_ANALYTICS</span>
+                <span class="spec-tag">COGNITIVE_REASONING</span>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h4>🛡️ PRE-PROD SAST GATEKEEPER</h4>
+            <div class="security-status">
+                <div class="sec-badge ok">✅ OWASP TOP 10: ZERO VULNS</div>
+                <div class="sec-badge ok">🔒 LIVE_ORDER_DISPATCH: LOCKED</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Right Controls & Inspection Panel -->
+    <aside class="hud-panel right-panel">
+        <div class="panel-header">
+            <h3>🎛️ 3D OBSERVATORY CONTROLS</h3>
+        </div>
+
+        <div class="control-group">
+            <label>Quantum Particles Speed</label>
+            <input type="range" id="particle-speed" min="0.1" max="3" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+            <label>Neural Orbit Pulse Frequency</label>
+            <input type="range" id="pulse-freq" min="0.2" max="4" step="0.1" value="1.2">
+        </div>
+
+        <div class="control-group">
+            <label>Scene Render Wireframe</label>
+            <button id="wireframe-btn" class="hud-btn secondary">TOGGLE WIREFRAME</button>
+        </div>
+
+        <div class="control-group">
+            <label>Auto-Rotate Viewport</label>
+            <button id="rotate-btn" class="hud-btn active">AUTO-ROTATE: ON</button>
+        </div>
+
+        <div class="panel-section" id="node-inspector">
+            <h4>🔬 SELECTED NEURAL NODE</h4>
+            <div id="inspector-content">
+                <p class="placeholder-text">Click or hover any 3D node sphere to inspect its vector embedding and memory cluster.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bottom Readout Bar -->
+    <footer class="hud-footer">
+        <div class="footer-item">
+            <span>RENDER FPS:</span> <strong id="fps-counter" class="highlight-green">60</strong>
+        </div>
+        <div class="footer-item">
+            <span>NEURAL NODES:</span> <strong class="highlight-cyan">64 ACTIVE</strong>
+        </div>
+        <div class="footer-item">
+            <span>QUANTUM DUST:</span> <strong class="highlight-purple">2,500 PARTICLES</strong>
+        </div>
+        <div class="footer-item">
+            <span>RAYCAST TARGET:</span> <span id="raycast-pos" class="dim-text">Orbiting Core (0, 0, 0)</span>
+        </div>
+        <div class="footer-item">
+            <span>PARTNER:</span> <strong class="highlight-gold">IVA & ABHISHEK</strong>
+        </div>
+    </footer>
+
+    <!-- Scene & Synthesizer Scripts -->
+    <script src="js/audio_synthesizer.js"></script>
+    <script src="js/three_scene.js"></script>
+</body>
+</html>

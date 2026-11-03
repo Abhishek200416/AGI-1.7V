@@ -47,6 +47,9 @@ class SkillCategory(str, enum.Enum):
     CYBER_SECURITY = "Cyber Security & Red-Teaming"
 
 
+SkillDomain = SkillCategory
+
+
 @dataclass
 class OrganizedSkill:
     skill_id: str

@@ -401,6 +401,7 @@ class TerminalClient:
             status = provider.get_model_discovery_status()
             active_m = status.get("active_model", "gemini-2.5-flash")
             prov_type = status.get("provider_type", "gemini").upper()
+            models = status.get("available_models", [])
             print(f"   • Active Provider       : {green(prov_type)}")
             print(f"   • API Key Scoping       : {dim('Models strictly grounded to your active ' + prov_type + ' API key')}")
             if active_m.upper() == "AUTO":

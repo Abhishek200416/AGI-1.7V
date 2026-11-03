@@ -38,6 +38,13 @@ class TestUniversalAPIProvider(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = Path(tempfile.mkdtemp(prefix="iva_api_test_"))
         self._orig_env = dict(os.environ)
+        for k in [
+            "GEMINI_API_KEY", "GOOGLE_API_KEY", "NVIDIA_API_KEY", "NVIDIA_NIM_API_KEY",
+            "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY", "GROQ_API_KEY",
+            "DEEPSEEK_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_BASE", "IVA_MODEL",
+            "GEMINI_MODEL", "NVIDIA_MODEL", "OPENAI_MODEL", "ACTIVE_MODEL", "ACTIVE_PROVIDER"
+        ]:
+            os.environ.pop(k, None)
 
     def tearDown(self) -> None:
         os.environ.clear()
