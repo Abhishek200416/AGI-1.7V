@@ -1,8 +1,8 @@
-/* AETHERIA 3D • Cybernetic Glassmorphic Styling */
+/* AETHERIA 3D • Cybernetic Glassmorphic Styling (Desktop & Mobile Optimized) */
 
 :root {
     --bg-dark: #05060b;
-    --panel-bg: rgba(12, 16, 28, 0.72);
+    --panel-bg: rgba(12, 16, 28, 0.78);
     --panel-border: rgba(94, 234, 212, 0.18);
     --panel-border-hover: rgba(94, 234, 212, 0.45);
     --cyan: #00f3ff;
@@ -22,16 +22,19 @@
     box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    position: fixed;
     background-color: var(--bg-dark);
     font-family: var(--font-stack);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
+    touch-action: none;
 }
 
 #canvas-container {
@@ -41,6 +44,14 @@ html, body {
     width: 100%;
     height: 100%;
     z-index: 1;
+    touch-action: none;
+}
+
+#canvas-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
 }
 
 /* Glassmorphism utility */
@@ -70,7 +81,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    z-index: 10;
+    z-index: 20;
 }
 
 .hud-brand {
@@ -80,8 +91,9 @@ html, body {
 }
 
 .brand-icon {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, var(--cyan), var(--purple));
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
@@ -101,6 +113,7 @@ html, body {
     background: linear-gradient(135deg, #ffffff 30%, var(--cyan) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    white-space: nowrap;
 }
 
 .brand-title .subtitle {
@@ -108,12 +121,13 @@ html, body {
     color: var(--text-muted);
     letter-spacing: 1.5px;
     font-family: var(--font-mono);
+    white-space: nowrap;
 }
 
 .hud-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .status-badge {
@@ -127,11 +141,13 @@ html, body {
     background: rgba(56, 239, 125, 0.1);
     border: 1px solid rgba(56, 239, 125, 0.3);
     color: var(--emerald);
+    white-space: nowrap;
 }
 
 .status-dot {
     width: 8px;
     height: 8px;
+    min-width: 8px;
     border-radius: 50%;
     background: var(--emerald);
     box-shadow: 0 0 8px var(--emerald);
@@ -144,7 +160,7 @@ html, body {
 }
 
 .hud-btn {
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 8px;
     border: 1px solid var(--panel-border);
     background: rgba(255, 255, 255, 0.04);
@@ -156,9 +172,10 @@ html, body {
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
 }
 
-.hud-btn:hover {
+.hud-btn:hover, .hud-btn:active {
     background: rgba(0, 243, 255, 0.15);
     border-color: var(--cyan);
     color: #ffffff;
@@ -178,9 +195,16 @@ html, body {
     left: 24px;
     width: 320px;
     padding: 20px;
-    z-index: 10;
+    z-index: 15;
     max-height: calc(100vh - 140px);
     overflow-y: auto;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.left-controls.collapsed {
+    transform: translateX(-360px);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .left-controls::-webkit-scrollbar {
@@ -189,6 +213,19 @@ html, body {
 .left-controls::-webkit-scrollbar-thumb {
     background: var(--panel-border);
     border-radius: 4px;
+}
+
+.panel-header-mobile {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--cyan);
+    letter-spacing: 1px;
 }
 
 .panel-section {
@@ -226,9 +263,9 @@ html, body {
 
 .cyber-slider {
     width: 100%;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.1);
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
     outline: none;
     -webkit-appearance: none;
     cursor: pointer;
@@ -236,8 +273,8 @@ html, body {
 
 .cyber-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: var(--cyan);
     box-shadow: 0 0 10px var(--cyan);
@@ -256,7 +293,7 @@ html, body {
 }
 
 .theme-pill {
-    padding: 8px 10px;
+    padding: 10px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.02);
@@ -270,7 +307,7 @@ html, body {
 .theme-pill:hover, .theme-pill.active {
     border-color: var(--cyan);
     color: #ffffff;
-    background: rgba(0, 243, 255, 0.12);
+    background: rgba(0, 243, 255, 0.14);
 }
 
 /* Right Celestial Inspector Card */
@@ -280,7 +317,7 @@ html, body {
     right: 24px;
     width: 360px;
     padding: 22px;
-    z-index: 10;
+    z-index: 25;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
 }
 
@@ -312,18 +349,24 @@ html, body {
 }
 
 .close-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-muted);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
-.close-btn:hover {
+.close-btn:hover, .close-btn:active {
     color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--cyan);
 }
 
 .inspector-telemetry {
@@ -381,11 +424,12 @@ html, body {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid var(--panel-border);
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     outline: none;
     font-family: var(--font-stack);
+    -webkit-appearance: none;
 }
 
 .oracle-input:focus {
@@ -399,13 +443,13 @@ html, body {
     border-radius: 8px;
     color: #fff;
     padding: 0 16px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s ease, transform 0.1s ease;
 }
 
-.oracle-submit:hover {
+.oracle-submit:hover, .oracle-submit:active {
     opacity: 0.9;
     transform: translateY(-1px);
 }
@@ -434,7 +478,7 @@ html, body {
     bottom: 20px;
     left: 24px;
     right: 24px;
-    height: 48px;
+    height: 44px;
     padding: 0 20px;
     display: flex;
     align-items: center;
@@ -444,7 +488,7 @@ html, body {
 
 .telemetry-pills {
     display: flex;
-    gap: 18px;
+    gap: 16px;
     font-size: 0.72rem;
     font-family: var(--font-mono);
     color: var(--text-muted);
@@ -466,10 +510,10 @@ html, body {
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.88);
     border: 1px solid var(--cyan);
     color: #fff;
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-family: var(--font-mono);
@@ -478,9 +522,147 @@ html, body {
     transition: all 0.3s ease;
     z-index: 100;
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    white-space: nowrap;
 }
 
 .toast-notice.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE BREAKPOINTS (<= 768px & <= 480px)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* Header layout */
+    .hud-header {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        height: 52px;
+        padding: 0 12px;
+        border-radius: 12px;
+    }
+
+    .brand-icon {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+    }
+
+    .brand-title h1 {
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+    }
+
+    .brand-title .subtitle {
+        display: none;
+    }
+
+    .status-badge {
+        display: none;
+    }
+
+    .hud-actions {
+        gap: 6px;
+    }
+
+    .hud-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Left Controls: Slide-down full-width sheet on mobile */
+    .left-controls {
+        top: 68px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: calc(100vh - 130px);
+        padding: 16px;
+        z-index: 30;
+    }
+
+    .left-controls.collapsed {
+        transform: translateY(-130%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .panel-header-mobile {
+        display: flex;
+    }
+
+    /* Right Inspector: Mobile Bottom Sheet Modal */
+    .right-inspector {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 75vh;
+        border-radius: 20px 20px 0 0;
+        padding: 20px 18px env(safe-area-inset-bottom, 20px) 18px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        z-index: 35;
+        border-bottom: none;
+    }
+
+    .right-inspector.collapsed {
+        transform: translateY(105%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .inspector-header h2 {
+        font-size: 1.05rem;
+    }
+
+    .inspector-lore {
+        font-size: 0.8rem;
+    }
+
+    /* Bottom Telemetry Bar: Compact */
+    .bottom-bar {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 10px;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    .shortcut-hints {
+        font-size: 0.68rem;
+    }
+
+    .toast-notice {
+        bottom: 60px;
+        font-size: 0.75rem;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-text {
+        display: none;
+    }
+
+    .hud-btn {
+        padding: 7px 10px;
+    }
+
+    .hud-btn .btn-icon {
+        font-size: 0.95rem;
+    }
+
+    .shortcut-hints {
+        display: none;
+    }
 }

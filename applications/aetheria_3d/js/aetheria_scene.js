@@ -1,9 +1,9 @@
 /**
- * AETHERIA 3D • Interactive WebGL 3D Cosmos Engine
+ * AETHERIA 3D • Interactive WebGL 3D Cosmos Engine (Desktop & Mobile Optimized)
  * =============================================================================
  * Real-time procedural universe built with Three.js.
  * Dynamic particle physics, orbital mechanics, interactive raycasting,
- * cinematic camera transitions, and audio-reactive flare rendering.
+ * mobile touch tap detection, and audio-reactive flare rendering.
  * =============================================================================
  */
 
@@ -15,6 +15,9 @@
     let raycaster, mouse;
     let anomalies = [];
     let selectedAnomaly = null;
+
+    // Device detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
     // Simulation tuning
     let speedMult = 1.0;
@@ -36,6 +39,7 @@
     const container = document.getElementById("canvas-container");
     const fpsVal = document.getElementById("fps-val");
     const particleCountVal = document.getElementById("particle-count-val");
+    const leftControls = document.getElementById("left-controls");
     const inspector = document.getElementById("right-inspector");
     const inspectorTitle = document.getElementById("inspector-title");
     const inspectorSector = document.getElementById("inspector-sector");
@@ -81,28 +85,37 @@
     };
 
     function init() {
+        // Adjust particle count for mobile performance
+        if (isMobile) {
+            particlesCount = 14000;
+        }
+
         // 1. Scene & Atmosphere
         scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(PALETTES.violet.fog, 0.0065);
 
-        // 2. Camera
+        // 2. Camera (Slightly further on mobile for broader perspective)
         camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.set(0, 30, 85);
+        camera.position.set(0, isMobile ? 36 : 30, isMobile ? 96 : 85);
 
-        // 3. Renderer with ACES Filmic Tone Mapping
+        // 3. Renderer with ACES Filmic Tone Mapping (capped pixel ratio on mobile)
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.25;
         container.appendChild(renderer.domElement);
 
-        // 4. Orbit Controls
+        // 4. Orbit Controls (Configured for smooth touch gestures)
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.maxDistance = 350;
         controls.minDistance = 12;
+        controls.touches = {
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN
+        };
 
         // 5. Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -112,7 +125,7 @@
         pointLight1.position.set(0, 0, 0);
         scene.add(pointLight1);
 
-        // 6. Raycasting & Mouse
+        // 6. Raycasting & Mouse / Touch Coordinates
         raycaster = new THREE.Raycaster();
         raycaster.params.Points.threshold = 1.0;
         mouse = new THREE.Vector2(-999, -999);
@@ -122,10 +135,13 @@
         createParticleUniverse(particlesCount);
         createCelestialAnomalies();
 
-        // 8. Event Listeners
+        // 8. Event Listeners (Desktop & Mobile)
         window.addEventListener("resize", onWindowResize);
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("click", onCanvasClick);
+
+        // Mobile touch tap detection
+        setupTouchInteraction();
 
         setupUIControls();
 
@@ -184,7 +200,7 @@
     }
 
     /**
-     * 25,000+ Dynamic GPU Particle Universe with Keplerian orbital drift.
+     * Dynamic GPU Particle Universe with Keplerian orbital drift.
      */
     function createParticleUniverse(count) {
         if (particleSystem) scene.remove(particleSystem);
@@ -242,7 +258,7 @@
         const texture = new THREE.CanvasTexture(canvas);
 
         const particleMaterial = new THREE.PointsMaterial({
-            size: 1.3,
+            size: isMobile ? 1.6 : 1.3,
             vertexColors: true,
             map: texture,
             transparent: true,
@@ -260,7 +276,7 @@
     }
 
     /**
-     * Interactive Clickable Celestial Beacons across the cosmos.
+     * Interactive Clickable/Tappable Celestial Beacons across the cosmos.
      */
     function createCelestialAnomalies() {
         anomalyGroup = new THREE.Group();
@@ -312,8 +328,8 @@
             const mesh = new THREE.Mesh(geo, mat);
             beaconMeshGroup.add(mesh);
 
-            // Glowing aura shell
-            const haloGeo = new THREE.SphereGeometry(3.6, 16, 16);
+            // Glowing aura shell (larger hit area on mobile)
+            const haloGeo = new THREE.SphereGeometry(isMobile ? 4.5 : 3.6, 16, 16);
             const haloMat = new THREE.MeshBasicMaterial({
                 color: colorHex,
                 wireframe: true,
@@ -355,6 +371,49 @@
         }
 
         raycaster.setFromCamera(mouse, camera);
+        checkRaycastHit();
+    }
+
+    /**
+     * Mobile Touch Tap Detection
+     */
+    function setupTouchInteraction() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+
+        window.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = performance.now();
+            }
+        }, { passive: true });
+
+        window.addEventListener("touchend", (e) => {
+            // Ignore if tapped on UI panels
+            if (e.target.closest(".hud-header") || e.target.closest(".left-controls") || e.target.closest(".right-inspector") || e.target.closest(".bottom-bar")) {
+                return;
+            }
+
+            if (e.changedTouches.length === 1) {
+                const touch = e.changedTouches[0];
+                const dx = touch.clientX - touchStartX;
+                const dy = touch.clientY - touchStartY;
+                const duration = performance.now() - touchStartTime;
+
+                // Tap detection: minimal movement (< 15px) & short duration (< 350ms)
+                if (Math.hypot(dx, dy) < 15 && duration < 350) {
+                    mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(mouse, camera);
+                    checkRaycastHit();
+                }
+            }
+        });
+    }
+
+    function checkRaycastHit() {
         const hitTargets = [];
         anomalies.forEach(grp => {
             hitTargets.push(grp.userData.mesh);
@@ -371,6 +430,13 @@
     function selectAnomaly(group) {
         selectedAnomaly = group;
         const data = group.userData;
+
+        // Close left controls on mobile to avoid screen clutter
+        if (leftControls) {
+            leftControls.classList.add("collapsed");
+            const controlsToggleBtn = document.getElementById("controls-toggle-btn");
+            if (controlsToggleBtn) controlsToggleBtn.classList.remove("active");
+        }
 
         // Play harmonic chime
         if (window.aetheriaAudio) {
@@ -391,9 +457,10 @@
 
         // Cinematic camera fly-to
         const targetPos = group.position.clone();
-        const offset = targetPos.clone().normalize().multiplyScalar(18);
+        const offsetDist = isMobile ? 22 : 18;
+        const offset = targetPos.clone().normalize().multiplyScalar(offsetDist);
         targetCameraPos = targetPos.clone().add(offset);
-        targetCameraPos.y += 6;
+        targetCameraPos.y += isMobile ? 8 : 6;
         targetLookAt = targetPos;
     }
 
@@ -404,16 +471,46 @@
     }
 
     /**
-     * UI Action Handlers
+     * UI Action Handlers (Desktop & Mobile)
      */
     function setupUIControls() {
+        // Mobile default: Collapse left controls on small screens
+        if (isMobile && leftControls) {
+            leftControls.classList.add("collapsed");
+        }
+
+        // Controls Toggle Button (Mobile & Desktop)
+        const controlsToggleBtn = document.getElementById("controls-toggle-btn");
+        if (controlsToggleBtn && leftControls) {
+            controlsToggleBtn.addEventListener("click", () => {
+                leftControls.classList.toggle("collapsed");
+                const isNowOpen = !leftControls.classList.contains("collapsed");
+                controlsToggleBtn.classList.toggle("active", isNowOpen);
+                if (isNowOpen && inspector) {
+                    inspector.classList.add("collapsed"); // Mutually exclusive on small screens
+                }
+            });
+        }
+
+        // Mobile Close Controls Button
+        const closeControlsBtn = document.getElementById("close-controls-btn");
+        if (closeControlsBtn && leftControls) {
+            closeControlsBtn.addEventListener("click", () => {
+                leftControls.classList.add("collapsed");
+                if (controlsToggleBtn) controlsToggleBtn.classList.remove("active");
+            });
+        }
+
         // Audio Toggle
         const audioBtn = document.getElementById("audio-toggle-btn");
         if (audioBtn) {
             audioBtn.addEventListener("click", () => {
                 const active = window.aetheriaAudio.toggle();
                 audioBtn.classList.toggle("active", active);
-                audioBtn.innerText = active ? "🔊 AUDIO: ACTIVE" : "🔇 AUDIO: MUTED";
+                const iconSpan = audioBtn.querySelector(".btn-icon");
+                const textSpan = audioBtn.querySelector(".btn-text");
+                if (iconSpan) iconSpan.innerText = active ? "🔊" : "🔇";
+                if (textSpan) textSpan.innerText = active ? " AUDIO: ON" : " AUDIO: OFF";
                 showToast(active ? "Cosmic Soundscape Engaged" : "Soundscape Suspended");
             });
         }
@@ -460,7 +557,7 @@
         const resetCamBtn = document.getElementById("reset-cam-btn");
         if (resetCamBtn) {
             resetCamBtn.addEventListener("click", () => {
-                targetCameraPos = new THREE.Vector3(0, 30, 85);
+                targetCameraPos = new THREE.Vector3(0, isMobile ? 36 : 30, isMobile ? 96 : 85);
                 targetLookAt = new THREE.Vector3(0, 0, 0);
                 if (inspector) inspector.classList.add("collapsed");
                 showToast("Orbital View Restored");
@@ -469,7 +566,7 @@
 
         // Close Inspector
         const closeInspectorBtn = document.getElementById("close-inspector-btn");
-        if (closeInspectorBtn) {
+        if (closeInspectorBtn && inspector) {
             closeInspectorBtn.addEventListener("click", () => {
                 inspector.classList.add("collapsed");
             });
@@ -491,6 +588,9 @@
                 if (window.aetheriaAudio) {
                     window.aetheriaAudio.playChime(3);
                 }
+
+                // Unfocus input on mobile to hide software keyboard
+                oracleInput.blur();
 
                 fetch("/api/transmit", {
                     method: "POST",
@@ -620,7 +720,6 @@
             lastTime = time;
         }
 
-        const delta = 0.016;
         const effSpeed = speedMult * warpFactor;
         const audioEnergy = window.aetheriaAudio ? window.aetheriaAudio.getEnergy() : 0;
 
@@ -639,7 +738,6 @@
             const d = grp.userData;
             // Orbit central pulsar
             const angle = time * d.orbitSpeed * 0.001 * effSpeed;
-            const r = d.basePos.length();
             grp.position.x = Math.cos(angle) * d.basePos.x - Math.sin(angle) * d.basePos.z;
             grp.position.z = Math.sin(angle) * d.basePos.x + Math.cos(angle) * d.basePos.z;
             grp.position.y = d.basePos.y + Math.sin(time * 0.002) * 1.5;

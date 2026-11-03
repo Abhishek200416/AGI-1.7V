@@ -11,9 +11,9 @@ import sys
 import webbrowser
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
+REPO_ROOT = Path(__file__).resolve().parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 # Windows UTF-8 stdout fix
 if sys.platform == "win32":
@@ -22,7 +22,10 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from server import run_server, DEFAULT_PORT
+try:
+    from applications.aetheria_3d.server import run_server, DEFAULT_PORT
+except ImportError:
+    from server import run_server, DEFAULT_PORT
 
 def main() -> None:
     port = DEFAULT_PORT

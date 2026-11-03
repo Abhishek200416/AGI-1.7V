@@ -1,9 +1,10 @@
 /**
- * AETHERIA 3D • Generative Web Audio Synthesizer Engine
+ * AETHERIA 3D • Generative Web Audio Synthesizer Engine (Mobile & Desktop)
  * =============================================================================
  * Pure Web Audio API procedural synthesizer.
  * Creates evolving celestial drones, interactive crystalline chimes, and
  * real-time frequency data for 3D visual reactivity with zero audio file assets.
+ * Optimized with touch-gesture unlocks for mobile Safari and Chrome.
  * =============================================================================
  */
 
@@ -234,3 +235,15 @@ class AetheriaAudioEngine {
 }
 
 window.aetheriaAudio = new AetheriaAudioEngine();
+
+// Mobile audio unlocking on first user touch gesture
+const unlockAudioContext = () => {
+    if (window.aetheriaAudio) {
+        window.aetheriaAudio.init();
+        if (window.aetheriaAudio.ctx && window.aetheriaAudio.ctx.state === "suspended") {
+            window.aetheriaAudio.ctx.resume();
+        }
+    }
+};
+window.addEventListener("touchstart", unlockAudioContext, { once: true, passive: true });
+window.addEventListener("click", unlockAudioContext, { once: true });
