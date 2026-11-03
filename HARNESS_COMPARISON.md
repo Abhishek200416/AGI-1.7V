@@ -86,16 +86,25 @@ This document provides a rigorous architectural and empirical comparison between
   3. When an account encounters a cooldown (e.g., *"Wait 4 hours"*), IVA extracts the duration, flags the profile in `scratch/chrome_quota_ledger.json`, and **seamlessly switches to the next available authenticated profile**.
   4. Work continues 24/7 without manual user intervention.
 
-### 2.4 Beyond Cliché "Purple AI Templates": Bespoke Design Systems
+### 2.4 Beyond Cliché "Purple AI Templates": Frontier Design Engine vs Emergent & Lovable
 - **The Competitor Flaw**:
-  Mainstream coding harnesses suffer from "LLM Template Laziness": whenever asked to build a landing page or web application, they invariably output generic Tailwind cards with purple/indigo gradients, floating pill badges, and centered headline text.
+  Mainstream coding harnesses suffer from "LLM Template Laziness": whenever asked to build a web application, they invariably output generic Tailwind cards with purple/indigo gradients, floating pill badges, and centered headline text. Even specialized tools like **Emergent (emergent.sh)** and **Lovable (lovable.dev)** often rely on fixed component templates or external cloud build pipelines.
 - **The IVA Solution**:
-  IVA enforces distinct mathematical design design systems through [`DesignAestheticTheme`](agents/IVA/engine/agi17/research/research_partner_engine.py):
-  - **Cyber-Terminal**: High-contrast slate `#050811`, electric cyan `#00f0ff`, JetBrains Mono typography, data-dense HUD grids.
-  - **Neo-Glass SaaS**: Deep obsidian navy `#030712`, acrylic backdrop-blur glassmorphism, sky-blue accents.
-  - **Brutalist FinTech**: Pitch black `#000000`, warning canary yellow `#facc15`, high-density ticker borders, zero border-radii.
-  - **Warm Minimalist**: Architectural bone `#fafaf9`, charcoal `#1c1917`, warm ochre `#d97706`, serif display typography.
-  - **Swiss International**: Clean white `#ffffff`, strict baseline grids, high typographic contrast, crimson `#e11d48` focus states.
+  IVA incorporates the [`FrontierDesignEngine`](agents/IVA/engine/agi17/capabilities/frontier_design_engine.py):
+  1. **Algorithmic Dynamic Design Synthesis**:
+     - Generates infinite bespoke design systems from any prompt, mood, or brand keywords (e.g. `design new CyberVoid "space dark synthwave with electric cyan"`).
+     - Calculates relative luminance and mathematical contrast ratios ($L_1/L_2$) to guarantee **100% WCAG 2.1 AA/AAA compliance**.
+     - Computes dynamic fluid scales, spring physics motion tokens, and full CSS variables / Tailwind themes.
+  2. **External Git Repository & Directory Design Extractor (`GitDesignExtractor`)**:
+     - Scans any local directory or cloned Git repository (`design import <path>`).
+     - Parses CSS variables (`:root { ... }`), hex palettes, font families, and border radii.
+     - Automatically extracts the brand's styling and registers it as a reusable, persistent design system in IVA.
+  3. **MCP Server UI & Token Ingestion**:
+     - Queries connected MCP tools (Context7, Tavily, UI schema docs) for current design tokens and component specs.
+  4. **Living Interactive Frontend Synthesizer (`design build <name>`)**:
+     - Synthesizes complete, living web applications with zero npm build step required.
+     - Includes reactive client-side state stores, real-time search/filter tables, modal sheets, and 60fps dynamic spatial WebGL/Canvas visualizers.
+     - Formally audited by [`AntiAiSlopLinter`](agents/IVA/engine/agi17/capabilities/creative_design_engine.py) to guarantee zero generic AI design clichés.
 
 ### 2.5 100-Specialist Contract Governance
 - **The Competitor Flaw**:
@@ -186,6 +195,20 @@ While standard harnesses emit unstructured prose that rots immediately, IVA's Re
   Performs complete upfront intake, locks requirements, and executes the entire engineering workflow (scaffolding, testing, AST patch repair, documentation) without pausing for intermediate confirmation.
 - **Interactive Co-Pilot Mode (`mode copilot`)**:
   Provides granular step-by-step guidance, explaining each diff before disk write and presenting checkpoints for operators who want line-by-line oversight.
+
+### 2.14 The Adaptive Ambiguity Protocol: "Ask When Serious" vs Digital Baby-Sitting
+- **The Competitor Dilemma**:
+  Standard agents either suffer from *hyper-interruption* (asking permission for every trivial file write or test run) or *reckless silence* (making irreversible assumptions on critical architectural dilemmas or destructive commands).
+- **The IVA Solution**:
+  IVA implements the [`AdaptiveAmbiguityEvaluator`](agents/IVA/engine/agi17/research/adaptive_ambiguity_evaluator.py):
+  1. Routine engineering actions (code patches, test runs, AST refactoring) proceed silently with **zero interruptions**.
+  2. When a prompt encounters a **Serious Ambiguity or Dilemma** (Score $\ge 0.70$):
+     - *Destructive Risk Gate*: Irreversible file deletion or schema drops trigger safe dry-run options.
+     - *Architectural Fork Gate*: Mutually exclusive technologies (e.g. 3D WebGL vs 2D DOM; SQLite vs Postgres; Vanilla vs React).
+  3. Formulates a structured **Strategic Fork**:
+     - Explains the architectural trade-off concisely.
+     - Presents 2–3 concrete technical alternatives with a **★ (Recommended)** default.
+     - The operator selects with a single keystroke (`1`, `2`, `3`) or presses Enter to proceed with the recommended path.
 
 ---
 

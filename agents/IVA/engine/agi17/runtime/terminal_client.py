@@ -112,6 +112,7 @@ class TerminalClient:
         self._router: Optional[Any] = None
         self._session_mgr: Optional[Any] = None
         self._workspace_indexer: Optional[Any] = None
+        self._design_store: Optional[Any] = None
         self.execution_mode: str = os.environ.get("IVA_MODE", "AUTONOMOUS").upper()
 
     @property
@@ -128,6 +129,13 @@ class TerminalClient:
             mem = getattr(self.adapter, "memory", None)
             self._workspace_indexer = WorkspaceIndexer(memory_adapter=mem)
         return self._workspace_indexer
+
+    @property
+    def design_store(self) -> Any:
+        if self._design_store is None:
+            from ..capabilities.frontier_design_engine import DesignSystemStore
+            self._design_store = DesignSystemStore()
+        return self._design_store
 
     @property
     def adapter(self) -> Any:
@@ -682,25 +690,52 @@ class TerminalClient:
         }
         scope = scope_map.get(s_choice, ArchitecturalScope.FULL_STACK_APP)
 
-        print(f"\n   [3/3] Select design aesthetic system (avoids repetitive generic purple templates):")
+        print(f"\n   [3/3] Select or synthesize design aesthetic system:")
         print("         [1] Cyber-Terminal (Slate #050811, Electric Cyan #00f0ff, JetBrains Mono — High-Tech)")
         print("         [2] Neo-Glass SaaS (Deep Navy, Acrylic Glassmorphism, Sky Blue #38bdf8 — Modern Product)")
         print("         [3] Brutalist FinTech (Pitch Black #000000, Canary Yellow #facc15, Data Density)")
         print("         [4] Warm Minimalist (Clean Neutral #fafaf9, Charcoal & Ochre, Editorial Serif)")
         print("         [5] Swiss International (Pure White, Grid Alignment, Crimson #e11d48 Accent)")
+        print("         [6] Dynamic Bespoke Vibe (Algorithmic synthesis from custom prompt / keywords)")
+        print("         [7] Import Styling from Git Repository or Directory (Extracts CSS tokens & colors)")
         try:
-            a_choice = input("         Select aesthetic [1-5, default: 1]: ").strip()
+            a_choice = input("         Select aesthetic [1-7, default: 1]: ").strip()
         except (KeyboardInterrupt, EOFError):
             a_choice = "1"
 
-        theme_map = {
-            "1": DesignAestheticTheme.CYBER_TERMINAL,
-            "2": DesignAestheticTheme.NEO_GLASS_SAAS,
-            "3": DesignAestheticTheme.BRUTALIST_FINTECH,
-            "4": DesignAestheticTheme.WARM_MINIMALIST,
-            "5": DesignAestheticTheme.SWISS_INTERNATIONAL,
-        }
-        theme = theme_map.get(a_choice, DesignAestheticTheme.CYBER_TERMINAL)
+        custom_ds = None
+        if a_choice == "6":
+            try:
+                vibe_in = input("         Enter aesthetic vibe description (e.g. 'space synthwave esports'): ").strip()
+            except (KeyboardInterrupt, EOFError):
+                vibe_in = "Modern high-contrast digital interface"
+            from ..capabilities.frontier_design_engine import DynamicDesignSynthesizer
+            custom_ds = DynamicDesignSynthesizer.synthesize_from_vibe(vision[:24], vibe_in or "Bespoke digital interface")
+            self.design_store.save_system(custom_ds)
+            print(bold(green(f"         ✅ Algorithmic Design Synthesized: {custom_ds.name} (WCAG {custom_ds.wcag_rating})")))
+            theme = DesignAestheticTheme.CYBER_TERMINAL
+        elif a_choice == "7":
+            try:
+                repo_in = input("         Enter path to Git repository or stylesheet folder: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                repo_in = "."
+            from ..capabilities.frontier_design_engine import GitDesignExtractor
+            try:
+                custom_ds = GitDesignExtractor.extract_from_directory(repo_in or ".")
+                self.design_store.save_system(custom_ds)
+                print(bold(green(f"         ✅ Extracted & Imported Design System from: {repo_in} (WCAG {custom_ds.wcag_rating})")))
+            except Exception as e:
+                print(yellow(f"         ⚠️ Extraction notice: {e}. Using Cyber-Terminal baseline."))
+            theme = DesignAestheticTheme.CYBER_TERMINAL
+        else:
+            theme_map = {
+                "1": DesignAestheticTheme.CYBER_TERMINAL,
+                "2": DesignAestheticTheme.NEO_GLASS_SAAS,
+                "3": DesignAestheticTheme.BRUTALIST_FINTECH,
+                "4": DesignAestheticTheme.WARM_MINIMALIST,
+                "5": DesignAestheticTheme.SWISS_INTERNATIONAL,
+            }
+            theme = theme_map.get(a_choice, DesignAestheticTheme.CYBER_TERMINAL)
 
         print("\n   " + bold(green("✅ Requirements Locked In Upfront! Zero mid-turn interruptions.")))
         print(f"      • Scope     : {cyan(scope.value)}")
@@ -1037,6 +1072,133 @@ class TerminalClient:
         except Exception as e:
             print(yellow(f"   Could not run git diff: {e}"))
         print(cyan("=" * 78) + "\n")
+
+    def print_design_systems(self) -> None:
+        """Displays all registered bespoke and seed design systems with contrast metrics."""
+        systems = self.design_store.list_systems()
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🎨 FRONTIER BESPOKE DESIGN SYSTEMS & ADAPTIVE PALETTES")))
+        print(cyan("=" * 78))
+        print(dim("   Beyond default templates: Algorithmic synthesis, Git extraction & living UI (WCAG AA/AAA)\n"))
+
+        for ds in systems:
+            src_tag = f"[{ds.source.upper()}]"
+            wcag_color = green if ds.wcag_rating in ("AAA", "AA") else red
+            print(f"   • {bold(ds.name.ljust(24))} {cyan(ds.system_id.ljust(26))} {dim(src_tag.ljust(12))}")
+            print(f"     Bg: {ds.bg_primary} | Accent: {magenta(ds.accent_primary)} | Text: {ds.text_primary} | Font: {dim(ds.font_body[:22])}")
+            print(f"     Contrast: {wcag_color(f'{ds.contrast_ratio:.1f}:1 (WCAG {ds.wcag_rating})')} | {dim(ds.description[:60])}\n")
+
+        print("   " + dim("Commands:"))
+        print("   " + dim("• design new <name> <vibe>       : Synthesize custom design from natural prompt"))
+        print("   " + dim("• design import <path_or_git>   : Extract styling tokens from Git repo or directory"))
+        print("   " + dim("• design inspect <name>          : Detailed token inspection & hex values"))
+        print("   " + dim("• design export <name> [css|tw]  : Export CSS variables or Tailwind theme"))
+        print("   " + dim("• design lint <file>             : Audit code with Anti-AI-Slop Linter"))
+        print("   " + dim("• design build <name> [prompt]   : Synthesize living interactive frontend app"))
+        print(cyan("=" * 78) + "\n")
+
+    def execute_design_command(self, arg: str) -> None:
+        """Routes design CLI subcommands."""
+        parts = arg.strip().split(maxsplit=2)
+        sub = parts[0].lower() if parts else "list"
+
+        if sub in ("list", ""):
+            self.print_design_systems()
+        elif sub == "new":
+            name = parts[1] if len(parts) > 1 else "Custom_System"
+            vibe = parts[2] if len(parts) > 2 else "Modern high-contrast digital interface"
+            from ..capabilities.frontier_design_engine import DynamicDesignSynthesizer
+            ds = DynamicDesignSynthesizer.synthesize_from_vibe(name, vibe)
+            self.design_store.save_system(ds)
+            print(bold(green(f"\n   ✅ Synthesized bespoke design system: {ds.name} [{ds.system_id}]")))
+            print(f"      • WCAG Contrast : {cyan(f'{ds.contrast_ratio:.1f}:1 ({ds.wcag_rating})')}")
+            print(f"      • Background    : {ds.bg_primary}")
+            print(f"      • Accent        : {ds.accent_primary}")
+            print(f"      • Typography    : {ds.font_body}")
+            print(f"      • Saved to      : {self.design_store.storage_dir / f'{ds.system_id}.json'}\n")
+        elif sub == "import":
+            target_path = parts[1] if len(parts) > 1 else "."
+            from ..capabilities.frontier_design_engine import GitDesignExtractor
+            try:
+                ds = GitDesignExtractor.extract_from_directory(target_path)
+                self.design_store.save_system(ds)
+                print(bold(green(f"\n   ✅ Extracted & imported design system from: {target_path}")))
+                print(f"      • Name          : {ds.name} [{ds.system_id}]")
+                print(f"      • Primary Bg    : {ds.bg_primary}")
+                print(f"      • Accent Color  : {ds.accent_primary}")
+                print(f"      • Typography    : {ds.font_body}")
+                print(f"      • Contrast      : {ds.contrast_ratio:.1f}:1 ({ds.wcag_rating})\n")
+            except Exception as e:
+                print(red(f"\n   Could not import design: {e}\n"))
+        elif sub == "inspect":
+            target = parts[1] if len(parts) > 1 else ""
+            ds = self.design_store.get_system(target)
+            if not ds:
+                print(red(f"\n   Design system not found: {target}\n"))
+                return
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta(f"   🎨 DESIGN SYSTEM INSPECTOR: {ds.name} [{ds.system_id}]")))
+            print(cyan("=" * 78))
+            print(f"   • Description    : {ds.description}")
+            print(f"   • Source         : {ds.source} ({ds.source_reference or 'internal'})")
+            print(f"   • Backgrounds    : Primary {ds.bg_primary} | Surface {ds.bg_surface} | Raised {ds.bg_surface_raised}")
+            print(f"   • Text Colors    : Primary {ds.text_primary} | Muted {ds.text_muted}")
+            print(f"   • Accents        : Primary {ds.accent_primary} | Hover {ds.accent_hover} | Subtle {ds.accent_subtle}")
+            print(f"   • Typography     : Display: {ds.font_display} | Body: {ds.font_body} | Mono: {ds.font_mono}")
+            print(f"   • Border Radius  : sm={ds.radius_sm}, md={ds.radius_md}, lg={ds.radius_lg}")
+            print(f"   • Contrast Ratio : {cyan(f'{ds.contrast_ratio:.2f}:1')} (WCAG {green(ds.wcag_rating)})")
+            print(cyan("=" * 78) + "\n")
+        elif sub == "export":
+            target = parts[1] if len(parts) > 1 else ""
+            fmt = parts[2].lower() if len(parts) > 2 else "css"
+            ds = self.design_store.get_system(target)
+            if not ds:
+                print(red(f"\n   Design system not found: {target}\n"))
+                return
+            if fmt == "tailwind":
+                print(json.dumps(ds.to_tailwind_theme(), indent=2))
+            elif fmt == "json":
+                print(json.dumps(ds.to_dict(), indent=2))
+            else:
+                print(ds.to_css_variables())
+        elif sub == "lint":
+            target_file = parts[1] if len(parts) > 1 else ""
+            from ..capabilities.creative_design_engine import AntiAiSlopLinter
+            p = Path(target_file)
+            if not p.is_file():
+                print(red(f"\n   File not found for linting: {target_file}\n"))
+                return
+            code = p.read_text(encoding="utf-8", errors="replace")
+            res = AntiAiSlopLinter.audit_markup(code)
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta(f"   🛡️ ANTI-AI-SLOP LINTER AUDIT: {p.name}")))
+            print(cyan("=" * 78))
+            status = green("SLOP-FREE (Clean Human Craft)") if res.is_slop_free else red(f"SLOP DETECTED (Score: {res.slop_score:.2f})")
+            print(f"   • Status: {status}")
+            if res.violations:
+                print(f"   • Violations ({len(res.violations)}):")
+                for v in res.violations:
+                    print(f"     [{red(v.severity)}] {bold(v.rule_id)}: {v.description}")
+                    print(f"        Snippet: {dim(v.snippet[:60])}")
+                    print(f"        Fix: {green(v.recommendation)}")
+            print(cyan("=" * 78) + "\n")
+        elif sub == "build":
+            target_name = parts[1] if len(parts) > 1 else "NexusApp"
+            prompt = parts[2] if len(parts) > 2 else "Interactive telemetry dashboard"
+            from ..capabilities.frontier_design_engine import FrontierApplicationSynthesizer
+            ds = self.design_store.get_system(target_name) or self.design_store.get_system("seed_precision_industrial") or self.design_store.list_systems()[0]
+            out_dir = Path("scratch") / "apps" / target_name.lower()
+            out_dir.mkdir(parents=True, exist_ok=True)
+            html_code = FrontierApplicationSynthesizer.synthesize_application(ds, target_name, prompt)
+            out_file = out_dir / "index.html"
+            out_file.write_text(html_code, encoding="utf-8")
+            print(bold(green(f"\n   ✅ Living Frontend Application Synthesized (Emergent/Lovable Grade)!")))
+            print(f"      • App Title     : {target_name}")
+            print(f"      • Design System : {ds.name} (WCAG {ds.wcag_rating})")
+            print(f"      • Written to    : {out_file.resolve()}")
+            print(f"      • Open URL      : {out_file.resolve().as_uri()}\n")
+        else:
+            print(yellow(f"\n   Unknown design subcommand '{sub}'. Type 'design list' to view available commands.\n"))
 
     def execute_evolve(self) -> None:
         """Runs the 24/7 continuous autonomous self-evolution cycle in terminal."""
@@ -2241,6 +2403,34 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
 
 
 
+        # Check Adaptive Ambiguity Evaluator ("Ask When Serious" Protocol)
+        try:
+            from ..research.adaptive_ambiguity_evaluator import AdaptiveAmbiguityEvaluator
+            assessment = AdaptiveAmbiguityEvaluator.evaluate(clean)
+            if assessment.is_serious and assessment.fork:
+                print(assessment.fork.format_interactive_prompt())
+                try:
+                    fork_choice = input().strip()
+                except (KeyboardInterrupt, EOFError):
+                    fork_choice = assessment.fork.default_option_id
+
+                if not fork_choice:
+                    fork_choice = assessment.fork.default_option_id
+
+                selected_opt = None
+                for opt in assessment.fork.options:
+                    if opt.option_id == fork_choice:
+                        selected_opt = opt
+                        break
+                if not selected_opt:
+                    selected_opt = assessment.fork.options[0]
+
+                print(bold(green(f"\n   ✅ Selected Strategic Path: [{selected_opt.option_id}] {selected_opt.label}")))
+                print(dim(f"      Proceeding autonomously with: {selected_opt.description}\n"))
+                clean = f"{clean}\n[Architectural Decision Adopted: {selected_opt.label} - {selected_opt.description}]"
+        except Exception:
+            pass
+
         # Model Invocation Path
         print("\n" + cyan("┌─ ") + bold(magenta("🌟 Iva (Cognitive Engineering Partner)")) + dim(" ... thinking"))
         task_id = f"TERM-{int(time.time())}"
@@ -2346,7 +2536,10 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             elif low in ("diff", "changes") or low.startswith("diff "):
                 target = line[5:].strip() if low.startswith("diff ") else None
                 self.print_color_diff(target)
-            elif low in ("1", "arch", "architecture", "design"):
+            elif low in ("design", "designs") or low.startswith("design "):
+                arg = line[6:].strip() if low.startswith("design ") else ""
+                self.execute_design_command(arg)
+            elif low in ("1", "arch", "architecture"):
                 self.execute_architecture_wizard()
             elif low in ("2", "web", "website", "3d", "webapp", "build"):
                 self.execute_web_3d_wizard()

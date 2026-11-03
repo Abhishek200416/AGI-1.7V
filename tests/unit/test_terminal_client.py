@@ -377,9 +377,45 @@ class TestTerminalClient(unittest.TestCase):
         self.assertIn("MULTI-PROVIDER API KEYS", output)
         self.assertIn("UNIFIED CODEBASE DIFF", output)
 
+    def test_20_frontier_design_and_strategic_fork_commands(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.execute_design_command("list")
+            client.execute_design_command("new CyberSynth Modern dark synthwave terminal")
+            client.execute_design_command("inspect CyberSynth")
+            client.execute_design_command("export CyberSynth css")
+            client.execute_design_command("build CyberApp Space visualization dashboard")
+
+        output = buf.getvalue()
+        self.assertIn("FRONTIER BESPOKE DESIGN SYSTEMS", output)
+        self.assertIn("Synthesized bespoke design system", output)
+        self.assertIn("DESIGN SYSTEM INSPECTOR", output)
+        self.assertIn(":root", output)
+        self.assertIn("Living Frontend Application Synthesized", output)
+
+        # Test Adaptive Ambiguity Evaluator Strategic Fork in execute_prompt with mock adapter
+        mock_adapter = MagicMock()
+        mock_adapter.model_adapter.invoke.return_value = {
+            "task_id": "TEST-FORK-01",
+            "response_text": "Executed non-destructive dry-run simulation.",
+            "model": "gemini-2.5-flash",
+            "token_usage": {"input_tokens": 40, "output_tokens": 20},
+            "duration_sec": 0.1,
+        }
+        client_fork = TerminalClient(adapter=mock_adapter, storage_root=self.temp_dir)
+        buf_fork = io.StringIO()
+        with patch("sys.stdout", buf_fork), patch("builtins.input", return_value="1"):
+            client_fork.execute_prompt("Drop all database tables and purge workspace history")
+        fork_out = buf_fork.getvalue()
+        self.assertIn("ARCHITECTURAL STRATEGIC FORK", fork_out)
+        self.assertIn("Selected Strategic Path", fork_out)
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
 
 
