@@ -33,8 +33,16 @@ curl -fsSL https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.sh 
 ```bash
 git clone https://github.com/Abhishek200416/IVA.git
 cd IVA
-python setup_iva.py
+
+# Windows (Command Prompt / PowerShell):
+py -3 setup_iva.py
+# (Or simply run: .\setup.bat or .\setup.ps1)
+
+# Linux / macOS / Android Termux:
+python3 setup_iva.py
 ```
+
+> **Windows Tip**: On Windows, official Python installs the `py` launcher. Run `py -3 setup_iva.py` (or `.\setup.bat`). If typing `python` displays *"Python was not found; run without arguments to install from the Microsoft Store"*, use `py -3` or run `.\setup.bat` / `.\setup.ps1` directly!
 
 ### 🔄 Already Installed? Update to Latest Version in 1 Step (Zero Re-cloning)
 If you already cloned or installed IVA previously, **you DO NOT need to re-clone or lose your files**. Your `.env` credentials and cognitive SQLite WAL memory are automatically safeguarded:
@@ -43,14 +51,19 @@ If you already cloned or installed IVA previously, **you DO NOT need to re-clone
   ```text
   iva> update
   ```
-- **From Terminal / Command Prompt**:
+- **From Windows PowerShell / CMD**:
+  ```powershell
+  py -3 run_iva.py update
+  # Or: .\run_iva.bat update
+  ```
+- **From Linux / macOS / Termux**:
   ```bash
-  python run_iva.py update
+  python3 run_iva.py update
   ```
 - **Via Git**:
   ```bash
   git pull origin main
-  python setup_iva.py
+  py -3 setup_iva.py
   ```
 - **Via Single-Line Installer**: Re-running the installer automatically detects your existing installation and pulls the latest updates:
   - Windows: `irm https://raw.githubusercontent.com/Abhishek200416/IVA/main/install.ps1 | iex`
