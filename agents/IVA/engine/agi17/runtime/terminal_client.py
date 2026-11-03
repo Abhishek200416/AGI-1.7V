@@ -369,14 +369,31 @@ class TerminalClient:
             prov_type = status.get("provider_type", "gemini").upper()
             models = provider.fetch_remote_models() or status.get("available_models", [])
             print(f"   • Active Provider       : {green(prov_type)}")
-            print(f"   • Active Model Target   : {bold(cyan(active_m))} {green('(Autonomously Selected)')}")
+            if active_m.upper() == "AUTO":
+                print(f"   • Active Model Target   : {bold(cyan('AUTO (Dynamic Action Swapper)'))} {green('(Auto-swapping fastest/best model per action)')}")
+            else:
+                print(f"   • Active Model Target   : {bold(cyan(active_m))} {green('(Autonomously Selected)')}")
             print(f"   • Zero User Prompting   : {green('Active (Zero friction, no manual selection required)')}")
             print(f"   • Available Models Count: {yellow(str(len(models)))}")
             if models:
-                print("\n   " + bold(f"Discovered Remote Models ({len(models)} Total):"))
-                for idx, m in enumerate(models, 1):
-                    marker = green("▶ (ACTIVE)") if m == active_m else dim("•")
-                    print(f"     [{idx:2d}] {marker} {m}")
+                try:
+                    from ..adapters.model_catalog import ModelMetadataCatalog
+                    ranked_meta = ModelMetadataCatalog.rank_and_sort_models(models)
+                except Exception:
+                    ranked_meta = [{"model_id": m, "company": prov_type, "params_label": "", "speed_tier": "", "badge": "", "specialty": ""} for m in models]
+
+                print("\n   " + bold(f"Discovered Remote Models ({len(ranked_meta)} Total — Ordered: Highest B Params → Lowest B):"))
+                for idx, item in enumerate(ranked_meta, 1):
+                    m_id = item["model_id"]
+                    comp = item.get("company", "Independent")
+                    plabel = item.get("params_label", "")
+                    speed = item.get("speed_tier", "")
+                    badge = item.get("badge", "")
+                    spec = item.get("specialty", "")
+                    marker = green("▶ (ACTIVE)") if (m_id == active_m or (active_m.upper() == "AUTO" and idx == 1)) else dim("•")
+                    print(f"     [{idx:2d}] {marker} [{comp}] {m_id} [{plabel}] {speed} {badge}")
+                    if spec:
+                        print(f"          ↳ {dim(spec)}")
             else:
                 print(dim("   (Provider models list cached or endpoint returned default catalog)"))
         else:

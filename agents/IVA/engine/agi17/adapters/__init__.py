@@ -19,6 +19,9 @@ def __getattr__(name: str):
     elif name == "UniversalAPIProvider":
         from .universal_api_provider import UniversalAPIProvider
         return UniversalAPIProvider
+    elif name == "ModelMetadataCatalog":
+        from .model_catalog import ModelMetadataCatalog
+        return ModelMetadataCatalog
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 __all__ = [
@@ -32,5 +35,6 @@ __all__ = [
     "OmniRouteResponse",
     "OmniRouteTelemetry",
     "UniversalAPIProvider",
+    "ModelMetadataCatalog",
 ]
 

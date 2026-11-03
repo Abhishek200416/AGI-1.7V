@@ -70,6 +70,7 @@ def save_key_and_model_to_env(env_path: Path, key: str, provider: str, model: st
     }
     target_var = key_var_map.get(provider.lower(), "GEMINI_API_KEY")
     updated_keys = {target_var: key, "ACTIVE_MODEL": model, "IVA_MODEL": model, "ACTIVE_PROVIDER": provider.lower()}
+    updated_keys[f"{provider.upper()}_MODEL"] = model
 
     if provider.lower() == "nvidia":
         updated_keys["OPENAI_API_KEY"] = key
@@ -147,76 +148,110 @@ def select_provider_dialog() -> str:
     return p_map.get(p_sel, "nvidia")
 
 def select_model_dialog(models: List[str], prov: str) -> str:
-    """Ranks and presents all available remote models for operator selection with fuzzy search."""
+    """Ranks and presents all available remote models ordered strictly by parameter size (Highest B -> Lowest B).
+    
+    Shows company attribution, parameter count, speed tier, and domain specialty badges.
+    Supports Option [0] for Autonomous Dynamic Action-Based Swapping.
+    """
     if not models:
-        return "nvidia/llama-3.1-nemotron-70b-instruct" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
-
-    print(f"\n  📋 All {len(models)} Available Remote Models for your {prov.upper()} API Key:")
-    pref_order = [
-        "nvidia/llama-3.1-nemotron-70b-instruct",
-        "nvidia/llama-3.1-nemotron-ultra-253b-v1",
-        "nvidia/nemotron-3-super-120b-a12b",
-        "nvidia/nemotron-3-ultra-550b-a55b",
-        "nvidia/nemotron-4-340b-instruct",
-        "nvidia/llama-3.1-nemotron-51b-instruct",
-        "openai/gpt-oss-20b",
-        "deepseek-ai/deepseek-v4.1-flash",
-        "deepseek-ai/deepseek-coder-6.7b-instruct",
-        "mistralai/mistral-large-2-instruct",
-        "mistralai/mistral-large-4-1t-a52b",
-        "meta/llama-3.2-11b-vision-instruct",
-        "meta/llama-3.2-90b-vision-instruct",
-        "writer/palmyra-creative-122b",
-        "writer/palmyra-fin-70b-32k",
-        "writer/palmyra-med-70b-32k",
-        "moonshotai/kimi-k2.6",
-        "gemini-2.5-flash",
-        "claude-3-5-sonnet-20241022",
-        "gpt-4o",
-        "llama-3.3-70b-versatile",
-        "gemini-2.5-pro",
-        "gemini-2.0-flash",
-        "gpt-4o-mini",
-        "gemini-1.5-pro",
-        "claude-3-5-haiku-20241022",
-    ]
-    sorted_models: List[str] = []
-    for pref in pref_order:
-        for m in models:
-            if (m == pref or m.startswith(pref)) and m not in sorted_models:
-                sorted_models.append(m)
-    remaining = sorted([m for m in models if m not in sorted_models])
-    sorted_models.extend(remaining)
-
-    for idx, m_id in enumerate(sorted_models, 1):
-        rec_tag = " (Recommended)" if idx == 1 else ""
-        print(f"     [{idx:2d}] {m_id}{rec_tag}")
-    print(f"     [ C] Custom model identifier override")
+        return "AUTO" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
 
     try:
-        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, keyword (e.g. ultra, 120b), or Enter for 1]: ").strip()
+        from agents.IVA.engine.agi17.adapters.model_catalog import ModelMetadataCatalog
+    except Exception:
+        try:
+            from agents.IVA.engine.agi17.adapters import ModelMetadataCatalog
+        except Exception:
+            ModelMetadataCatalog = None
+
+    if ModelMetadataCatalog is not None:
+        sorted_meta = ModelMetadataCatalog.rank_and_sort_models(models)
+    else:
+        sorted_meta = [
+            {
+                "model_id": m,
+                "company": prov.capitalize(),
+                "params_label": "?B",
+                "speed_tier": "[⚖️ BALANCED]",
+                "badge": "★ GENERAL",
+                "specialty": "Standard Model Target",
+                "is_recommended": False,
+            }
+            for m in sorted(models)
+        ]
+
+    print(f"\n  " + "═" * 84)
+    print(f"  🤖 ALL {len(sorted_meta)} REMOTE MODELS FOR {prov.upper()} (ORDERED: HIGHEST B PARAMS → LOWEST B PARAMS)")
+    print("  " + "═" * 84)
+    print("  [Company] Model Identifier [Params] [Speed Tier] ★ Specialty Badge")
+    print("  " + "─" * 84)
+
+    # Highlight Dynamic Swapper as Option [0]
+    print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper (Recommended for Autonomous Operation)")
+    print("       ⚡ Swaps dynamically per action: 7B/8B for fast routing, 90B for vision, 253B for deep code")
+    print("  " + "─" * 84)
+
+    rec_index = 1
+    for idx, item in enumerate(sorted_meta, 1):
+        if item.get("is_recommended"):
+            rec_index = idx
+        m_id = item["model_id"]
+        comp = item.get("company", "Independent")
+        plabel = item.get("params_label", "")
+        speed = item.get("speed_tier", "")
+        badge = item.get("badge", "")
+        spec = item.get("specialty", "")
+
+        print(f"  [{idx:2d}] [{comp}] {m_id} [{plabel}] {speed} {badge}")
+        if spec:
+            print(f"       ↳ {spec}")
+
+    print("  " + "─" * 84)
+    print("  [ C] Custom model identifier override")
+    print("  " + "═" * 84)
+
+    default_choice = str(rec_index)
+    rec_model_name = sorted_meta[rec_index - 1]["model_id"].split("/")[-1]
+    try:
+        prompt_txt = (
+            f"\n  Select active model target:\n"
+            f"    • Enter [0] or 'auto' for Dynamic Swapper (fastest response per action)\n"
+            f"    • Enter [{rec_index}] or press Enter for Recommended Workhorse ({rec_model_name})\n"
+            f"    • Enter [1-{len(sorted_meta)}] or keyword (e.g. 550b, 120b, vision, coder, dbrx): "
+        )
+        m_choice = input(prompt_txt).strip()
     except (KeyboardInterrupt, EOFError):
-        m_choice = "1"
+        m_choice = default_choice
 
     if not m_choice:
-        return sorted_models[0]
+        return sorted_meta[rec_index - 1]["model_id"]
+    elif m_choice.lower() in ("0", "auto", "swapper", "dynamic"):
+        print("  🎯 Selected: AUTO (Dynamic Action-Based Model Swapper)")
+        return "AUTO"
+    elif m_choice.lower() in ("rec", "recommended", "best"):
+        chosen = sorted_meta[rec_index - 1]["model_id"]
+        print(f"  🎯 Selected Recommended Workhorse: {chosen}")
+        return chosen
     elif m_choice.lower() == "c":
         try:
             custom_m = input("  Enter custom model name: ").strip()
         except (KeyboardInterrupt, EOFError):
             custom_m = ""
-        return custom_m or sorted_models[0]
-    elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_models):
-        return sorted_models[int(m_choice) - 1]
+        return custom_m or sorted_meta[0]["model_id"]
+    elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_meta):
+        chosen = sorted_meta[int(m_choice) - 1]["model_id"]
+        print(f"  🎯 Selected Model [{m_choice}]: {chosen}")
+        return chosen
     else:
-        for sm in sorted_models:
-            if m_choice.lower() == sm.lower():
-                print(f"  🎯 Exact Match: {sm}")
-                return sm
-        for sm in sorted_models:
-            if m_choice.lower() in sm.lower():
-                print(f"  🎯 Keyword Match: '{m_choice}' -> {sm}")
-                return sm
+        # Match by model_id exact or substring or specialty
+        for sm in sorted_meta:
+            if m_choice.lower() == sm["model_id"].lower():
+                print(f"  🎯 Exact Match: {sm['model_id']}")
+                return sm["model_id"]
+        for sm in sorted_meta:
+            if m_choice.lower() in sm["model_id"].lower() or m_choice.lower() in sm.get("specialty", "").lower():
+                print(f"  🎯 Keyword Match: '{m_choice}' -> {sm['model_id']}")
+                return sm["model_id"]
         return m_choice
 
 def configure_multi_provider_pool(env_file: Path) -> None:

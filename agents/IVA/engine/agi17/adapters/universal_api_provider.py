@@ -29,6 +29,7 @@ from .model_adapter import (
     ModelResponseValidationError,
     redact_sensitive_text,
 )
+from .model_catalog import ModelMetadataCatalog
 
 logger = logging.getLogger("UniversalAPIProvider")
 
@@ -484,6 +485,9 @@ class UniversalAPIProvider(BaseModelProvider):
             ],
         }
 
+        if os.environ.get("IVA_MODEL") == "AUTO" or os.environ.get("ACTIVE_MODEL") == "AUTO" or getattr(self, "model_name", "") == "AUTO":
+            return "AUTO"
+
         actual_prov = "nvidia" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else self.provider_type
         pref_list = preferences.get(actual_prov, preferences.get(self.provider_type, preferences.get("openai", [])))
         for pref in pref_list:
@@ -495,19 +499,76 @@ class UniversalAPIProvider(BaseModelProvider):
                     logger.info("Auto-discovered and selected optimal model (matched): %s", c)
                     return c
 
-        return candidates[0]
+        # If no explicit preference matches, pick the recommended model or highest parameter model
+        ranked = ModelMetadataCatalog.rank_and_sort_models(candidates)
+        for r in ranked:
+            if r.get("is_recommended"):
+                return r["model_id"]
+        return ranked[0]["model_id"] if ranked else candidates[0]
 
     def get_model_discovery_status(self) -> Dict[str, Any]:
         """Returns structured metadata about model auto-discovery."""
+        models = getattr(self, "available_models", [])
         return {
             "provider_type": self.provider_type,
             "active_model": self.model_name,
             "auto_discovered": getattr(self, "auto_discovered", False),
-            "available_models_count": len(getattr(self, "available_models", [])),
-            "available_models": getattr(self, "available_models", []),
+            "available_models_count": len(models),
+            "available_models": models,
+            "models_metadata": ModelMetadataCatalog.rank_and_sort_models(models) if models else [],
             "base_url": self.base_url,
             "has_key": bool(self.api_key),
         }
+
+    def resolve_effective_model(self, request: ModelRequest) -> str:
+        """Determines active model target for execution, running dynamic action swapping if enabled."""
+        override = getattr(request, "model_override", None)
+        target = override or self.model_name or "nvidia/llama-3.1-nemotron-70b-instruct"
+        if target.upper() != "AUTO":
+            return target
+
+        # Dynamic Action-Based Model Swapping is active
+        action_type = getattr(request, "action_type", None)
+        if not action_type:
+            prompt_lower = (request.prompt or "").lower()
+            agent_lower = (getattr(request, "agent_id", "") or "").lower()
+            if any(k in prompt_lower for k in ("screenshot", "image", "visual", "dom", "browser tab", "inspect page")) or "vision" in agent_lower:
+                action_type = "vision"
+            elif any(k in prompt_lower for k in ("volatility", "hawkes", "option", "greeks", "nifty", "banknifty", "svi", "arbitrage", "derivative")) or "quant" in agent_lower:
+                action_type = "finance"
+            elif any(k in prompt_lower for k in ("def ", "class ", "import ", "syntax", "refactor", "bug", "patch", "traceback", "ast", "pytest", "unittest")) or "swe_" in agent_lower:
+                action_type = "coding"
+            elif any(k in prompt_lower for k in ("mathematical", "proof", "theorem", "architecture", "frontier", "deep reasoning", "gpqa")) or "math_" in agent_lower or "plan_" in agent_lower:
+                action_type = "reasoning"
+            elif any(k in prompt_lower for k in ("route", "classify", "triage", "parse json", "yes/no", "short")) or len(request.prompt) < 80:
+                action_type = "fast"
+            else:
+                action_type = "default"
+
+        if self.available_models:
+            models_pool = self.available_models
+        else:
+            is_nv = getattr(self, "api_key", "").startswith("nvapi-") or "integrate.api.nvidia.com" in getattr(self, "base_url", "")
+            if is_nv:
+                models_pool = [
+                    "nvidia/llama-3.1-nemotron-70b-instruct",
+                    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+                    "nvidia/nemotron-3-super-120b-a12b",
+                    "meta/llama-3.2-90b-vision-instruct",
+                    "mistralai/mistral-7b-instruct-v0.3",
+                    "ibm/granite-3.0-8b-instruct",
+                ]
+            elif self.provider_type == "gemini":
+                models_pool = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
+            else:
+                models_pool = ["gpt-4o", "gpt-4o-mini"]
+
+        chosen = ModelMetadataCatalog.get_action_model(models_pool, action_type=action_type)
+        logger.info(
+            "Dynamic Action Swapper: routed task '%s' [action: %s] -> %s",
+            request.task_id, action_type, chosen
+        )
+        return chosen
 
     @classmethod
     def has_available_credentials(cls) -> bool:
@@ -619,7 +680,9 @@ class UniversalAPIProvider(BaseModelProvider):
 
     def _call_gemini_rest(self, request: ModelRequest, start_time: float) -> Dict[str, Any]:
         """Calls Google Gemini GenerateContent REST API using Python standard library urllib."""
-        eff_model = getattr(request, "model_override", None) or self.model_name
+        eff_model = self.resolve_effective_model(request)
+        if eff_model.upper() == "AUTO":
+            eff_model = "gemini-2.5-flash"
         # Sanitize model name for Google API path
         if eff_model.startswith("models/"):
             eff_model = eff_model[len("models/"):]
@@ -747,7 +810,9 @@ class UniversalAPIProvider(BaseModelProvider):
 
     def _call_openai_rest(self, request: ModelRequest, start_time: float) -> Dict[str, Any]:
         """Calls OpenAI-compatible /chat/completions endpoint using standard library urllib."""
-        eff_model = getattr(request, "model_override", None) or self.model_name
+        eff_model = self.resolve_effective_model(request)
+        if eff_model.upper() == "AUTO":
+            eff_model = "nvidia/llama-3.1-nemotron-70b-instruct" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else "gpt-4o-mini"
         endpoint = f"{self.base_url}/chat/completions"
 
         messages = []
@@ -863,7 +928,9 @@ class UniversalAPIProvider(BaseModelProvider):
 
     def _call_anthropic_rest(self, request: ModelRequest, start_time: float) -> Dict[str, Any]:
         """Calls Anthropic Messages API using standard library urllib."""
-        eff_model = getattr(request, "model_override", None) or self.model_name
+        eff_model = self.resolve_effective_model(request)
+        if eff_model.upper() == "AUTO":
+            eff_model = "claude-3-5-sonnet-20241022"
         endpoint = f"{self.base_url}/messages"
 
         payload: Dict[str, Any] = {
