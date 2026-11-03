@@ -141,7 +141,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 model_name
                 or os.environ.get("NVIDIA_MODEL")
                 or os.environ.get("IVA_MODEL")
-                or "nvidia/llama-3.1-nemotron-70b-instruct"
+                or "nvidia/nemotron-3.5-bolt-e4b"
             )
             self.base_url = (
                 base_url
@@ -862,7 +862,7 @@ class UniversalAPIProvider(BaseModelProvider):
                     response_text = ""
                     if choices:
                         msg = choices[0].get("message", {})
-                        response_text = msg.get("content", "")
+                        response_text = msg.get("content") or msg.get("reasoning_content") or ""
 
                     parsed_json = {}
                     if response_text.strip().startswith("{") or response_text.strip().startswith("["):
