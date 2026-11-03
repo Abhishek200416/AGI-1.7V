@@ -183,11 +183,13 @@ Iva maintains continuous cognitive self-monitoring through two native modules:
 
 ---
 
-## ⚔️ Head-to-Head Comparative Architecture: IVA vs. Standard Antigravity Baseline
+## ⚔️ Head-to-Head Comparative Architecture: IVA vs. Industry Harnesses
 
-A common question from developers and AI evaluators is: *"How does IVA compare to Google's standard Antigravity agent harness?"*
+> 📄 **Definitive 5-Way Architectural Whitepaper**: For an exhaustive technical breakdown comparing **IVA vs. Claude Code vs. OpenAI Codex vs. Google Antigravity vs. DeepSeek Harness**, see [**`HARNESS_COMPARISON.md`**](HARNESS_COMPARISON.md).
 
-While Google Antigravity provides a desktop agent harness for interactive exploration, **IVA is an enterprise-grade autonomous control plane and multi-agent systems partner** designed for zero-token-waste, persistent multi-step engineering, and multi-platform portability.
+A critical question from senior developers and engineering leads is: *"How does IVA fundamentally differ from industry execution harnesses like Claude Code, OpenAI Codex, Google Antigravity, or DeepSeek?"*
+
+While traditional harnesses act as flat interactive loops or thin wrappers around proprietary cloud APIs that constantly interrupt you mid-workflow, **IVA is an enterprise-grade autonomous control plane, systems architect, and research partner** designed for zero third-party dependencies, continuous multi-step execution, and device portability.
 
 | Evaluation Dimension | Standard Antigravity Desktop Agent | IVA Autonomous Cognitive Runtime |
 |:---|:---|:---|
@@ -522,6 +524,10 @@ Inside the `iva> ` prompt, you can run single-word administrative commands:
 | Command | Action | Output Description |
 |:---|:---|:---|
 | `chat <prompt>` | Intelligence | Natural language reasoning, code synthesis, and architectural discussion. |
+| `tui` / `hud` | Terminal HUD | High-density interactive Terminal UI HUD status board with models, memory, and accounts. |
+| `research` / `intake` | Research Partner | Upfront adaptive intake & bespoke design specification generator (`DESIGN_SPEC.md`). |
+| `accounts` / `chrome` | Multi-Account | Discovers 6-78 local Chrome profiles, monitors quotas, and auto-rotates across accounts. |
+| `meetup3d` | 3D Application | Launches production NexusMeet 3D WebGL spatial application (`applications/meetup_3d/`). |
 | `models` | Model Discovery | Remote model querying via API key with autonomous optimal target selection. |
 | `sysmatch` | Compatibility | Complete 6-dimension system match report (Host, Python, Memory, Provider, MCP, Safety). |
 | `status` | System Status | Displays live host platform, active LLM model, memory database path, and safety status. |

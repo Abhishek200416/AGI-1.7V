@@ -335,6 +335,20 @@ class TestTerminalClient(unittest.TestCase):
         self.assertIn("IVA AUTONOMOUS REPOSITORY UPDATER", output)
         self.assertIn("IVA is now 100% UP TO DATE", output)
 
+    def test_18_tui_and_accounts_commands(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.print_tui_dashboard()
+            client.print_chrome_accounts()
+
+        output = buf.getvalue()
+        self.assertIn("TERMINAL TUI HUD", output)
+        self.assertIn("Active Model Target", output)
+        self.assertIn("Chrome Multi-Account", output)
+        self.assertIn("Discovered Chrome Profiles", output)
+
 
 if __name__ == "__main__":
     unittest.main()
