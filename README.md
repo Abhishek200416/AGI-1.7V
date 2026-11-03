@@ -418,6 +418,99 @@ iva "Fix failing unit tests in this repository"
 
 ---
 
+## 🤖 Model Auto-Discovery, Parameter Size Ordering (550B → 1B) & Dynamic Action Swapper
+
+When you link an API key (e.g. NVIDIA NIM / Build with 85+ models, Gemini, OpenAI, DeepSeek, Groq, Anthropic), IVA **does not force or lock you to a single model**. Instead, IVA powers autonomous model discovery and adaptive execution:
+
+### 1. Strict Parameter Size Ordering (Highest $B$ → Lowest $B$)
+Models are automatically queried via live REST endpoints and ordered descending from largest parameters to smallest:
+
+$$\text{550B} \rightarrow \text{480B} \rightarrow \text{340B} \rightarrow \text{253B} \rightarrow \text{176B} \rightarrow \text{132B} \rightarrow \text{123B} \rightarrow \text{122B} \rightarrow \text{120B} \rightarrow \text{94B} \rightarrow \text{90B} \rightarrow \text{70B} \rightarrow \text{51B} \rightarrow \text{34B} \rightarrow \text{22B} \rightarrow \text{11B} \rightarrow \text{8B} \rightarrow \text{7B} \rightarrow \text{2B} \rightarrow \text{1B}$$
+
+### 2. Company Attribution & Domain Specialty Badges
+Every model displays its creator and domain specialty:
+- `[NVIDIA] nvidia/llama-3.1-nemotron-70b-instruct` `[70B]` `[⚖️ BALANCED]` **★ RECOMMENDED WORKHORSE** — Optimal balance of speed, code synthesis, refactoring, and multi-turn stability.
+- `[NVIDIA] nvidia/nemotron-3-ultra-550b-a55b` `[550B]` `[🧠 DEEP-THINKING]` **★ FRONTIER REASONING** — Mega-scale architecture, theoretical proofs & high-dimensional planning.
+- `[NVIDIA] nvidia/nemotron-4-340b-instruct` `[340B]` `[🧠 DEEP-THINKING]` **★ FRONTIER REASONING** — Synthetic data generation, mathematical proofs & instruction following.
+- `[NVIDIA] nvidia/llama-3.1-nemotron-ultra-253b-v1` `[253B]` `[🧠 DEEP-THINKING]` **★ DEEP REFACTORING** — Multi-agent architectural refactoring, AST transformations & system logic.
+- `[Mistral AI] mistralai/mixtral-8x22b-v0.1` `[176B]` `[🧠 DEEP-THINKING]` **★ SPARSE MOE REASONING** — High-capacity sparse MoE for enterprise code and multilingual logic.
+- `[NVIDIA] nvidia/nemotron-3-super-120b-a12b` `[120B]` `[🧠 DEEP-THINKING]` **★ QUANT & VOLATILITY** — Quantitative research, econometric modeling & volatility forecasting.
+- `[Meta] meta/llama-3.2-90b-vision-instruct` `[90B]` `[⚖️ BALANCED]` **★ MULTIMODAL VISION** — Visual reasoning, high-res chart inspection, DOM screenshot analysis.
+- `[Mistral AI] mistralai/codestral-22b-instruct-v0.1` `[22B]` `[⚡ ULTRA-FAST]` **★ SPECIALIZED CODING** — Dedicated code synthesis, completion, and AST patch generation.
+- `[DeepSeek] deepseek-ai/deepseek-coder-6.7b-instruct` `[6.7B]` `[⚡ ULTRA-FAST]` **★ FAST CODE REPAIR** — Rapid function synthesis, AST bug isolation, and code review sweeps.
+- `[IBM] ibm/granite-3.0-8b-instruct` `[8B]` `[⚡ ULTRA-FAST]` **★ ULTRA-FAST ROUTING** — Sub-150ms micro-task parsing, regex extraction & event routing.
+
+### 3. Option `[ 0]` Autonomous Dynamic Action Swapper & Model Researcher
+Select **Option `[ 0]`** (or type `auto`). IVA autonomously analyzes task intent and empirical benchmarks via [`AutonomousModelResearcher`](agents/IVA/engine/agi17/adapters/model_researcher.py) to select the fastest, best-performing model for every individual prompt:
+- **Fast Routing / Micro-Tasks (<150ms)**: Routes to 7B/8B models (IBM Granite 8B, Mistral 7B).
+- **DOM / Screenshots / Visual Inspection**: Routes to Meta Llama 3.2 90B/11B Vision or Gemini 2.5 Flash.
+- **Python AST Refactoring & CI Bug Repair**: Routes to Nemotron 70B or Codestral 22B.
+- **Frontier Theoretical Architecture & Math**: Routes to Nemotron 253B, 340B, or 550B.
+- **Quantitative Derivatives & Volatility**: Routes to Nemotron-3 Super 120B or Palmyra-Fin 70B.
+
+---
+
+## 🔒 System & Browser Permission Control Gate
+
+IVA enforces an explicit, fail-closed security boundary via [`BrowserPermissionsGate`](agents/IVA/engine/agi17/security/browser_permissions_gate.py) before initiating system-level or browser actions:
+- **`BROWSER_CONTROL`**: Authorizes launching or attaching to Chrome / Edge browser sessions.
+- **`MULTI_ACCOUNT_CHROME`**: Authorizes discovering and connecting to local Chrome user profiles.
+- **`SYSTEM_SCREENSHOT`**: Authorizes capturing desktop screens or DOM elements.
+- **`EXTERNAL_ACCOUNT_LOGIN`**: Authorizes interacting with authenticated ChatGPT or Gemini web sessions.
+
+All permissions can be granted interactively for the active session, saved permanently in `.env` (`IVA_PERMIT_BROWSER_CONTROL=true`), or denied with safe fail-closed fallback. All grants are cryptographically tracked in `scratch/permission_grants_ledger.json`.
+
+---
+
+## 🌐 Multi-Account Chrome Profile Manager & Gemini Video Automation (6 to 78 Accounts)
+
+Many power users maintain multiple Google Chrome accounts (e.g. 6 to 78 profiles logged into Google Gemini Advanced / Pro or ChatGPT Plus). IVA's [`MultiAccountBrowserManager`](agents/IVA/engine/agi17/browser/multi_account_browser_manager.py) automates these profiles without requiring manual re-login:
+
+1. **Automatic Profile Discovery**: Scans Chrome's `User Data` directory on Windows (`%LOCALAPPDATA%\Google\Chrome\User Data`), Linux, and macOS, discovering `Default`, `Profile 1`, `Profile 2` ... `Profile 78`.
+2. **Session Preservation**: Launches Chrome with `--profile-directory="Profile X"`, maintaining active cookies, session tokens, and Gemini Pro subscriptions.
+3. **Automated Video & Media Generation**: Directly prompts Google Gemini Web (`https://gemini.google.com`) or AI Studio to generate high-definition video loops (Google Veo / Gemini Omni Video) and image assets.
+4. **24/7 Rate-Limit & Cooldown Rotation**: When an account reaches its daily generation quota or rate limit (e.g., *"You've reached your limit. Try again in 4 hours"*), IVA:
+   - Detects the quota notice and parses the exact cooldown duration.
+   - Logs wait time estimates to `scratch/chrome_profiles_quota_ledger.json`.
+   - **Autonomously rotates to the next available Chrome profile** (`Profile 1` → `Profile 2` → `Profile 3`...), allowing generation and research pipelines to run 24/7 without dying!
+
+---
+
+## 🏢 Enterprise Full-Stack 3D Scrolling Engineering (`applications/meetup_3d/`)
+
+When tasked with building full-stack applications (such as a 3D scrolling Meetups app or any complex problem statement), IVA structures and writes the codebase following real-time big-tech engineering standards (Google / Meta quality):
+
+```text
+applications/meetup_3d/
+├── backend/
+│   ├── server.py              # Zero-dependency multi-threaded REST API server (Port 8095)
+│   ├── models.py              # Typed domain contracts (MeetupEvent, Attendee, Coordinate3D)
+│   └── database.py            # Thread-safe persistent JSON repository with seed meetups
+├── frontend/
+│   ├── index.html             # Semantic HTML5, accessible HUD header, 3D WebGL Canvas
+│   ├── css/styles.css         # Glassmorphic spatial design system, responsive breakpoints
+│   └── js/
+│       ├── app.js             # Core application controller, REST API integration, RSVP state
+│       └── three_scene.js     # Spatial Three.js scene manager, camera scroll rigging, node rotations
+├── tests/
+│   └── test_backend_api.py    # Automated integration test suite (HTTP 200, RSVP flow, CORS)
+├── run_app.py                 # Automated launcher script with browser auto-open
+└── README.md                  # Complete technical architecture specification
+```
+
+### Quick Run:
+```powershell
+# Windows
+py -3 applications/meetup_3d/run_app.py
+# Or double-click: applications/meetup_3d/run_app.bat
+
+# Linux / macOS
+python3 applications/meetup_3d/run_app.py
+```
+*(Runs 100% on the Python standard library with 0 pip requirements; opens an interactive 3D WebGL spatial meetup tracker in your browser).*
+
+---
+
 ## 💻 Interactive Terminal Client (`iva> `)
 
 IVA is engineered specifically for terminal lovers, DevOps practitioners, and systems researchers. All interaction takes place directly inside your standard terminal session.

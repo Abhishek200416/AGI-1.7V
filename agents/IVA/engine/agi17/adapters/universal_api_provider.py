@@ -563,12 +563,23 @@ class UniversalAPIProvider(BaseModelProvider):
             else:
                 models_pool = ["gpt-4o", "gpt-4o-mini"]
 
-        chosen = ModelMetadataCatalog.get_action_model(models_pool, action_type=action_type)
-        logger.info(
-            "Dynamic Action Swapper: routed task '%s' [action: %s] -> %s",
-            request.task_id, action_type, chosen
-        )
-        return chosen
+        try:
+            from .model_researcher import AutonomousModelResearcher
+            verdict = AutonomousModelResearcher.select_best_model(models_pool, request.prompt)
+            chosen = verdict.chosen_model
+            logger.info(
+                "Autonomous Model Researcher: routed task '%s' [domain: %s, score: %.1f] -> %s (%s)",
+                request.task_id, verdict.task_domain, verdict.overall_score, chosen, verdict.rationale
+            )
+            return chosen
+        except Exception as exc:
+            logger.debug("AutonomousModelResearcher fallback: %s", exc)
+            chosen = ModelMetadataCatalog.get_action_model(models_pool, action_type=action_type)
+            logger.info(
+                "Dynamic Action Swapper: routed task '%s' [action: %s] -> %s",
+                request.task_id, action_type, chosen
+            )
+            return chosen
 
     @classmethod
     def has_available_credentials(cls) -> bool:

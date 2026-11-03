@@ -31,8 +31,8 @@ logger = logging.getLogger("AuthenticChromeController")
 
 # Authentic Chromium binary on Windows host (dedicated isolated Playwright managed build)
 CHROME_CANDIDATES = [
-    str(Path.home() / "AppData" / "Local" / "ms-playwright"\chromium-1243\chrome-win64\chrome.exe",
-    str(Path.home() / "AppData" / "Local" / "ms-playwright"\chromium-1234\chrome-win64\chrome.exe",
+    str(Path.home() / "AppData" / "Local" / "ms-playwright" / "chromium-1243" / "chrome-win64" / "chrome.exe"),
+    str(Path.home() / "AppData" / "Local" / "ms-playwright" / "chromium-1234" / "chrome-win64" / "chrome.exe"),
 ]
 
 

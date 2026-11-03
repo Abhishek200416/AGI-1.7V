@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusMeet 3D — Global Engineering & AI Meetups</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Production Three.js WebGL Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <!-- Fixed Fullscreen 3D WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Top Navigation & HUD -->
+  <header class="hud-header">
+    <div class="hud-brand">
+      <div class="brand-orb"></div>
+      <span class="brand-name">NEXUS<span>3D</span></span>
+      <span class="brand-badge">ENTERPRISE MEETUPS</span>
+    </div>
+    <div class="hud-stats" id="hud-stats">
+      <div class="stat-pill"><span class="dot live"></span> LIVE SPATIAL VIEW</div>
+      <div class="stat-pill" id="stat-events">0 EVENTS</div>
+      <div class="stat-pill" id="stat-rsvps">0 RSVPS</div>
+    </div>
+  </header>
+
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-tracker">
+    <div class="tracker-bar" id="tracker-bar"></div>
+    <div class="tracker-label" id="tracker-label">SECTION 01 / 05</div>
+  </div>
+
+  <!-- Main Scrollable Story Track -->
+  <main class="story-track" id="story-track">
+    <!-- Section 0: Hero -->
+    <section class="story-section hero-section" data-step="0">
+      <div class="glass-card hero-card">
+        <div class="card-tag">SPATIAL ENGINEERING GATHERINGS</div>
+        <h1 class="hero-title">Experience Meetups in <span class="gradient-text">Three Dimensions</span>.</h1>
+        <p class="hero-desc">
+          Step into a reactive 3D WebGL ecosystem connecting world-class autonomous systems architects,
+          Three.js spatial developers, and high-frequency quant researchers.
+        </p>
+        <div class="hero-cta">
+          <a href="#meetup-01" class="btn btn-primary">Explore Gatherings ↓</a>
+          <span class="scroll-hint">Scroll down to navigate 3D nodes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sections 1-4 will be dynamically anchored or enhanced by app.js -->
+    <div id="dynamic-sections"></div>
+
+    <!-- Section 5: Footer / Community -->
+    <section class="story-section footer-section" data-step="5">
+      <div class="glass-card footer-card">
+        <h2 class="gradient-text">Host Your Engineering Meetup</h2>
+        <p>Built with Google / Meta enterprise engineering rigor. Zero runtime pip dependencies, full REST backend, and responsive spatial Three.js UI.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Back to Nexus Orbit ↑</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- RSVP Modal Dialog -->
+  <div class="modal-backdrop" id="rsvp-modal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-header">
+        <span class="modal-badge" id="modal-category">EVENT RSVP</span>
+        <h3 id="modal-title">Confirm Your Attendance</h3>
+        <p id="modal-subtitle">Secure your reserved spatial access token.</p>
+      </div>
+      <form id="rsvp-form" onsubmit="event.preventDefault(); submitRSVP();">
+        <input type="hidden" id="rsvp-event-id" value="">
+        <div class="form-group">
+          <label for="rsvp-name">Full Name</label>
+          <input type="text" id="rsvp-name" placeholder="e.g. Elena Rostova" required>
+        </div>
+        <div class="form-group">
+          <label for="rsvp-email">Work Email</label>
+          <input type="email" id="rsvp-email" placeholder="e.g. elena@company.com" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="rsvp-submit-btn">Confirm RSVP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Frontend Client Logic -->
+  <script src="/js/three_scene.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
