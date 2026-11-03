@@ -146,6 +146,170 @@ def select_provider_dialog() -> str:
     }
     return p_map.get(p_sel, "nvidia")
 
+def select_model_dialog(models: List[str], prov: str) -> str:
+    """Ranks and presents all available remote models for operator selection with fuzzy search."""
+    if not models:
+        return "nvidia/llama-3.1-nemotron-70b-instruct" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
+
+    print(f"\n  📋 All {len(models)} Available Remote Models for your {prov.upper()} API Key:")
+    pref_order = [
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+        "nvidia/nemotron-3-super-120b-a12b",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "nvidia/nemotron-4-340b-instruct",
+        "nvidia/llama-3.1-nemotron-51b-instruct",
+        "openai/gpt-oss-20b",
+        "deepseek-ai/deepseek-v4.1-flash",
+        "deepseek-ai/deepseek-coder-6.7b-instruct",
+        "mistralai/mistral-large-2-instruct",
+        "mistralai/mistral-large-4-1t-a52b",
+        "meta/llama-3.2-11b-vision-instruct",
+        "meta/llama-3.2-90b-vision-instruct",
+        "writer/palmyra-creative-122b",
+        "writer/palmyra-fin-70b-32k",
+        "writer/palmyra-med-70b-32k",
+        "moonshotai/kimi-k2.6",
+        "gemini-2.5-flash",
+        "claude-3-5-sonnet-20241022",
+        "gpt-4o",
+        "llama-3.3-70b-versatile",
+        "gemini-2.5-pro",
+        "gemini-2.0-flash",
+        "gpt-4o-mini",
+        "gemini-1.5-pro",
+        "claude-3-5-haiku-20241022",
+    ]
+    sorted_models: List[str] = []
+    for pref in pref_order:
+        for m in models:
+            if (m == pref or m.startswith(pref)) and m not in sorted_models:
+                sorted_models.append(m)
+    remaining = sorted([m for m in models if m not in sorted_models])
+    sorted_models.extend(remaining)
+
+    for idx, m_id in enumerate(sorted_models, 1):
+        rec_tag = " (Recommended)" if idx == 1 else ""
+        print(f"     [{idx:2d}] {m_id}{rec_tag}")
+    print(f"     [ C] Custom model identifier override")
+
+    try:
+        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, keyword (e.g. ultra, 120b), or Enter for 1]: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        m_choice = "1"
+
+    if not m_choice:
+        return sorted_models[0]
+    elif m_choice.lower() == "c":
+        try:
+            custom_m = input("  Enter custom model name: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            custom_m = ""
+        return custom_m or sorted_models[0]
+    elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_models):
+        return sorted_models[int(m_choice) - 1]
+    else:
+        for sm in sorted_models:
+            if m_choice.lower() == sm.lower():
+                print(f"  🎯 Exact Match: {sm}")
+                return sm
+        for sm in sorted_models:
+            if m_choice.lower() in sm.lower():
+                print(f"  🎯 Keyword Match: '{m_choice}' -> {sm}")
+                return sm
+        return m_choice
+
+def configure_multi_provider_pool(env_file: Path) -> None:
+    """Interactively links multiple API providers simultaneously into the intelligence pool."""
+    print("\n  " + "═" * 74)
+    print("  🌐 MULTI-PROVIDER INTELLIGENCE POOL CONFIGURATION")
+    print("  " + "═" * 74)
+    print("  Configure multiple AI providers simultaneously to activate multi-agent orchestration:")
+    print("  • NVIDIA NIM   : Ultra-scale Nemotron 253B/120B/550B & Palmyra for deep reasoning")
+    print("  • Google Gemini: Real-time search grounding, 2M token context & multimodal")
+    print("  • OpenAI / ChatGPT: High-precision logic & function calling")
+    print("  • DeepSeek AI  : Fast mathematical & algorithmic reasoning")
+    print("  • Groq LPU     : Ultrafast inference (500+ tokens/sec)")
+    print("  (Press Enter on any provider to keep current value / leave unset)")
+    print("  " + "═" * 74)
+
+    cur_nvidia = os.environ.get("NVIDIA_API_KEY", "")
+    cur_gemini = os.environ.get("GEMINI_API_KEY", "")
+    cur_openai = os.environ.get("OPENAI_API_KEY", "")
+    cur_deepseek = os.environ.get("DEEPSEEK_API_KEY", "")
+    cur_groq = os.environ.get("GROQ_API_KEY", "")
+
+    new_keys = {}
+
+    print(f"\n  [1/5] NVIDIA NIM Key (Current: {mask_key(cur_nvidia) or 'None'}):")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["NVIDIA_API_KEY"] = val
+
+    print(f"\n  [2/5] Google Gemini Key (Current: {mask_key(cur_gemini) or 'None'}):")
+    print("        👉 Free key (instant in 10s): https://aistudio.google.com/app/apikey")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["GEMINI_API_KEY"] = val
+
+    print(f"\n  [3/5] OpenAI Key (Current: {mask_key(cur_openai) or 'None'}):")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["OPENAI_API_KEY"] = val
+
+    print(f"\n  [4/5] DeepSeek Key (Current: {mask_key(cur_deepseek) or 'None'}):")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["DEEPSEEK_API_KEY"] = val
+
+    print(f"\n  [5/5] Groq Key (Current: {mask_key(cur_groq) or 'None'}):")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["GROQ_API_KEY"] = val
+
+    new_keys["MULTI_PROVIDER_ENABLED"] = "true"
+
+    lines = []
+    if env_file.exists():
+        lines = env_file.read_text(encoding="utf-8", errors="ignore").splitlines()
+
+    new_lines = []
+    seen = set()
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            new_lines.append(line)
+            continue
+        if "=" in stripped:
+            k = stripped.split("=", 1)[0].strip()
+            if k in new_keys:
+                new_lines.append(f"{k}={new_keys[k]}")
+                seen.add(k)
+            else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    for k, v in new_keys.items():
+        if k not in seen:
+            new_lines.append(f"{k}={v}")
+
+    env_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+    for k, v in new_keys.items():
+        os.environ[k] = v
+
+    print(f"\n  💾 Multi-Provider Intelligence Pool saved to .env!")
+
 def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Optional[str], Optional[str], str]:
     print("\n[2/6] Configuring API Key & Intelligent Model Target...")
     env_file = REPO_ROOT / ".env"
@@ -184,24 +348,53 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
     elif existing_openai: active_prov = "openai"
 
     needs_prompt = True
+    selected_model = os.environ.get("ACTIVE_MODEL") or os.environ.get("IVA_MODEL")
+
     if active_key and active_prov != "none":
         if interactive:
-            print(f"  ℹ️  Existing API key detected: {mask_key(active_key)} ({active_prov.upper()})")
-            print("     [1] Use existing key (Recommended)")
-            print("     [2] Paste a new API key")
+            pool = UniversalAPIProvider.get_configured_providers_pool()
+            cur_model = selected_model or ("nvidia/llama-3.1-nemotron-70b-instruct" if active_prov == "nvidia" else "gemini-2.5-flash")
+            print(f"  ℹ️  Active Provider: {active_prov.upper()} (Current Target: {cur_model})")
+            if len(pool) > 1:
+                print(f"     🌐 Multi-Provider Intelligence Pool ({len(pool)} active): {', '.join(p.upper() for p in pool.keys())}")
+            else:
+                print(f"     🔑 Key linked: {mask_key(active_key)}")
+
+            print("\n     [1] Start with current key & model (Quickstart)")
+            print(f"     [2] Select a different model for {active_prov.upper()} (Browse all 85+ models: Nemotron, Ultra, 120B...)")
+            print("     [3] Configure Multi-Provider Intelligence Pool (Link Gemini, OpenAI, DeepSeek, Groq simultaneously)")
+            print("     [4] Paste a new primary API key")
             try:
-                choice = input("     Select option [1-2, default: 1]: ").strip()
+                choice = input("     Select option [1-4, default: 1]: ").strip()
             except (KeyboardInterrupt, EOFError):
                 choice = "1"
+
             if choice == "2":
+                print(f"\n  ⏳ Fetching all remote models for {active_prov.upper()} endpoint...")
+                is_valid, prov, models, err_msg = UniversalAPIProvider.verify_and_fetch_models(
+                    active_key, provider_type=active_prov
+                )
+                if is_valid and models:
+                    selected_model = select_model_dialog(models, prov)
+                    save_key_and_model_to_env(env_file, active_key, active_prov, selected_model)
+                    print(f"  ✅ Active Model Target updated to: {selected_model}")
+                    print(f"  💾 Saved credentials and model target to .env")
+                    needs_prompt = False
+                else:
+                    print(f"  ⚠️ Could not fetch models ({err_msg}). Re-entering key...")
+                    active_key = None
+                    active_prov = "none"
+            elif choice == "3":
+                configure_multi_provider_pool(env_file)
+                load_repo_dotenv()
+                needs_prompt = False
+            elif choice == "4":
                 active_key = None
                 active_prov = "none"
             else:
                 needs_prompt = False
         else:
             needs_prompt = False
-
-    selected_model = os.environ.get("ACTIVE_MODEL") or os.environ.get("IVA_MODEL")
 
     if needs_prompt and interactive:
         current_entered_key = ""
@@ -242,87 +435,7 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 print(f"  ✅ API Key verified successfully! Connection confirmed with {prov.upper()}.")
                 active_key = current_entered_key
                 active_prov = prov
-
-                if models:
-                    print(f"\n  📋 All {len(models)} Available Remote Models for your {prov.upper()} API Key:")
-                    pref_order = [
-                        "nvidia/llama-3.1-nemotron-70b-instruct",
-                        "nvidia/llama-3.1-nemotron-ultra-253b-v1",
-                        "nvidia/nemotron-3-super-120b-a12b",
-                        "nvidia/nemotron-3-ultra-550b-a55b",
-                        "nvidia/nemotron-4-340b-instruct",
-                        "nvidia/llama-3.1-nemotron-51b-instruct",
-                        "openai/gpt-oss-20b",
-                        "deepseek-ai/deepseek-v4.1-flash",
-                        "deepseek-ai/deepseek-coder-6.7b-instruct",
-                        "mistralai/mistral-large-2-instruct",
-                        "mistralai/mistral-large-4-1t-a52b",
-                        "meta/llama-3.2-11b-vision-instruct",
-                        "meta/llama-3.2-90b-vision-instruct",
-                        "writer/palmyra-creative-122b",
-                        "writer/palmyra-fin-70b-32k",
-                        "writer/palmyra-med-70b-32k",
-                        "moonshotai/kimi-k2.6",
-                        "gemini-2.5-flash",
-                        "claude-3-5-sonnet-20241022",
-                        "gpt-4o",
-                        "llama-3.3-70b-versatile",
-                        "gemini-2.5-pro",
-                        "gemini-2.0-flash",
-                        "gpt-4o-mini",
-                        "gemini-1.5-pro",
-                        "claude-3-5-haiku-20241022",
-                    ]
-                    sorted_models: List[str] = []
-                    # First add preferred models in order
-                    for pref in pref_order:
-                        for m in models:
-                            if (m == pref or m.startswith(pref)) and m not in sorted_models:
-                                sorted_models.append(m)
-                    # Then append ALL remaining models sorted alphabetically
-                    remaining = sorted([m for m in models if m not in sorted_models])
-                    sorted_models.extend(remaining)
-
-                    for idx, m_id in enumerate(sorted_models, 1):
-                        rec_tag = " (Recommended)" if idx == 1 else ""
-                        print(f"     [{idx:2d}] {m_id}{rec_tag}")
-                    print(f"     [ C] Custom model identifier override")
-
-                    try:
-                        m_choice = input(f"\n  Select active model target [1-{len(sorted_models)}, model name, or Enter for 1]: ").strip()
-                    except (KeyboardInterrupt, EOFError):
-                        m_choice = "1"
-
-                    if not m_choice:
-                        selected_model = sorted_models[0]
-                    elif m_choice.lower() == "c":
-                        try:
-                            custom_m = input("  Enter custom model name: ").strip()
-                        except (KeyboardInterrupt, EOFError):
-                            custom_m = ""
-                        selected_model = custom_m or sorted_models[0]
-                    elif m_choice.isdigit() and 1 <= int(m_choice) <= len(sorted_models):
-                        selected_model = sorted_models[int(m_choice) - 1]
-                    else:
-                        # Match by keyword or partial name
-                        matched = None
-                        for sm in sorted_models:
-                            if m_choice.lower() == sm.lower():
-                                matched = sm
-                                break
-                        if not matched:
-                            for sm in sorted_models:
-                                if m_choice.lower() in sm.lower():
-                                    matched = sm
-                                    break
-                        if matched:
-                            selected_model = matched
-                            print(f"  🎯 Selected: {selected_model}")
-                        else:
-                            selected_model = m_choice
-                else:
-                    selected_model = "nvidia/llama-3.1-nemotron-70b-instruct" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
-
+                selected_model = select_model_dialog(models, prov)
                 print(f"  ✅ Active Model Target set to: {selected_model}")
                 save_key_and_model_to_env(env_file, active_key, active_prov, selected_model)
                 print(f"  💾 Saved verified credentials and active model to .env")
@@ -338,7 +451,6 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                     retry_choice = "3"
                 if retry_choice == "1":
                     current_prov = select_provider_dialog()
-                    # Loop re-verifies current_entered_key with newly selected provider
                 elif retry_choice == "2":
                     current_entered_key = ""
                     current_prov = ""

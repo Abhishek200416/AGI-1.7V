@@ -514,7 +514,9 @@ class UniversalAPIProvider(BaseModelProvider):
         """Returns True if valid API credentials are present in environment or .env file."""
         load_repo_dotenv()
         return bool(
-            os.environ.get("GEMINI_API_KEY")
+            os.environ.get("NVIDIA_API_KEY")
+            or os.environ.get("NVIDIA_NIM_API_KEY")
+            or os.environ.get("GEMINI_API_KEY")
             or os.environ.get("GOOGLE_API_KEY")
             or os.environ.get("ANTHROPIC_API_KEY")
             or os.environ.get("CLAUDE_API_KEY")
@@ -524,6 +526,77 @@ class UniversalAPIProvider(BaseModelProvider):
             or os.environ.get("OPENROUTER_API_KEY")
             or os.environ.get("OPENAI_API_BASE")
         )
+
+    @classmethod
+    def get_configured_providers_pool(cls) -> Dict[str, Dict[str, Any]]:
+        """Scans environment and returns all active provider configurations in the Multi-Provider Pool."""
+        load_repo_dotenv()
+        pool: Dict[str, Dict[str, Any]] = {}
+        nv_key = os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_NIM_API_KEY")
+        if nv_key:
+            pool["nvidia"] = {
+                "name": "NVIDIA NIM / NVIDIA Build",
+                "key": nv_key,
+                "base_url": "https://integrate.api.nvidia.com/v1",
+                "default_model": os.environ.get("NVIDIA_MODEL") or "nvidia/llama-3.1-nemotron-70b-instruct",
+                "specialty": "Ultra-Scale Reasoning, Nemotron 253B/120B/550B, Coding",
+            }
+        gem_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if gem_key:
+            pool["gemini"] = {
+                "name": "Google Gemini",
+                "key": gem_key,
+                "base_url": "https://generativelanguage.googleapis.com/v1beta",
+                "default_model": os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash",
+                "specialty": "Multimodal, Real-Time Web Search, 2M Token Context",
+            }
+        oa_key = os.environ.get("OPENAI_API_KEY")
+        # Only treat as distinct OpenAI if not just an alias pointing to NVIDIA NIM
+        if oa_key and not (nv_key and os.environ.get("OPENAI_BASE_URL", "").startswith("https://integrate.api.nvidia.com")):
+            pool["openai"] = {
+                "name": "OpenAI / ChatGPT",
+                "key": oa_key,
+                "base_url": os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1",
+                "default_model": os.environ.get("OPENAI_MODEL") or "gpt-4o",
+                "specialty": "General Logic, High Precision, Function Calling",
+            }
+        ds_key = os.environ.get("DEEPSEEK_API_KEY")
+        if ds_key:
+            pool["deepseek"] = {
+                "name": "DeepSeek AI",
+                "key": ds_key,
+                "base_url": "https://api.deepseek.com/v1",
+                "default_model": os.environ.get("DEEPSEEK_MODEL") or "deepseek-chat",
+                "specialty": "Deep Mathematics, Code Synthesis, Cost Efficiency",
+            }
+        gr_key = os.environ.get("GROQ_API_KEY")
+        if gr_key:
+            pool["groq"] = {
+                "name": "Groq LPU",
+                "key": gr_key,
+                "base_url": "https://api.groq.com/openai/v1",
+                "default_model": os.environ.get("GROQ_MODEL") or "llama-3.3-70b-versatile",
+                "specialty": "Ultra-Fast Inference (500+ tokens/sec), Micro-Parsing",
+            }
+        or_key = os.environ.get("OPENROUTER_API_KEY")
+        if or_key:
+            pool["openrouter"] = {
+                "name": "OpenRouter",
+                "key": or_key,
+                "base_url": "https://openrouter.ai/api/v1",
+                "default_model": os.environ.get("OPENROUTER_MODEL") or "anthropic/claude-3.5-sonnet",
+                "specialty": "Multi-Model Router, Global Fallback",
+            }
+        ant_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+        if ant_key:
+            pool["anthropic"] = {
+                "name": "Anthropic Claude",
+                "key": ant_key,
+                "base_url": "https://api.anthropic.com/v1",
+                "default_model": os.environ.get("ANTHROPIC_MODEL") or "claude-3-5-sonnet-20241022",
+                "specialty": "Complex Engineering Architecture, Nuanced Logic",
+            }
+        return pool
 
     def generate(self, request: ModelRequest) -> Dict[str, Any]:
         """Executes a model request via direct REST API and returns structured execution metadata."""
