@@ -63,8 +63,10 @@ class TestModelAutoDiscoveryAndMCP(unittest.TestCase):
         mock_resp = MagicMock()
         mock_resp.read.return_value = json.dumps(mock_resp_data).encode("utf-8")
         mock_resp.__enter__.return_value = mock_resp
-
-        with patch("urllib.request.urlopen", return_value=mock_resp):
+        os.environ.pop("IVA_MODEL", None)
+        os.environ.pop("ACTIVE_MODEL", None)
+        with patch("agents.IVA.engine.agi17.adapters.universal_api_provider.urllib.request.urlopen", return_value=mock_resp), \
+             patch("agents.IVA.engine.agi17.adapters.universal_api_provider.load_repo_dotenv", return_value={}):
             provider = UniversalAPIProvider(
                 provider_type="gemini",
                 api_key="AIzaSy_MOCK_TEST_KEY_12345",

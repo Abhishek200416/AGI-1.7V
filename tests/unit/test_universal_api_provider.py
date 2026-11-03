@@ -66,7 +66,7 @@ class TestUniversalAPIProvider(unittest.TestCase):
         os.environ.pop("OPENAI_MODEL", None)
 
         with patch("pathlib.Path.cwd", return_value=self.temp_dir):
-            loaded = load_repo_dotenv()
+            loaded = load_repo_dotenv(root_dir=self.temp_dir)
             self.assertEqual(os.environ.get("GEMINI_API_KEY"), "AIzaSySyntheticTestKey1234567890")
             self.assertEqual(os.environ.get("OPENAI_MODEL"), "gpt-4o-mini")
 
@@ -201,19 +201,16 @@ class TestUniversalAPIProvider(unittest.TestCase):
         self.assertEqual(res["token_usage"]["accounting_mode"], "UNIVERSAL_API")
 
     def test_06_helpful_error_when_no_engine_available(self) -> None:
-        os.environ.pop("GEMINI_API_KEY", None)
-        os.environ.pop("GOOGLE_API_KEY", None)
-        os.environ.pop("OPENAI_API_KEY", None)
+        with patch("agents.IVA.engine.agi17.adapters.universal_api_provider.UniversalAPIProvider.has_available_credentials", return_value=False):
+            adapter = ModelAdapter(
+                mock_provider=None,
+                api_provider=None,
+                agy_path=self.temp_dir / "nonexistent_agy.exe",
+            )
+            with self.assertRaises(RuntimeError) as ctx:
+                adapter.invoke(task_id="TASK-NO-PROVIDER", prompt="Hello")
 
-        adapter = ModelAdapter(
-            mock_provider=None,
-            api_provider=None,
-            agy_path=self.temp_dir / "nonexistent_agy.exe",
-        )
-        with self.assertRaises(RuntimeError) as ctx:
-            adapter.invoke(task_id="TASK-NO-PROVIDER", prompt="Hello")
-
-        self.assertIn("GEMINI_API_KEY", str(ctx.exception))
+            self.assertIn("GEMINI_API_KEY", str(ctx.exception))
     def test_07_model_adapter_with_api_key_and_model(self) -> None:
         adapter = ModelAdapter(
             api_key="AIzaSyExplicitPassedKey",

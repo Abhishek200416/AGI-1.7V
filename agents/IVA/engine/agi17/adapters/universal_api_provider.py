@@ -34,19 +34,21 @@ from .model_catalog import ModelMetadataCatalog
 logger = logging.getLogger("UniversalAPIProvider")
 
 
-def load_repo_dotenv() -> Dict[str, str]:
+def load_repo_dotenv(root_dir: Optional[Path] = None) -> Dict[str, str]:
     """Loads variables from the repository's `.env` file into `os.environ` if not already set.
     
     Uses 100% standard library Python line parsing (no external dotenv dependency needed).
     """
     loaded = {}
-    current = Path(__file__).resolve()
-    # Ascend up to repository root
-    repo_root = current.parents[5] if len(current.parents) >= 6 else Path.cwd()
-    candidates = [
-        repo_root / ".env",
-        Path.cwd() / ".env",
-    ]
+    if root_dir is not None:
+        candidates = [Path(root_dir) / ".env"]
+    else:
+        current = Path(__file__).resolve()
+        repo_root = current.parents[5] if len(current.parents) >= 6 else Path.cwd()
+        candidates = [
+            Path.cwd() / ".env",
+            repo_root / ".env",
+        ]
     for env_file in candidates:
         if env_file.is_file():
             try:
