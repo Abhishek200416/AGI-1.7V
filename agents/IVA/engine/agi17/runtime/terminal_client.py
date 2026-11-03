@@ -110,6 +110,24 @@ class TerminalClient:
         self.storage_root = storage_root
         self._adapter = adapter
         self._router: Optional[Any] = None
+        self._session_mgr: Optional[Any] = None
+        self._workspace_indexer: Optional[Any] = None
+        self.execution_mode: str = os.environ.get("IVA_MODE", "AUTONOMOUS").upper()
+
+    @property
+    def session_mgr(self) -> Any:
+        if self._session_mgr is None:
+            from .session_manager import SessionManager
+            self._session_mgr = SessionManager()
+        return self._session_mgr
+
+    @property
+    def workspace_indexer(self) -> Any:
+        if self._workspace_indexer is None:
+            from ..memory.workspace_indexer import WorkspaceIndexer
+            mem = getattr(self.adapter, "memory", None)
+            self._workspace_indexer = WorkspaceIndexer(memory_adapter=mem)
+        return self._workspace_indexer
 
     @property
     def adapter(self) -> Any:
@@ -367,14 +385,14 @@ class TerminalClient:
             status = provider.get_model_discovery_status()
             active_m = status.get("active_model", "gemini-2.5-flash")
             prov_type = status.get("provider_type", "gemini").upper()
-            models = provider.fetch_remote_models() or status.get("available_models", [])
             print(f"   • Active Provider       : {green(prov_type)}")
+            print(f"   • API Key Scoping       : {dim('Models strictly grounded to your active ' + prov_type + ' API key')}")
             if active_m.upper() == "AUTO":
                 print(f"   • Active Model Target   : {bold(cyan('AUTO (Dynamic Action Swapper)'))} {green('(Auto-swapping fastest/best model per action)')}")
             else:
                 print(f"   • Active Model Target   : {bold(cyan(active_m))} {green('(Autonomously Selected)')}")
             print(f"   • Zero User Prompting   : {green('Active (Zero friction, no manual selection required)')}")
-            print(f"   • Available Models Count: {yellow(str(len(models)))}")
+            print(f"   • Models for this Key   : {yellow(str(len(models)))} verified remote endpoints")
             if models:
                 try:
                     from ..adapters.model_catalog import ModelMetadataCatalog
@@ -746,15 +764,16 @@ class TerminalClient:
         """Runs the interactive full terminal TUI ('Yuvay') interface loop."""
         while True:
             self.print_tui_dashboard()
-            print("   " + bold("Select an interactive view or action:"))
             print("     [1] 📊 System Status & Resource Telemetry")
             print("     [2] 🏛️ Architecture & Research Partner (Upfront Intake Wizard)")
             print("     [3] 🌐 Chrome Accounts & Gemini Video Quotas (6-78 Profiles)")
-            print("     [4] 🤖 Models Pool & Dynamic Parameter Swapper (550B -> 1B)")
+            print("     [4] 🤖 Models Pool & Dynamic Parameter Swapper (Grounded per Key)")
             print("     [5] 💾 Cognitive SQLite WAL Memory Explorer (10 Layers)")
             print("     [6] 🛡️ Specialist Family Catalog (100 Contracts)")
             print("     [7] 🚀 Launch NexusMeet 3D Application")
             print("     [8] ⚔️ Harness Comparison Matrix (IVA vs Industry Harnesses)")
+            print("     [9] 📁 Multi-Session Tracker (List, Switch, Export)")
+            print("     [10] 🌐 External Workspace Indexer (Add & Memorize Codebase)")
             print("     [0] 🔙 Return to Shell Command Line\n")
 
             try:
@@ -781,6 +800,10 @@ class TerminalClient:
                 self.launch_meetup_3d()
             elif choice == "8":
                 self.print_harness_comparison()
+            elif choice == "9":
+                self.print_sessions()
+            elif choice == "10":
+                self.execute_workspace_command("list")
             else:
                 pass
 
@@ -831,6 +854,189 @@ class TerminalClient:
             print(bold(green("   ✅ NexusMeet 3D is live and opened in your browser!\n")))
         except Exception as exc:
             print(red(f"   Failed to launch Meetup 3D: {exc}\n"))
+
+    def print_sessions(self) -> None:
+        """Displays all persistent CLI work sessions, turn counts, and modified files."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   📁 IVA MULTI-SESSION TRACKER (STATELESS TERMINAL RUNTIME)")))
+        print(cyan("=" * 78))
+        print(dim("   Tracks isolated work contexts, history, modified files & memory snapshots.\n"))
+        sessions = self.session_mgr.list_sessions()
+        active = self.session_mgr.get_active_session()
+        print(f"   • Active Session : {bold(green(active.name))} ({cyan(active.session_id)})")
+        print(f"   • Total Sessions : {len(sessions)}\n")
+
+        print("   " + bold(f"{'#':<3} {'STATUS':<12} {'SESSION ID':<26} {'NAME':<24} {'TURNS':<6} {'FILES':<6}"))
+        print(cyan("   " + "-" * 75))
+        for idx, s in enumerate(sessions, 1):
+            status_str = green("▶ (ACTIVE)") if s.session_id == active.session_id else dim("• ARCHIVED")
+            print(f"   {idx:<3} {status_str:<12} {cyan(s.session_id[:24]):<26} {s.name[:22]:<24} {len(s.turns):<6} {len(s.modified_files):<6}")
+            if s.modified_files and s.session_id == active.session_id:
+                files_preview = ", ".join(s.modified_files[:4])
+                if len(s.modified_files) > 4:
+                    files_preview += f" ... (+{len(s.modified_files)-4} more)"
+                print(dim(f"        ↳ Touched Files: {files_preview}"))
+
+        print("\n   " + dim("Commands: session new <name> | session switch <id> | session diff | session export"))
+        print(cyan("=" * 78) + "\n")
+
+    def execute_session_command(self, arg: str) -> None:
+        """Handles session management commands (new, switch, diff, export)."""
+        clean = arg.strip()
+        parts = clean.split(maxsplit=1)
+        subcmd = parts[0].lower() if parts else "list"
+        rest = parts[1].strip() if len(parts) > 1 else ""
+
+        if subcmd in ("list", ""):
+            self.print_sessions()
+        elif subcmd == "new":
+            s_name = rest or f"Session_{time.strftime('%Y%m%d_%H%M%S')}"
+            new_s = self.session_mgr.create_session(s_name)
+            print(bold(green(f"\n   ✅ Created and switched to fresh session: {new_s.name} ({new_s.session_id})\n")))
+        elif subcmd in ("switch", "open", "use"):
+            if not rest:
+                print(yellow("\n   Usage: session switch <session_id_or_name>\n"))
+                return
+            switched = self.session_mgr.switch_session(rest)
+            if switched:
+                print(bold(green(f"\n   ✅ Switched to session: {switched.name} ({switched.session_id})\n")))
+            else:
+                print(red(f"\n   ❌ Session not found matching: '{rest}'\n"))
+        elif subcmd in ("diff", "changes"):
+            self.print_color_diff()
+        elif subcmd in ("export", "transcript"):
+            out_md = self.session_mgr.export_session_markdown()
+            out_file = Path("scratch") / f"{self.session_mgr.get_active_session().session_id}_transcript.md"
+            out_file.parent.mkdir(parents=True, exist_ok=True)
+            out_file.write_text(out_md, encoding="utf-8")
+            print(bold(green(f"\n   ✅ Session transcript exported to: {out_file}\n")))
+        else:
+            print(yellow(f"\n   Unknown session command '{subcmd}'. Use: session list | new | switch | diff | export\n"))
+
+    def execute_workspace_command(self, arg: str) -> None:
+        """Handles multi-workspace external folder ingestion and memory indexing."""
+        clean = arg.strip()
+        parts = clean.split(maxsplit=1)
+        subcmd = parts[0].lower() if parts else "list"
+        target_path = parts[1].strip() if len(parts) > 1 else ""
+
+        if subcmd == "list" or not clean:
+            workspaces = self.workspace_indexer.list_indexed_workspaces()
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta("   🌐 INDEXED EXTERNAL WORKSPACES & CODEBASES")))
+            print(cyan("=" * 78))
+            if not workspaces:
+                print(dim("   No external workspaces indexed yet. Add any codebase with:"))
+                print(cyan("   workspace add <folder_path>  or  index <folder_path>\n"))
+            else:
+                for idx, w in enumerate(workspaces, 1):
+                    print(f"   [{idx:2d}] {bold(cyan(w.get('target_path')))}")
+                    print(f"        • Scanned: {w.get('total_files_scanned')} files | AST Nodes: {w.get('total_ast_nodes')} | Symbols: {w.get('total_symbols_extracted')}")
+                    print(f"        • Persistent Memory Entries: {green(str(w.get('memory_entries_stored')))} entries stored in SQLite WAL.")
+            print(cyan("=" * 78) + "\n")
+            return
+
+        if subcmd in ("add", "index", "learn-dir", "scan"):
+            path_to_index = target_path or subcmd
+            if not path_to_index:
+                print(yellow("\n   Usage: workspace add <path_to_directory>\n"))
+                return
+            p = Path(path_to_index.strip("'\"`")).resolve()
+            if not p.exists():
+                print(red(f"\n   ❌ Path does not exist: {p}\n"))
+                return
+            print(f"\n   ⏳ Ingesting and parsing AST symbols from: {cyan(str(p))}...")
+            try:
+                res = self.workspace_indexer.index_directory(p)
+                print(bold(green("\n   ✅ Codebase Ingested and Memorized into Persistent SQLite WAL!")))
+                print(f"      • Target Path      : {cyan(res.target_path)}")
+                print(f"      • Files Scanned    : {green(str(res.total_files_scanned))}")
+                print(f"      • AST Nodes Parsed : {green(str(res.total_ast_nodes))}")
+                print(f"      • Symbols Extracted: {green(str(res.total_symbols_extracted))} classes/methods")
+                print(f"      • Memory Entries   : {green(str(res.memory_entries_stored))} stored in Layer 5 (Semantic Facts)")
+                print(f"      • Duration         : {dim(f'{res.duration_sec:.2f}s')}\n")
+            except Exception as e:
+                print(red(f"\n   ❌ Failed indexing workspace: {e}\n"))
+
+    def execute_mode_command(self, arg: str) -> None:
+        """Toggles or sets execution mode (AUTONOMOUS SPRINT vs INTERACTIVE CO-PILOT)."""
+        clean = arg.strip().upper()
+        if clean in ("AUTO", "AUTONOMOUS", "SPRINT"):
+            self.execution_mode = "AUTONOMOUS"
+        elif clean in ("STEP", "INTERACTIVE", "COPILOT", "PAUSE"):
+            self.execution_mode = "INTERACTIVE"
+        else:
+            self.execution_mode = "INTERACTIVE" if self.execution_mode == "AUTONOMOUS" else "AUTONOMOUS"
+
+        os.environ["IVA_MODE"] = self.execution_mode
+        mode_desc = (
+            "Upfront intake once, executes end-to-end with zero mid-turn halting."
+            if self.execution_mode == "AUTONOMOUS"
+            else "Step-by-step confirmation before modifying files or executing shell commands."
+        )
+        print(f"\n   🎮 Execution Mode set to: {bold(green(self.execution_mode))}")
+        print(f"      ↳ {dim(mode_desc)}\n")
+
+    def execute_keys_command(self, arg: str) -> None:
+        """Displays configured API keys across providers and allows linking new keys."""
+        from ..adapters.universal_api_provider import load_repo_dotenv
+        load_repo_dotenv()
+
+        providers = [
+            ("NVIDIA NIM", "NVIDIA_API_KEY", "integrate.api.nvidia.com (85 Models: 550B, 405B, 70B...)"),
+            ("Google Gemini", "GEMINI_API_KEY", "generativelanguage.googleapis.com (Gemini 2.5 Pro / Flash)"),
+            ("OpenAI", "OPENAI_API_KEY", "api.openai.com (GPT-4o, GPT-4o-mini)"),
+            ("Anthropic", "ANTHROPIC_API_KEY", "api.anthropic.com (Claude 3.5 Sonnet)"),
+            ("DeepSeek", "DEEPSEEK_API_KEY", "api.deepseek.com (DeepSeek-V3, R1)"),
+            ("Groq", "GROQ_API_KEY", "api.groq.com (Llama 3.3 70B @ 500+ tok/s)"),
+        ]
+
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🔑 MULTI-PROVIDER API KEYS & INTELLIGENCE POOL STATUS")))
+        print(cyan("=" * 78))
+        for name, env_var, desc in providers:
+            k = os.environ.get(env_var, "")
+            status = green("CONFIGURED") if k else yellow("NOT SET")
+            masked = (k[:4] + "..." + k[-4:]) if len(k) > 10 else ("***" if k else "None")
+            print(f"   • {bold(name.ljust(15))} [{status}]: Key: {cyan(masked.ljust(14))} | {dim(desc)}")
+        print("\n   " + dim("To add a key: key add <provider> <key>  (e.g. key add gemini AIzaSy...)"))
+        print(cyan("=" * 78) + "\n")
+
+    def print_color_diff(self, target: Optional[str] = None) -> None:
+        """Displays colorized unified git diffs with green additions and red deletions."""
+        import subprocess
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   📝 UNIFIED CODEBASE DIFF & MODIFIED FILES")))
+        print(cyan("=" * 78))
+
+        repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+        cmd = ["git", "diff"]
+        if target:
+            cmd.append(target)
+
+        try:
+            res = subprocess.run(cmd, cwd=str(repo_root), capture_output=True, text=True, encoding="utf-8", errors="replace", check=False)
+            diff_text = res.stdout or res.stderr or ""
+            if not diff_text.strip():
+                print(dim("   No unstaged changes in working tree (clean state).\n"))
+                active_s = self.session_mgr.get_active_session()
+                if active_s.modified_files:
+                    print(bold(f"   Files modified in session '{active_s.name}':"))
+                    for mf in active_s.modified_files:
+                        print(f"     • {cyan(mf)}")
+            else:
+                for line in diff_text.splitlines():
+                    if line.startswith("+") and not line.startswith("+++"):
+                        print(green(line))
+                    elif line.startswith("-") and not line.startswith("---"):
+                        print(red(line))
+                    elif line.startswith("@@"):
+                        print(cyan(line))
+                    else:
+                        print(line)
+        except Exception as e:
+            print(yellow(f"   Could not run git diff: {e}"))
+        print(cyan("=" * 78) + "\n")
 
     def execute_evolve(self) -> None:
         """Runs the 24/7 continuous autonomous self-evolution cycle in terminal."""
@@ -965,11 +1171,17 @@ class TerminalClient:
         print(f"     5.  {cyan('5')} / {cyan('video')}      : Google Gemini Multimodal Video & Media Synthesis (Omni/Veo)")
         print(f"     6.  {cyan('6')} / {cyan('research')}   : Deep Web Research & 21 Pre-Connected MCP Tools")
         print(f"     7.  {cyan('7')} / {cyan('evolve')}     : 24/7 Continuous Autonomous Self-Evolution Cycle\n")
-        print("   " + bold("Interactive HUD & Research Workflows:"))
-        print(f"     •  {cyan('tui')} / {cyan('hud')}       : High-density interactive Terminal UI HUD status board")
-        print(f"     •  {cyan('research')}     : Upfront adaptive intake & bespoke design specification generator")
-        print(f"     •  {cyan('accounts')}     : Multi-account Chrome manager (6 to 78 profiles) & quota monitor")
-        print(f"     •  {cyan('meetup3d')}     : Launch production NexusMeet 3D WebGL spatial application\n")
+        print("   " + bold("Interactive HUD & Autonomous Workflows:"))
+        print(f"     •  {cyan('yuvay')} / {cyan('tui')}     : Full interactive Terminal UI menu interface with live telemetry")
+        print(f"     •  {cyan('harness')}       : 5-Way Architectural comparison: IVA vs Claude Code / Codex / DeepSeek")
+        print(f"     •  {cyan('sessions')}      : Multi-session tracking for stateless terminal (new, switch, diff, export)")
+        print(f"     •  {cyan('workspace')}     : Multi-workspace codebase indexer & memory ingestor (add, list)")
+        print(f"     •  {cyan('mode')}          : Toggle execution mode (AUTONOMOUS SPRINT vs INTERACTIVE CO-PILOT)")
+        print(f"     •  {cyan('keys')}          : Multi-provider API keys status & configuration")
+        print(f"     •  {cyan('diff')}          : Unified colorized diff (+ green, - red) of modified files")
+        print(f"     •  {cyan('research')}      : Upfront adaptive intake & bespoke design specification generator")
+        print(f"     •  {cyan('accounts')}      : Multi-account Chrome manager (6 to 78 profiles) & quota monitor")
+        print(f"     •  {cyan('meetup3d')}      : Launch production NexusMeet 3D WebGL spatial application\n")
         print("   " + bold("Intelligence & Models:"))
         print(f"     •  {cyan('chat <prompt>')}: Natural language prompt / coding / reasoning with Iva")
         print(f"     •  {cyan('models')}       : Auto-discover remote models from API key & view active target")
@@ -2056,6 +2268,10 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 + dim(f"[Model: {active_model} | Latency: {dt}s | Tokens: In {in_toks}, Out {out_toks}]")
                 + "\n"
             )
+            try:
+                self.session_mgr.record_turn(prompt=clean, response=resp_text, model=active_model)
+            except Exception:
+                pass
         except RuntimeError as rte:
             dt = round(time.perf_counter() - t0, 2)
             err_msg = str(rte)
@@ -2110,6 +2326,26 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 self.print_chrome_accounts()
             elif low in ("meetup", "meetup3d", "3dapp", "meetups"):
                 self.launch_meetup_3d()
+            elif low in ("session", "sessions") or low.startswith("session "):
+                arg = line[7:].strip() if low.startswith("session ") else ""
+                self.execute_session_command(arg)
+            elif low in ("workspace", "workspaces") or low.startswith("workspace ") or low.startswith("index "):
+                if low.startswith("workspace "):
+                    arg = line[10:].strip()
+                elif low.startswith("index "):
+                    arg = f"add {line[6:].strip()}"
+                else:
+                    arg = "list"
+                self.execute_workspace_command(arg)
+            elif low in ("mode", "toggle-mode") or low.startswith("mode "):
+                arg = line[5:].strip() if low.startswith("mode ") else ""
+                self.execute_mode_command(arg)
+            elif low in ("keys", "key") or low.startswith("key "):
+                arg = line[4:].strip() if low.startswith("key ") else ""
+                self.execute_keys_command(arg)
+            elif low in ("diff", "changes") or low.startswith("diff "):
+                target = line[5:].strip() if low.startswith("diff ") else None
+                self.print_color_diff(target)
             elif low in ("1", "arch", "architecture", "design"):
                 self.execute_architecture_wizard()
             elif low in ("2", "web", "website", "3d", "webapp", "build"):

@@ -136,6 +136,57 @@ While standard harnesses emit unstructured prose that rots immediately, IVA's Re
 4. `VERIFICATION_PLAN.md` — Test execution matrix, edge cases, and UAT pass criteria.
 5. `MEDIA_ASSETS_SPEC.md` — Prompts and recipes for DALL-E 3 and Google Gemini video generation.
 
+### 2.9 Multi-Session Tracking in Stateless Terminals (`SessionManager`)
+- **The Competitor Flaw**:
+  Claude Code and OpenAI Codex run in stateless terminal processes or rely on proprietary cloud session IDs. If the developer closes the terminal window, restarts SSH, or wants to work on two parallel features (e.g. `refactor-db` vs `frontend-ui`), the prompt context and history are destroyed or intermingled.
+- **The IVA Solution**:
+  IVA incorporates the [`SessionManager`](agents/IVA/engine/agi17/runtime/session_manager.py):
+  1. Creates and persists isolated local work sessions (`scratch/sessions/<session_id>.json`).
+  2. Tracks complete turn history, prompt/response pairs, timestamps, touched files, and model signatures per session.
+  3. Supports hot switching without restarting the runtime:
+     - `session list` — Displays all sessions, turn counts, and creation dates.
+     - `session new <name>` — Spawns an isolated session context.
+     - `session switch <id>` — Seamlessly restores context and active session state.
+     - `session export <id>` — Compiles the session transcript into clean GitHub Markdown.
+     - `diff` — Generates a colorized git diff scoped directly to the files touched in the active session.
+
+### 2.10 Cross-Workspace Codebase Ingestion & Memory (`WorkspaceIndexer`)
+- **The Competitor Flaw**:
+  Standard coding harnesses only inspect the immediate working directory (`./`). If an enterprise project depends on internal shared libraries, common models, or microservices located in sibling repositories (`../core-service`, `D:/libs/shared`), the agent is completely blind to those symbols.
+- **The IVA Solution**:
+  IVA includes the [`WorkspaceIndexer`](agents/IVA/engine/agi17/memory/workspace_indexer.py):
+  1. Recursively traverses any external repository or folder on the local machine (`workspace add <path>`).
+  2. Ignores build artifacts (`.git`, `node_modules`, `.venv`, `dist`, `__pycache__`).
+  3. Employs Python's standard library `ast` parser to extract classes, methods, function signatures, and docstrings.
+  4. Automatically synchronizes symbols into **Layer 5 (Semantic Facts)** of IVA's SQLite WAL cognitive memory (`omega_memory.db`).
+  5. Any subsequent prompt or subagent query can immediately recall functions, type signatures, and data contracts across all indexed workspaces across the entire machine!
+
+### 2.11 One-Time Upfront Permissions Architecture
+- **The Competitor Flaw**:
+  Mainstream agent CLIs constantly interrupt the operator with repetitive approval prompts for every command: *"Allow bash execution? Allow file write? Allow network call?"* Over time, developers either experience approval fatigue and blindly press Enter, or abandon the tool altogether.
+- **The IVA Solution**:
+  During setup (`setup_iva.py`), IVA presents a transparent **One-Time Permission Consent Checklist**:
+  - `IVA_PERMIT_WORKSPACE_FS`: Read/write access inside workspace paths.
+  - `IVA_PERMIT_SHELL_EXEC`: Local shell execution for tests and builds.
+  - `IVA_PERMIT_PERSISTENT_MEMORY`: SQLite WAL persistent state tracking.
+  - `IVA_PERMIT_BROWSER_CONTROL`: Optional Chrome / Playwright browser automation.
+  Grants are permanently persisted in `.env`. The operator approves once during onboarding, after which IVA operates smoothly without nagging interruptions.
+
+### 2.12 Grounded Multi-API Key Architecture vs Illusionary Pooling
+- **The Competitor Flaw**:
+  Many agent tools make vague claims about supporting "hundreds of models" without clarifying that models are strictly gated by individual provider API keys. A user with a Google Gemini key cannot call OpenAI GPT-4o, and an OpenAI key cannot query Anthropic Claude.
+- **The IVA Solution**:
+  IVA provides strict empirical grounding through [`UniversalAPIProvider`](agents/IVA/engine/agi17/adapters/universal_api_provider.py):
+  - **Single Active Key Grounding**: If the operator links an NVIDIA NIM key, IVA displays the exact 85 NIM models available on that endpoint (550B $\to$ 1B). If the operator links a Google Gemini key, IVA scopes down to the 8 Gemini models.
+  - **Multi-Key Aggregation**: When multiple keys are configured in `.env` (`GEMINI_API_KEY`, `NVIDIA_API_KEY`, `OPENAI_API_KEY`, `GROQ_API_KEY`, `DEEPSEEK_API_KEY`), IVA transparently pools only the providers with verified keys, enabling true cross-provider model routing.
+  - Run `keys` in the terminal to inspect active credentials and masked keys at any time.
+
+### 2.13 Dual Execution Engine: Autonomous Sprint vs Interactive Co-Pilot
+- **Autonomous Sprint Mode (`mode autonomous`)**:
+  Performs complete upfront intake, locks requirements, and executes the entire engineering workflow (scaffolding, testing, AST patch repair, documentation) without pausing for intermediate confirmation.
+- **Interactive Co-Pilot Mode (`mode copilot`)**:
+  Provides granular step-by-step guidance, explaining each diff before disk write and presenting checkpoints for operators who want line-by-line oversight.
+
 ---
 
 ## 3. Real-World Capability Demonstration: NexusMeet 3D

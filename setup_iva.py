@@ -515,8 +515,88 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
 
     return env_file, active_key, selected_model, active_prov
 
+def configure_runtime_permissions(env_file: Path, interactive: bool = True) -> Dict[str, bool]:
+    """Configures one-time explicit operating permissions so IVA operates autonomously without repeated nagging."""
+    print("\n[3/7] Configuring One-Time Operating Permissions...")
+
+    fs_ok = os.environ.get("IVA_PERMIT_WORKSPACE_FS", "").lower() in ("true", "1")
+    shell_ok = os.environ.get("IVA_PERMIT_SHELL_EXEC", "").lower() in ("true", "1")
+    mem_ok = os.environ.get("IVA_PERMIT_PERSISTENT_MEMORY", "").lower() in ("true", "1")
+    browser_ok = os.environ.get("IVA_PERMIT_BROWSER_CONTROL", "").lower() in ("true", "1")
+
+    if fs_ok and shell_ok and mem_ok:
+        print("  ✅ Core Operating Permissions already configured in .env:")
+        print("     • Workspace Filesystem Access : GRANTED (Read/Write)")
+        print("     • Terminal Shell Automation   : GRANTED (Run tests & compilers)")
+        print("     • Persistent SQLite WAL Memory: GRANTED (~/.iva/memory)")
+        print(f"     • Chrome Browser Automation   : {'GRANTED' if browser_ok else 'OPTIONAL / OFF'}")
+        print("     (Zero mid-flight interruptions will occur)")
+        return {"fs": True, "shell": True, "mem": True, "browser": browser_ok}
+
+    print("  " + "═" * 74)
+    print("  🛡️ ONE-TIME RUNTIME PERMISSION CONSENT")
+    print("  " + "═" * 74)
+    print("  To operate autonomously without repeatedly asking you mid-flight,")
+    print("  IVA configures four explicit operating boundaries once:")
+    print()
+    print("  [1] Filesystem Workspace Access  : READ/WRITE in project directory")
+    print("  [2] Terminal Shell Automation    : RUN tests, compilers & linters")
+    print("  [3] Persistent SQLite WAL Memory : STORE project memory in ~/.iva")
+    print("  [4] Chrome Browser & Accounts    : OPTIONAL (For Gemini video/images)")
+    print()
+    print("  Press [Enter] to Approve Recommended Permissions (1, 2, 3)")
+    print("  Or type 'all' to approve all including Chrome browser (1, 2, 3, 4)")
+    print("  (Stored in .env — you will never be interrupted for these again!)")
+    print("  " + "═" * 74)
+
+    approved_all = False
+    if interactive:
+        try:
+            choice = input("  Approve permissions [Enter=Recommended, 'all'=All]: ").strip().lower()
+            if choice in ("all", "4", "yes", "y"):
+                approved_all = True
+        except (KeyboardInterrupt, EOFError):
+            pass
+
+    new_perms = {
+        "IVA_PERMIT_WORKSPACE_FS": "true",
+        "IVA_PERMIT_SHELL_EXEC": "true",
+        "IVA_PERMIT_PERSISTENT_MEMORY": "true",
+        "IVA_PERMIT_BROWSER_CONTROL": "true" if approved_all else "false",
+    }
+
+    lines = []
+    if env_file.exists():
+        lines = env_file.read_text(encoding="utf-8", errors="ignore").splitlines()
+
+    new_lines = []
+    seen = set()
+    for line in lines:
+        stripped = line.strip()
+        if stripped and "=" in stripped and not stripped.startswith("#"):
+            k = stripped.split("=", 1)[0].strip()
+            if k in new_perms:
+                new_lines.append(f"{k}={new_perms[k]}")
+                seen.add(k)
+                continue
+        new_lines.append(line)
+
+    for k, v in new_perms.items():
+        if k not in seen:
+            new_lines.append(f"{k}={v}")
+
+    env_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+    for k, v in new_perms.items():
+        os.environ[k] = v
+
+    print(f"  ✅ Permissions configured and saved to .env!")
+    print("     • Workspace Filesystem: GRANTED | Shell Execution: GRANTED | SQLite Memory: GRANTED")
+    if approved_all:
+        print("     • Multi-Account Chrome & Browser Automation: GRANTED")
+    return {"fs": True, "shell": True, "mem": True, "browser": approved_all}
+
 def initialize_local_memory() -> Path:
-    print("\n[3/6] Provisioning Persistent Cognitive Memory (omega_memory.db)...")
+    print("\n[4/7] Provisioning Persistent Cognitive Memory (omega_memory.db)...")
     from agents.IVA.engine.agi17.memory.omega_command_memory import OmegaCommandMemory
 
     custom_dir = os.environ.get("OMEGA_MEMORY_DIR")
@@ -555,7 +635,7 @@ def initialize_local_memory() -> Path:
         return mem.db_path
 
 def verify_specialist_and_mcp_ecosystem() -> int:
-    print("\n[4/6] Verifying 100-Specialist Ecosystem & 21-MCP Tool Registry...")
+    print("\n[5/7] Verifying 100-Specialist Ecosystem & 21-MCP Tool Registry...")
     registry_file = REPO_ROOT / "agents" / "IVA" / "ecosystem" / "agent_registry" / "registry.json"
     total = 100
     if registry_file.exists():
@@ -581,7 +661,7 @@ def verify_specialist_and_mcp_ecosystem() -> int:
     return total
 
 def check_complete_system_match() -> None:
-    print("\n[5/6] Verifying Complete 6-Dimension System Match Matrix...")
+    print("\n[6/7] Verifying Complete 6-Dimension System Match Matrix...")
     try:
         from agents.IVA.engine.agi17.capabilities.capability_profiler import CapabilityProfiler
         profiler = CapabilityProfiler()
@@ -596,7 +676,7 @@ def check_complete_system_match() -> None:
         print(f"  ⚠️ System match check notice: {exc}")
 
 def check_safety_invariants() -> None:
-    print("\n[6/6] Auditing Physical Safety Invariants...")
+    print("\n[7/7] Auditing Physical Safety Invariants...")
     from agents.IVA.engine.agi17.runtime.authoritative_brain_config import AuthoritativeBrainConfig
 
     config = AuthoritativeBrainConfig()
@@ -678,6 +758,7 @@ def main():
     if not check_python_version():
         sys.exit(1)
     env_file, active_key, selected_model, active_prov = setup_environment_and_models(interactive=interactive)
+    configure_runtime_permissions(env_file, interactive=interactive)
     db_path = initialize_local_memory()
     verify_specialist_and_mcp_ecosystem()
     check_complete_system_match()

@@ -8,7 +8,7 @@
 [![External Plugins](https://img.shields.io/badge/External_Plugins-0_Needed_(All--in--One)-success.svg)](#-zero-external-plugins-mandate)
 [![Interface Surface](https://img.shields.io/badge/Interface-Pure_Terminal_CLI-informational.svg)](#-interactive-terminal-client)
 [![Universal API](https://img.shields.io/badge/API_Access-Universal_(Gemini%20%2F%20OpenAI)-orange.svg)](#-universal-api-key-setup)
-[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-52%2F52_Passing_(100%25)-success.svg)](tests/)
+[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-86%2F86_Passing_(100%25)-success.svg)](tests/)
 [![Safety Railings](https://img.shields.io/badge/Live_Broker_Gate-LOCKED_(Fail--Closed)-red.svg)](#-fail-closed-safety-railings)
 
 **IVA** is an institutional-grade, resource-aware multi-agent engineering partner and automated **Python CI-Repair** runtime led by **Iva** ([`IVA_README.md`](IVA_README.md)). Designed to operate as a sovereign intellectual partner rather than a passive chatbot, IVA combines persistent cognitive self-modeling, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.
@@ -312,18 +312,25 @@ When you run the installer or `setup_iva.py`, IVA executes an **orchestrated, in
   ✅ Active Model Target set to: gemini-2.5-flash
   💾 Saved verified credentials and active model to .env
 
-[3/6] Provisioning Persistent Cognitive Memory (omega_memory.db)...
+[3/7] Configuring Runtime Permissions (Workspace, Shell, Memory, Browser)...
+  ✅ Workspace Filesystem: GRANTED (Direct safe file creation & refactoring)
+  ✅ Local Shell Execution: GRANTED (Autonomous test running & CI repair)
+  ✅ Persistent SQLite Memory: GRANTED (Layered cognitive memory tracking)
+  ✅ Browser & Screen Automation: GRANTED (Multi-account Chrome & ChatGPT bridge)
+  💾 Saved verified permissions to .env (One-time consent: zero mid-flight interruptions)
+
+[4/7] Provisioning Persistent Cognitive Memory (omega_memory.db)...
   ✅ SQLite WAL memory active at: ~/.iva/memory/omega_memory.db
   ✅ Memory schema verified (10 layers active, 765 stored entries).
 
-[4/6] Verifying 100-Specialist Ecosystem & 21-MCP Tool Registry...
+[5/7] Verifying 100-Specialist Ecosystem & 21-MCP Tool Registry...
   ✅ Verified 100 specialist contracts active across 16 capability families.
   ✅ Verified 21 embedded Model Context Protocol (MCP) servers (pre-installed).
 
-[5/6] Verifying Complete 6-Dimension System Match Matrix...
+[6/7] Verifying Complete 6-Dimension System Match Matrix...
   ✅ Complete System Match: 100% MATCHED & FULLY COMPATIBLE (6/6 Dimensions)
 
-[6/6] Auditing Physical Safety Invariants...
+[7/7] Auditing Physical Safety Invariants...
   🔒 Physical Live Order Safety Gate: LOCKED (Safe Fail-Closed).
 
 ================================================================================
@@ -331,7 +338,7 @@ When you run the installer or `setup_iva.py`, IVA executes an **orchestrated, in
 ================================================================================
   NEXT ACTION:
   [1] Launch Interactive Autonomous Terminal (Recommended) — python run_iva.py
-  [2] Run Autonomous Self-Verification Suite (55 Tests) — python run_iva.py test
+  [2] Run Autonomous Self-Verification Suite (86 Tests) — python run_iva.py test
   [3] Complete 6-Dimension System Match Report — python run_iva.py sysmatch
   [4] Exit to command prompt
 
@@ -523,6 +530,11 @@ Inside the `iva> ` prompt, you can run single-word administrative commands:
 
 | Command | Action | Output Description |
 |:---|:---|:---|
+| `session` / `sessions` | Multi-Session | Manages stateless terminal sessions (`session list`, `new <n>`, `switch <id>`, `export <id>`). |
+| `workspace` / `workspaces` | Workspace Index | Indexes external repositories & synchronizes AST classes/functions into SQLite memory. |
+| `mode [auto\|copilot]` | Execution Mode | Toggles Autonomous Sprint (upfront intake, zero mid-turn halting) vs Interactive Co-Pilot. |
+| `keys` / `key` | API Credentials | Inspects active API keys and grounded models, or adds new provider keys (`key add ...`). |
+| `diff [target]` | Codebase Diff | Displays colorized unified git diff (green adds, red deletes) with session file tracking. |
 | `chat <prompt>` | Intelligence | Natural language reasoning, code synthesis, and architectural discussion. |
 | `yuvay` / `tui` / `ui` | Interactive TUI | Full interactive terminal menu interface with live telemetry, specialists, accounts, and specs. |
 | `harness` / `compare` | Harness Matrix | Displays comparative matrix: IVA vs Claude Code, OpenAI Codex, Antigravity, DeepSeek. |

@@ -359,6 +359,24 @@ class TestTerminalClient(unittest.TestCase):
             client.run_tui_interface()
         self.assertIn("Returning to iva> prompt", buf_tui.getvalue())
 
+    def test_19_sessions_workspace_mode_keys_commands(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.execute_session_command("list")
+            client.execute_workspace_command("list")
+            client.execute_mode_command("toggle")
+            client.execute_keys_command("")
+            client.print_color_diff()
+
+        output = buf.getvalue()
+        self.assertIn("MULTI-SESSION TRACKER", output)
+        self.assertIn("INDEXED EXTERNAL WORKSPACES", output)
+        self.assertIn("Execution Mode set to", output)
+        self.assertIn("MULTI-PROVIDER API KEYS", output)
+        self.assertIn("UNIFIED CODEBASE DIFF", output)
+
 
 if __name__ == "__main__":
     unittest.main()
