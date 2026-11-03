@@ -524,8 +524,9 @@ Inside the `iva> ` prompt, you can run single-word administrative commands:
 | Command | Action | Output Description |
 |:---|:---|:---|
 | `chat <prompt>` | Intelligence | Natural language reasoning, code synthesis, and architectural discussion. |
-| `tui` / `hud` | Terminal HUD | High-density interactive Terminal UI HUD status board with models, memory, and accounts. |
-| `research` / `intake` | Research Partner | Upfront adaptive intake & bespoke design specification generator (`DESIGN_SPEC.md`). |
+| `yuvay` / `tui` / `ui` | Interactive TUI | Full interactive terminal menu interface with live telemetry, specialists, accounts, and specs. |
+| `harness` / `compare` | Harness Matrix | Displays comparative matrix: IVA vs Claude Code, OpenAI Codex, Antigravity, DeepSeek. |
+| `research` / `intake` | Research Partner | Upfront adaptive intake & synthesizes all 5 architectural contracts + scaffolds code. |
 | `accounts` / `chrome` | Multi-Account | Discovers 6-78 local Chrome profiles, monitors quotas, and auto-rotates across accounts. |
 | `meetup3d` | 3D Application | Launches production NexusMeet 3D WebGL spatial application (`applications/meetup_3d/`). |
 | `models` | Model Discovery | Remote model querying via API key with autonomous optimal target selection. |

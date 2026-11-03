@@ -687,24 +687,102 @@ class TerminalClient:
         print("\n   " + bold(green("✅ Requirements Locked In Upfront! Zero mid-turn interruptions.")))
         print(f"      • Scope     : {cyan(scope.value)}")
         print(f"      • Aesthetic : {magenta(theme.value)}")
-        print("   " + dim("Synthesizing DESIGN_SPEC.md and ARCH_SPEC.md...\n"))
+        print("   " + dim("Scaffolding project and generating all 5 specification contracts...\n"))
 
         proj_clean = "".join(c if c.isalnum() else "_" for c in vision[:30]).strip("_") or "Project_Nexus"
-        design_spec = ResearchPartnerEngine.generate_design_specification(proj_clean, theme)
-        arch_spec = ResearchPartnerEngine.generate_architecture_specification(
-            proj_clean,
-            scope,
-            modules=["backend/server.py", "backend/models.py", "frontend/index.html", "frontend/css/styles.css", "tests/test_api.py"],
+        out_dir = Path("scratch") / "research_output" / proj_clean
+        scaffold_res = ResearchPartnerEngine.scaffold_project_files(
+            target_dir=out_dir,
+            project_name=proj_clean,
+            scope=scope,
+            theme=theme,
+            vision=vision,
         )
 
-        out_dir = Path("scratch") / "research_output"
-        out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / "DESIGN_SPEC.md").write_text(design_spec, encoding="utf-8")
-        (out_dir / "ARCH_SPEC.md").write_text(arch_spec, encoding="utf-8")
+        print("   " + bold(green("✅ Scaffolding & Specifications Synthesized Successfully!")))
+        print(f"      • Target Directory   : {cyan(str(out_dir))}")
+        print(f"      • Generated Contracts:")
+        for spec_name in ("REQUIREMENTS_SPEC.md", "DESIGN_SPEC.md", "ARCH_SPEC.md", "VERIFICATION_PLAN.md", "MEDIA_ASSETS_SPEC.md"):
+            print(f"        - {green(spec_name)}")
+        print(f"      • Generated Code & Assets ({len(scaffold_res['created_files']) - 5} items):")
+        for f in scaffold_res["created_files"]:
+            if not f.endswith("_SPEC.md") and not f.endswith("_PLAN.md"):
+                print(f"        - {cyan(f)}")
+        print("\n   " + bold(cyan("🚀 Project architecture ready for autonomous execution. Zero mid-turn interruptions.")) + "\n")
 
-        print(f"   💾 Generated Design Specification       : {green(str(out_dir / 'DESIGN_SPEC.md'))}")
-        print(f"   💾 Generated Architecture Specification : {green(str(out_dir / 'ARCH_SPEC.md'))}")
-        print("\n   " + bold(cyan("🚀 Ready to scaffold project autonomously. Zero mid-turn interruptions.")) + "\n")
+    def print_harness_comparison(self) -> None:
+        """Displays comparative matrix: IVA vs Claude Code, OpenAI Codex, Google Antigravity, DeepSeek."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   ⚔️ ARCHITECTURAL HARNESS COMPARISON: IVA VS INDUSTRY HARNESSES")))
+        print(cyan("=" * 78))
+        print(dim("   Why IVA is high-pressure, autonomous, multi-account, and 100% dependency-free.\n"))
+
+        rows = [
+            ("Claude Code", "Node.js / npm", "Claude only", "Frequent mid-turn", "None (CLI only)", "Ephemeral logs"),
+            ("OpenAI Codex", "Python / pip", "OpenAI only", "Frequent mid-turn", "Headless remote", "Cloud session"),
+            ("Antigravity", "Electron / GUI", "Gemini only", "Interactive IDE", "Desktop tab only", "Workspace cache"),
+            ("DeepSeek", "Python CLI", "DeepSeek only", "Unbuffered CLI", "None (CLI only)", "Stateless"),
+            ("IVA 1.7 OMEGA", "0 (100% Stdlib)", "85 Models (550B->1B)", "Upfront Intake (0 mid)", "6-78 Profiles (24/7)", "10-Layer SQLite WAL"),
+        ]
+
+        print(bold(f"   {'HARNESS':<15} {'DEPENDENCIES':<16} {'MODELS':<22} {'INTERRUPTION':<20}"))
+        print(cyan("   " + "-" * 75))
+        for name, deps, models, inter, browser, mem in rows:
+            if "IVA" in name:
+                print(bold(green(f"   {name:<15} {deps:<16} {models:<22} {inter:<20}")))
+            else:
+                print(dim(f"   {name:<15} {deps:<16} {models:<22} {inter:<20}"))
+
+        print("\n   " + bold("Key Architectural Advantages of IVA:"))
+        print(f"   1. {cyan('The Pressure Principle')} : Relentless self-repair; loops through failures until 100% green.")
+        print(f"   2. {cyan('Multi-Account Rotation')}: Auto-rotates 6-78 Chrome profiles when Gemini Pro/Veo hits quota limits.")
+        print(f"   3. {cyan('Anti-Cliché Design')}   : 5 bespoke design systems (Cyber-Terminal, Neo-Glass, Brutalist...).")
+        print(f"   4. {cyan('100 Embedded Roles')}  : Full transactional contracts across 16 families (SWE, QA, Quant, Ops).")
+        print(f"   5. {cyan('Zero Pip Requirements')}: Boots in <1s with vanilla Python 3.10+ standard library.")
+        print(dim("\n   📄 Full whitepaper available at: HARNESS_COMPARISON.md"))
+        print(cyan("=" * 78) + "\n")
+
+    def run_tui_interface(self) -> None:
+        """Runs the interactive full terminal TUI ('Yuvay') interface loop."""
+        while True:
+            self.print_tui_dashboard()
+            print("   " + bold("Select an interactive view or action:"))
+            print("     [1] 📊 System Status & Resource Telemetry")
+            print("     [2] 🏛️ Architecture & Research Partner (Upfront Intake Wizard)")
+            print("     [3] 🌐 Chrome Accounts & Gemini Video Quotas (6-78 Profiles)")
+            print("     [4] 🤖 Models Pool & Dynamic Parameter Swapper (550B -> 1B)")
+            print("     [5] 💾 Cognitive SQLite WAL Memory Explorer (10 Layers)")
+            print("     [6] 🛡️ Specialist Family Catalog (100 Contracts)")
+            print("     [7] 🚀 Launch NexusMeet 3D Application")
+            print("     [8] ⚔️ Harness Comparison Matrix (IVA vs Industry Harnesses)")
+            print("     [0] 🔙 Return to Shell Command Line\n")
+
+            try:
+                choice = input(bold(cyan("yuvay> "))).strip()
+            except (KeyboardInterrupt, EOFError):
+                break
+
+            if choice in ("0", "exit", "quit", "back", "q"):
+                print(dim("\n   Returning to iva> prompt...\n"))
+                break
+            elif choice == "1":
+                self.print_status()
+            elif choice == "2":
+                self.execute_research_partner_flow()
+            elif choice == "3":
+                self.print_chrome_accounts()
+            elif choice == "4":
+                self.print_models()
+            elif choice == "5":
+                self.print_memory_status()
+            elif choice == "6":
+                self.print_specialists()
+            elif choice == "7":
+                self.launch_meetup_3d()
+            elif choice == "8":
+                self.print_harness_comparison()
+            else:
+                pass
 
     def print_chrome_accounts(self) -> None:
         """Inspects all local Chrome user profiles (6 to 78 accounts) and Gemini video automation status."""
@@ -2023,7 +2101,9 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             elif low in ("suggestions", "menu", "options", "what"):
                 self.display_suggestions_menu()
             elif low in ("tui", "ui", "yuvay", "hud", "dash", "dashboard"):
-                self.print_tui_dashboard()
+                self.run_tui_interface()
+            elif low in ("harness", "compare", "comparison", "matrix"):
+                self.print_harness_comparison()
             elif low in ("research", "intake", "design-flow"):
                 self.execute_research_partner_flow()
             elif low in ("accounts", "chrome", "profiles", "multilogin"):

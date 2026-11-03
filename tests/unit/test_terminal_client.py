@@ -342,12 +342,22 @@ class TestTerminalClient(unittest.TestCase):
         with patch("sys.stdout", buf):
             client.print_tui_dashboard()
             client.print_chrome_accounts()
+            client.print_harness_comparison()
 
         output = buf.getvalue()
         self.assertIn("TERMINAL TUI HUD", output)
         self.assertIn("Active Model Target", output)
         self.assertIn("Chrome Multi-Account", output)
         self.assertIn("Discovered Chrome Profiles", output)
+        self.assertIn("HARNESS COMPARISON", output)
+        self.assertIn("Claude Code", output)
+        self.assertIn("DeepSeek", output)
+
+        # Test interactive TUI loop exiting cleanly with "0"
+        buf_tui = io.StringIO()
+        with patch("sys.stdout", buf_tui), patch("builtins.input", side_effect=["0"]):
+            client.run_tui_interface()
+        self.assertIn("Returning to iva> prompt", buf_tui.getvalue())
 
 
 if __name__ == "__main__":
