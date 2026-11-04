@@ -34,7 +34,7 @@ wheels = [
 
 [[package]]
 name = "iva-engine"
-version = "1.7.29"
+version = "1.8.0"
 source = { editable = "." }
 
 [package.optional-dependencies]

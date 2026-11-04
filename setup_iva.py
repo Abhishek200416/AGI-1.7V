@@ -621,7 +621,7 @@ def initialize_local_memory() -> Path:
                 layer=5,
                 subject_key="iva.cognitive_bootstrap",
                 content="Iva cognitive architecture initialized on local system. Female autonomous engineering lead and systems partner.",
-                structured_data={"system": "Iva", "version": "1.7.29", "safety_mode": "FAIL_CLOSED"},
+                structured_data={"system": "Iva", "version": "1.8.0", "safety_mode": "FAIL_CLOSED"},
                 tags=["bootstrap", "identity", "iva"]
             )
             print("  ✅ Seeded baseline cognitive identity entry into Layer 5 (Semantic Facts).")

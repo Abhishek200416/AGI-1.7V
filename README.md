@@ -3,13 +3,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Development Status](https://img.shields.io/badge/Status-Beta_(v1.7.29)-yellow.svg)](pyproject.toml)
+[![Development Status](https://img.shields.io/badge/Status-Beta_(v1.8.0)-yellow.svg)](pyproject.toml)
 [![Runtime Dependencies](https://img.shields.io/badge/Dependencies-0_Required_(Stdlib)-brightgreen.svg)](pyproject.toml)
 [![Embedded Specialists](https://img.shields.io/badge/Embedded_Specialists-100_Active_Contracts-blueviolet.svg)](agents/IVA/ecosystem/agent_registry/registry.json)
 [![External Plugins](https://img.shields.io/badge/External_Plugins-0_Needed_(All--in--One)-success.svg)](#-zero-external-plugins-mandate)
 [![Interface Surface](https://img.shields.io/badge/Interface-Pure_Terminal_CLI-informational.svg)](#-interactive-terminal-client)
 [![Universal API](https://img.shields.io/badge/API_Access-Universal_(Gemini%20%2F%20OpenAI)-orange.svg)](#-universal-api-key-setup)
-[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-118%2F118_Passing_(100%25)-success.svg)](tests/)
+[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-119%2F119_Passing_(100%25)-success.svg)](tests/)
 [![Safety Railings](https://img.shields.io/badge/Live_Broker_Gate-LOCKED_(Fail--Closed)-red.svg)](#-fail-closed-safety-railings)
 
 **IVA** is an institutional-grade, resource-aware multi-agent engineering partner and automated **Python CI-Repair** runtime led by **Iva** ([`IVA_README.md`](IVA_README.md)). Designed to operate as a sovereign intellectual partner rather than a passive chatbot, IVA combines persistent cognitive self-modeling, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.

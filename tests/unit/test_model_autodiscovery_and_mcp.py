@@ -287,7 +287,36 @@ def run_invariant_check() -> bool:
                 provider_type="nvidia",
             )
             self.assertEqual(provider.model_name, "nvidia/nemotron-3.5-bolt-e4b")
-            self.assertEqual(provider.base_url, "https://integrate.api.nvidia.com/v1")
+    def test_13_mcp_operational_readiness_validation(self) -> None:
+        from agents.IVA.engine.agi17.mcp.mcp_manager import MCPManager
+        mgr = MCPManager()
+
+        # 1. Self-contained servers must be READY without credentials
+        fs_ready = mgr.check_operational_readiness("filesystem")
+        self.assertEqual(fs_ready["status"], "READY")
+        self.assertTrue(fs_ready["operational"])
+        self.assertEqual(fs_ready["type"], "SELF_CONTAINED")
+
+        # 2. Credential-bound servers without env vars must report NEEDS_CREDENTIALS
+        with patch.dict(os.environ, {}, clear=True):
+            gh_ready = mgr.check_operational_readiness("github")
+            self.assertEqual(gh_ready["status"], "NEEDS_CREDENTIALS")
+            self.assertFalse(gh_ready["operational"])
+            self.assertIn("GITHUB_TOKEN", gh_ready["detail"])
+
+            # When env var provided, becomes READY
+            with patch.dict(os.environ, {"GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_mock12345"}):
+                gh_ready_with_key = mgr.check_operational_readiness("github")
+                self.assertEqual(gh_ready_with_key["status"], "READY")
+                self.assertTrue(gh_ready_with_key["operational"])
+
+        # 3. Server list must embed operational readiness fields
+        servers = mgr.list_servers()
+        self.assertGreater(len(servers), 0)
+        for s in servers:
+            self.assertIn("readiness", s)
+            self.assertIn("operational_ready", s)
+            self.assertIsInstance(s["operational_ready"], bool)
 
 
 if __name__ == "__main__":

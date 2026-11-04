@@ -25,7 +25,7 @@
         <div class="hook-glow-orb"></div>
         <div class="hook-text-block">
             <div class="hook-headline">AETHERIA 3D • Universal Scale Journey</div>
-            <div class="hook-sub">Planet → Solar System → Milky Way → Supercluster → Cosmic Web</div>
+            <div class="hook-sub">Planet → Solar System → Blue Hypergiant → Milky Way Spiral → Supercluster → Cosmic Web → Bubble Multiverse</div>
         </div>
         <button id="dismiss-hook-btn" class="hook-enter-btn">ENTER COSMOS ✦</button>
     </div>
@@ -35,6 +35,15 @@
         <span class="zen-icon">👁️</span>
         <span class="zen-label">RESTORE HUD</span>
     </button>
+
+    <!-- Interactive Universal Hover Reticle -->
+    <div id="cosmic-hover-reticle" class="cosmic-hover-reticle"></div>
+
+    <!-- Spacecraft Flight Controls HUD Hint -->
+    <div id="space-nav-hint" class="space-nav-hint glass-panel">
+        <span class="hint-badge">🚀 FLIGHT</span>
+        <span><b>WASD / Drag</b> Free Move • <b>Click</b> Enter Any World • <b>Wheel</b> Infinite Zoom</span>
+    </div>
 
     <!-- Centered Floating Dynamic Capsule Navigation (Dynamic Island) -->
     <header id="dynamic-capsule" class="dynamic-capsule glass-panel">
@@ -57,7 +66,7 @@
         </div>
     </header>
 
-    <!-- Universal Scale Selector Ribbon (Planet to Cosmic Web) -->
+    <!-- Universal Scale Selector Ribbon (Planet to Bubble Multiverse) -->
     <div id="scale-ribbon" class="scale-ribbon glass-panel">
         <button class="scale-btn" data-scale="planetary" title="Terrestrial Planet Scale (10^7 m)">
             <span class="scale-icon">🌍</span><span class="scale-text">Planet</span>
@@ -65,14 +74,20 @@
         <button class="scale-btn active" data-scale="solar_system" title="Heliosphere Solar System (10^13 m)">
             <span class="scale-icon">☀️</span><span class="scale-text">Solar System</span>
         </button>
-        <button class="scale-btn" data-scale="milky_way" title="Milky Way Galaxy (10^21 m)">
+        <button class="scale-btn" data-scale="stellar_neighborhood" title="Cygnus Blue Hypergiant & 32 Systems (10^17 m)">
+            <span class="scale-icon">💎</span><span class="scale-text">Blue Hypergiant</span>
+        </button>
+        <button class="scale-btn" data-scale="milky_way" title="Milky Way Galaxy Spiral & Sagittarius A* (10^21 m)">
             <span class="scale-icon">🌌</span><span class="scale-text">Milky Way</span>
         </button>
-        <button class="scale-btn" data-scale="supercluster" title="Laniakea Supercluster (10^24 m)">
+        <button class="scale-btn" data-scale="supercluster" title="Laniakea Supercluster & 16 Clusters (10^24 m)">
             <span class="scale-icon">🌀</span><span class="scale-text">Supercluster</span>
         </button>
-        <button class="scale-btn" data-scale="cosmic_web" title="Observable Cosmic Web (10^26 m)">
+        <button class="scale-btn" data-scale="cosmic_web" title="Observable Cosmic Web & Boötes Voids (10^26 m)">
             <span class="scale-icon">🕸️</span><span class="scale-text">Cosmic Web</span>
+        </button>
+        <button class="scale-btn" data-scale="multiverse_matrix" title="Infinite Bubble Multiverse & Omniverse (10^29 m)">
+            <span class="scale-icon">🫧</span><span class="scale-text">Bubble Multiverse</span>
         </button>
     </div>
 
@@ -133,7 +148,7 @@
             </div>
 
             <div class="tuning-section">
-                <div class="section-title">Cosmic Dynamics</div>
+                <div class="section-title">Cosmic Dynamics & Physics</div>
                 <div class="control-row">
                     <div class="control-label">
                         <span>Orbital Velocity</span>
@@ -144,10 +159,38 @@
 
                 <div class="control-row">
                     <div class="control-label">
-                        <span>Gravitational Attraction</span>
-                        <span id="gravity-val" class="control-val">1.0x</span>
+                        <span>Galaxy Spiral Speed</span>
+                        <span id="galaxy-speed-val" class="control-val">1.0x</span>
                     </div>
-                    <input id="gravity-slider" type="range" min="0.1" max="2.5" step="0.1" value="1.0" class="cyber-slider">
+                    <input id="galaxy-speed-slider" type="range" min="0.1" max="3.0" step="0.1" value="1.0" class="cyber-slider">
+                </div>
+
+                <div class="control-row">
+                    <div class="control-label">
+                        <span>Star Particle Luminosity</span>
+                        <span id="star-size-val" class="control-val">1.6 px</span>
+                    </div>
+                    <input id="star-size-slider" type="range" min="0.8" max="3.5" step="0.1" value="1.6" class="cyber-slider">
+                </div>
+
+                <div class="control-row">
+                    <div class="control-label">
+                        <span>Target Frame Rate</span>
+                        <span id="engine-fps-badge" class="control-val" style="color:var(--cyan);font-weight:bold;">240 Hz Pro</span>
+                    </div>
+                    <div class="fps-pill-row">
+                        <button class="fps-pill" data-fps="60">60 FPS</button>
+                        <button class="fps-pill" data-fps="120">120 FPS</button>
+                        <button class="fps-pill active" data-fps="240">240 FPS (Max)</button>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-label">
+                        <span>Audio & Click Sound FX</span>
+                        <span id="audio-status-label" class="control-val">Active</span>
+                    </div>
+                    <button id="tuning-audio-toggle-btn" class="action-btn" style="padding:4px 10px;font-size:0.75rem;">🔊 Toggle Sound</button>
                 </div>
             </div>
 
@@ -164,12 +207,12 @@
             <div class="drag-handle"></div>
         </div>
         <div class="modal-header">
-            <h3>🪐 SOLAR WORLDS & CELESTIAL BEACONS</h3>
+            <h3>🪐 COSMIC SYSTEMS & EXOPLANETS</h3>
             <button id="close-anomalies-btn" class="modal-close-btn" title="Close">✕</button>
         </div>
         <div class="modal-body">
             <div id="anomalies-list" class="anomalies-list">
-                <!-- Populated dynamically: Sun, Earth, Saturn, Jupiter, Chronos Weave, etc. -->
+                <!-- Populated dynamically with all multi-star systems and worlds -->
             </div>
         </div>
     </aside>
@@ -197,6 +240,11 @@
                     <div class="telemetry-label">Metric Horizon</div>
                     <div id="inspector-energy" class="telemetry-val">Class IV Temporal</div>
                 </div>
+            </div>
+
+            <div class="inspector-actions-row">
+                <button id="fly-to-target-btn" class="action-btn" style="flex:1;">🚀 Fly To Target</button>
+                <button id="play-target-sound-btn" class="action-btn" style="flex:1;">🔊 Hear Resonance</button>
             </div>
 
             <div id="inspector-lore" class="inspector-lore">
@@ -230,6 +278,6 @@
 
     <!-- Application Logic Scripts -->
     <script src="js/aetheria_audio.js"></script>
-    <script src="js/aetheria_scene.js"></script>
+    <script src="js/aetheria_scene.js?v=2.5"></script>
 </body>
 </html>

@@ -52,7 +52,7 @@ The self-model is implemented in `PersistentSelfModel` (`agents/AGI_1_7/engine/a
 {
   "identity": {
     "system_name": "Iva",
-    "version": "1.7.29",
+    "version": "1.8.0",
     "persona": "FEMALE_AUTONOMOUS_PARTNER",
     "operator_name": "Abhi",
     "fail_closed_safety": true,

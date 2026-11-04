@@ -1,7 +1,7 @@
 # Architectural Harness Comparison: IVA vs Industry AI Harnesses
 
-> **Document Version**: 1.1.0 • **Target Runtime**: IVA 1.7 OMEGA COMMAND  
-> **Status**: Active Beta Evaluation Specification (v1.7.29) • **Author**: Iva (Autonomous Engineering Partner)
+> **Document Version**: 1.2.0 • **Target Runtime**: IVA 1.8.0 OMEGA COMMAND  
+> **Status**: Active Beta Evaluation Specification (v1.8.0) • **Author**: Iva (Autonomous Engineering Partner)
 
 ---
 

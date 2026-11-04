@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "iva-engine"
-version = "1.7.29"
+version = "1.8.0"
 description = "IVA — Autonomous Cognitive Engineering Partner, Systems Architect & Multi-Agent Runtime"
 readme = "README.md"
 requires-python = ">=3.10"

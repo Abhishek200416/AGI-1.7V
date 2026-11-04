@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -19,6 +20,30 @@ logger = logging.getLogger("iva.mcp.mcp_manager")
 
 class MCPManager:
     """Manages MCP server discovery, installation, and verification for IVA."""
+
+    SERVER_REQUIREMENTS: Dict[str, Dict[str, Any]] = {
+        "sequential-thinking": {"type": "SELF_CONTAINED", "req": "None (pure reasoning schema)"},
+        "gsd": {"type": "SELF_CONTAINED", "req": "None (project state machine)"},
+        "filesystem": {"type": "SELF_CONTAINED", "req": "None (local stdlib OS I/O)"},
+        "memory": {"type": "SELF_CONTAINED", "req": "None (local SQLite WAL graph)"},
+        "ponytail": {"type": "SELF_CONTAINED", "req": "None (lazy dev heuristics)"},
+        "codegraphcontext": {"type": "SELF_CONTAINED", "req": "None (AST parser)"},
+        "context7": {"type": "SELF_CONTAINED", "req": "None (documentation schemas)"},
+        "gemini-api_gemini-api-docs": {"type": "SELF_CONTAINED", "req": "None (bundled doc index / GEMINI_API_KEY)"},
+        "data-agent-kit-plugin_dak-notebook": {"type": "SELF_CONTAINED", "req": "None (python stdlib data schemas)"},
+        "data-agent-kit-plugin_dak-viz": {"type": "SELF_CONTAINED", "req": "None (SVG/canvas data visualizer)"},
+        "uiux-mcp": {"type": "SELF_CONTAINED", "req": "None (frontend tokens & glassmorphism)"},
+        "playwright": {"type": "RUNTIME_ENV", "req": "Node.js + Chromium binary", "bin": "node"},
+        "chrome-devtools-mcp": {"type": "RUNTIME_ENV", "req": "Running Chrome CDP debugging port 9222/9229", "port": 9229},
+        "wdio-mcp": {"type": "RUNTIME_ENV", "req": "Node.js WebdriverIO runtime", "bin": "node"},
+        "mobile-mcp": {"type": "RUNTIME_ENV", "req": "Android SDK / adb runtime", "bin": "adb"},
+        "maestro": {"type": "RUNTIME_ENV", "req": "Maestro CLI binary", "bin": "maestro"},
+        "cloudrun": {"type": "CREDENTIALS", "req": "GCP Credentials (GOOGLE_APPLICATION_CREDENTIALS / GCP_PROJECT)", "env": ["GOOGLE_APPLICATION_CREDENTIALS", "GCP_PROJECT"]},
+        "firebase-mcp-server": {"type": "CREDENTIALS", "req": "Firebase token (FIREBASE_TOKEN / GOOGLE_APPLICATION_CREDENTIALS)", "env": ["FIREBASE_TOKEN", "GOOGLE_APPLICATION_CREDENTIALS"]},
+        "github": {"type": "CREDENTIALS", "req": "GitHub PAT (GITHUB_TOKEN / GH_TOKEN / GITHUB_PERSONAL_ACCESS_TOKEN)", "env": ["GITHUB_TOKEN", "GH_TOKEN", "GITHUB_PERSONAL_ACCESS_TOKEN"]},
+        "gonkarouter": {"type": "CREDENTIALS", "req": "OpenRouter API Key (OPENROUTER_API_KEY)", "env": ["OPENROUTER_API_KEY"]},
+        "arize-tracing-assistant": {"type": "CREDENTIALS", "req": "Arize API credentials (ARIZE_SPACE_ID / ARIZE_API_KEY)", "env": ["ARIZE_SPACE_ID", "ARIZE_API_KEY"]},
+    }
 
     def __init__(self, mcp_root: Optional[Path | str] = None) -> None:
         if mcp_root:
@@ -75,6 +100,7 @@ class MCPManager:
                     pass
 
             is_installed = item.name in installed_set or True  # All 21 embedded servers are natively pre-installed
+            readiness = self.check_operational_readiness(item.name)
 
             servers.append({
                 "name": item.name,
@@ -83,9 +109,60 @@ class MCPManager:
                 "tools": tool_names,
                 "description": doc_snippet or f"{item.name} MCP tools ({len(tool_files)} operations)",
                 "installed": is_installed,
+                "readiness": readiness,
+                "operational_ready": readiness["operational"],
             })
 
         return servers
+
+    def check_operational_readiness(self, server_name: str) -> Dict[str, Any]:
+        """Evaluates live operational readiness vs schema-only cataloging for an MCP server."""
+        meta = self.SERVER_REQUIREMENTS.get(server_name, {"type": "UNKNOWN", "req": "Schema verified"})
+        stype = meta.get("type", "UNKNOWN")
+        if stype == "SELF_CONTAINED":
+            return {
+                "status": "READY",
+                "operational": True,
+                "type": stype,
+                "detail": "Self-contained (no external credentials or runtime required)",
+            }
+        elif stype == "CREDENTIALS":
+            envs = meta.get("env", [])
+            present = any(os.environ.get(e) for e in envs)
+            if present:
+                return {
+                    "status": "READY",
+                    "operational": True,
+                    "type": stype,
+                    "detail": f"Configured via active environment credentials",
+                }
+            return {
+                "status": "NEEDS_CREDENTIALS",
+                "operational": False,
+                "type": stype,
+                "detail": f"Requires credentials: {meta['req']}",
+            }
+        elif stype == "RUNTIME_ENV":
+            b = meta.get("bin")
+            if b and shutil.which(b):
+                return {
+                    "status": "READY",
+                    "operational": True,
+                    "type": stype,
+                    "detail": f"Runtime binary '{b}' detected and operational",
+                }
+            return {
+                "status": "NEEDS_RUNTIME",
+                "operational": False,
+                "type": stype,
+                "detail": f"Requires runtime: {meta['req']}",
+            }
+        return {
+            "status": "CATALOGED",
+            "operational": False,
+            "type": stype,
+            "detail": meta.get("req", "Schema verified"),
+        }
 
     def install_server(self, name: str) -> Dict[str, Any]:
         """Installs or registers an MCP server into the active tool manifest."""

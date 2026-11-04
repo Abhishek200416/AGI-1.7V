@@ -63,7 +63,7 @@ class ObservatoryRequestHandler(SimpleHTTPRequestHandler):
         """Returns active model target and cascade failover status."""
         return {
             "application": "IVA 3D Neural Observatory",
-            "version": "1.7.29",
+            "version": "1.8.0",
             "active_model_target": os.environ.get("IVA_MODEL", "gemini-2.5-pro / nemotron-70b"),
             "context_window_max": 2000000,
             "context_window_active": 342850,

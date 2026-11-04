@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "config_version": "1.7.29",
+  "config_version": "1.8.0",
   "system_name": "AGI 1.7 OMEGA COMMAND",
   "authoritative_status": "ACTIVE_PRODUCTION_AUTHORITATIVE",
   "last_updated_iso": "2026-10-19T04:45:00Z",

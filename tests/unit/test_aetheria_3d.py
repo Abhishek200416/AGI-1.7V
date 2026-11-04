@@ -82,10 +82,10 @@ class TestAetheria3D(unittest.TestCase):
         self.assertIn("black hole accretion disk", reply)
 
     def test_06_cosmic_scales_structure(self) -> None:
-        """Verifies that all 5 universal scales exist with chronicles and metrics."""
+        """Verifies that all 7 universal scales exist with chronicles and metrics."""
         from applications.aetheria_3d.server import COSMIC_SCALES
-        self.assertEqual(len(COSMIC_SCALES), 5)
-        expected = ["planetary", "solar_system", "milky_way", "supercluster", "cosmic_web"]
+        self.assertGreaterEqual(len(COSMIC_SCALES), 7)
+        expected = ["planetary", "solar_system", "stellar_neighborhood", "milky_way", "supercluster", "cosmic_web", "multiverse_matrix"]
         for key in expected:
             self.assertIn(key, COSMIC_SCALES)
             scale = COSMIC_SCALES[key]
@@ -102,6 +102,14 @@ class TestAetheria3D(unittest.TestCase):
         names = [p["name"] for p in SOLAR_SYSTEM_PLANETS]
         for expected_planet in ["Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]:
             self.assertIn(expected_planet, names)
+
+    def test_08_stellar_systems_catalog(self) -> None:
+        """Verifies multi-star systems and galactic core objects exist in STELLAR_SYSTEMS."""
+        from applications.aetheria_3d.server import STELLAR_SYSTEMS
+        self.assertGreaterEqual(len(STELLAR_SYSTEMS), 10)
+        ids = [s["id"] for s in STELLAR_SYSTEMS]
+        for expected_id in ["cygnus_blue_hypergiant", "alcyone", "sol", "alpha_centauri", "kepler_452", "trappist_1", "sirius", "vega", "sagittarius_a"]:
+            self.assertIn(expected_id, ids)
 
 
 if __name__ == "__main__":

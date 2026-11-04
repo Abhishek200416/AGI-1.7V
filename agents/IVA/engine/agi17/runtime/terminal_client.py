@@ -455,11 +455,22 @@ class TerminalClient:
             from ..mcp.mcp_manager import MCPManager
             mgr = MCPManager()
             servers = mgr.list_servers()
-            print(f"   Total MCP Servers: {green(str(len(servers)))} servers active.\n")
+            ready_count = sum(1 for s in servers if s.get("operational_ready"))
+            print(f"   Total MCP Servers: {green(str(len(servers)))} cataloged ({green(str(ready_count))} operationally ready, {yellow(str(len(servers) - ready_count))} require keys/runtimes).\n")
             for idx, s in enumerate(servers, 1):
                 tools_str = f"{s['tools_count']} tools"
-                print(f"   {bold(f'{idx:2d}.')} {cyan(s['name'].ljust(34))} : {green(tools_str.ljust(10))} {dim(s['description'][:30])}")
-            print("\n   " + dim("Commands: mcp install <name> | mcp test <name>"))
+                r = s.get("readiness", {})
+                r_status = r.get("status", "CATALOGED")
+                if r_status == "READY":
+                    badge = green("[READY]        ")
+                elif r_status == "NEEDS_CREDENTIALS":
+                    badge = yellow("[NEEDS KEY]    ")
+                elif r_status == "NEEDS_RUNTIME":
+                    badge = yellow("[NEEDS RUNTIME]")
+                else:
+                    badge = dim("[CATALOGED]    ")
+                print(f"   {bold(f'{idx:2d}.')} {badge} {cyan(s['name'].ljust(32))} : {tools_str.ljust(9)} {dim(s['description'][:28])}")
+            print("\n   " + dim("Commands: mcp install <name> | mcp test <name> | mcp status"))
         except Exception as exc:
             print(yellow(f"   MCP catalog error: {exc}"))
         print(cyan("=" * 78) + "\n")
@@ -1439,7 +1450,7 @@ class TerminalClient:
         print("\n" + cyan("=" * 78))
         print(bold(magenta("   🌟 IVA AUTONOMOUS ENGINEERING PARTNER")))
         print(cyan("=" * 78))
-        print(f"   • Engine Version     : {green('1.7.29')}")
+        print(f"   • Engine Version     : {green('1.8.0')}")
         print(f"   • Codename           : {cyan('OMEGA COMMAND')}")
         print(f"   • Architecture       : {platform.machine()} (Python {platform.python_version()})")
         print(f"   • Operating Engine   : Pure Python Standard Library (Zero 3rd-party pip dependencies)")

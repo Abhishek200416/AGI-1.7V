@@ -407,7 +407,7 @@ python -m unittest tests/unit/test_iva_unit_suite.py
 ## 👩‍💻 Lead Autonomous Agent & Partner
 
 - **Identity**: Iva (`AuthoritativeBrainConfig`)
-- **Version**: IVA 1.7.29 Autonomous Runtime
+- **Version**: IVA 1.8.0 Autonomous Runtime
 - **Foundation Model Engine**: Exclusively Google Gemini 3.8 Flash High (`gemini-3.8-flash-high`) via `ModelAdapter`
 - **Repository**: [https://github.com/Abhishek200416/IVA.git](https://github.com/Abhishek200416/IVA.git)
 - **License**: MIT License

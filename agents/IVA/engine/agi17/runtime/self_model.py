@@ -46,7 +46,7 @@ class EpistemicProvenance(str, enum.Enum):
 class SystemIdentity:
     """Immutable identity anchors for IVA."""
     system_name: str = "Iva"
-    version: str = "1.7.29"
+    version: str = "1.8.0"
     persona: str = "FEMALE_AUTONOMOUS_PARTNER"
     operator_name: str = "Abhi"
     fail_closed_safety: bool = True

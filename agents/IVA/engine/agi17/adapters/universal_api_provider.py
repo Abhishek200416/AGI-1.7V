@@ -283,7 +283,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 endpoint = f"{root_url}/models?key={clean_key}"
                 req = urllib.request.Request(
                     endpoint,
-                    headers={"User-Agent": "IVA-Autonomous-Partner/1.7.29"},
+                    headers={"User-Agent": "IVA-Autonomous-Partner/1.8.0"},
                     method="GET",
                 )
                 with urllib.request.urlopen(req, timeout=timeout_sec, context=ctx) as resp:
@@ -308,7 +308,7 @@ class UniversalAPIProvider(BaseModelProvider):
                     headers={
                         "x-api-key": clean_key,
                         "anthropic-version": "2023-06-01",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                        "User-Agent": "IVA-Autonomous-Partner/1.8.0",
                     },
                     method="GET",
                 )
@@ -326,7 +326,7 @@ class UniversalAPIProvider(BaseModelProvider):
                     endpoint,
                     headers={
                         "Authorization": f"Bearer {clean_key}",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                        "User-Agent": "IVA-Autonomous-Partner/1.8.0",
                     },
                     method="GET",
                 )
@@ -345,7 +345,7 @@ class UniversalAPIProvider(BaseModelProvider):
                     headers={
                         "Authorization": f"Bearer {clean_key}",
                         "Accept": "application/json",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                        "User-Agent": "IVA-Autonomous-Partner/1.8.0",
                     },
                     method="GET",
                 )
@@ -369,7 +369,7 @@ class UniversalAPIProvider(BaseModelProvider):
                     endpoint,
                     headers={
                         "Authorization": f"Bearer {clean_key}",
-                        "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+                        "User-Agent": "IVA-Autonomous-Partner/1.8.0",
                     },
                     method="GET",
                 )
@@ -724,7 +724,7 @@ class UniversalAPIProvider(BaseModelProvider):
 
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+            "User-Agent": "IVA-Autonomous-Partner/1.8.0",
         }
 
         data_bytes = json.dumps(payload).encode("utf-8")
@@ -846,7 +846,7 @@ class UniversalAPIProvider(BaseModelProvider):
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+            "User-Agent": "IVA-Autonomous-Partner/1.8.0",
         }
 
         data_bytes = json.dumps(payload).encode("utf-8")
@@ -962,7 +962,7 @@ class UniversalAPIProvider(BaseModelProvider):
             "Content-Type": "application/json",
             "x-api-key": self.api_key,
             "anthropic-version": "2023-06-01",
-            "User-Agent": "IVA-Autonomous-Partner/1.7.29",
+            "User-Agent": "IVA-Autonomous-Partner/1.8.0",
         }
 
         data_bytes = json.dumps(payload).encode("utf-8")

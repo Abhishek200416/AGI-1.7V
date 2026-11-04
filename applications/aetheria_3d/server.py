@@ -211,16 +211,16 @@ def query_nemotron_oracle(user_prompt: str, anomaly_name: str = "Aetheria Cosmos
     )
 
 
-# 5-Scale Universal Hierarchy (Planet -> Solar System -> Milky Way -> Superclusters -> Cosmic Web)
+# 7-Scale Universal Hierarchy (Planet -> Solar System -> Stellar Neighborhood -> Milky Way -> Superclusters -> Cosmic Web -> Multiverse Hypercube Matrix)
 COSMIC_SCALES: Dict[str, Dict[str, Any]] = {
     "planetary": {
         "id": "planetary",
         "name": "Terrestrial Planetary Scale",
         "order": 1,
         "metrics": "10^7 m (7,000 km)",
-        "camera_dist": 22,
-        "fov": 50,
-        "chronicle": "A sapphire jewel, cradled in stellar grace, where life's delicate whispers find their place.",
+        "camera_dist": 6.5,
+        "fov": 48,
+        "chronicle": "A living sapphire jewel, cradled in stellar grace, where liquid oceans and delicate atmospheres cradle consciousness.",
         "badge": "🌍 Terrestrial",
         "particle_density": 6000
     },
@@ -229,44 +229,66 @@ COSMIC_SCALES: Dict[str, Dict[str, Any]] = {
         "name": "Heliosphere Solar System",
         "order": 2,
         "metrics": "10^13 m (100 AU)",
-        "camera_dist": 140,
-        "fov": 60,
-        "chronicle": "A dance of worlds around a fiery heart, a miniature cosmos, a celestial art.",
+        "camera_dist": 130,
+        "fov": 58,
+        "chronicle": "A radiant stellar furnace carrying eight worlds and rocky belts in harmonious Keplerian choreography.",
         "badge": "☀️ Heliosphere",
         "particle_density": 18000
     },
+    "stellar_neighborhood": {
+        "id": "stellar_neighborhood",
+        "name": "Stellar Neighborhood & Multi-Star Systems",
+        "order": 3,
+        "metrics": "10^17 m (10 Light Years)",
+        "camera_dist": 650,
+        "fov": 62,
+        "chronicle": "Our Sun travels through the Orion Spur beside Alpha Centauri, radiant Sirius, pulsating Betelgeuse, and the Pleiades.",
+        "badge": "✨ Star Cluster",
+        "particle_density": 28000
+    },
     "milky_way": {
         "id": "milky_way",
-        "name": "Milky Way Galactic Spiral",
-        "order": 3,
+        "name": "Milky Way Galactic Spiral & Sagittarius A*",
+        "order": 4,
         "metrics": "10^21 m (100,000 Light Years)",
-        "camera_dist": 650,
+        "camera_dist": 3500,
         "fov": 65,
-        "chronicle": "A spiral arm of starlight, vast and deep, where billions of suns their ancient vigil keep.",
+        "chronicle": "A grand design spiral arm of starlight swirling around Sagittarius A*, where billions of suns keep their ancient vigil.",
         "badge": "🌌 Galactic",
-        "particle_density": 35000
+        "particle_density": 45000
     },
     "supercluster": {
         "id": "supercluster",
-        "name": "Laniakea Galactic Supercluster",
-        "order": 4,
+        "name": "Laniakea Mega-Cluster & Great Attractor",
+        "order": 5,
         "metrics": "10^24 m (520 Million Light Years)",
-        "camera_dist": 1800,
+        "camera_dist": 18000,
         "fov": 70,
-        "chronicle": "Clusters gathered, a cosmic congregation grand, a tapestry woven across the stellar land.",
+        "chronicle": "Thousands of galaxies flowing along gravitational rivers of starlight toward the mysterious Great Attractor.",
         "badge": "🌀 Supercluster",
-        "particle_density": 45000
+        "particle_density": 55000
     },
     "cosmic_web": {
         "id": "cosmic_web",
-        "name": "Observable Cosmic Web & Multiverse",
-        "order": 5,
+        "name": "Observable Cosmic Web & Boötes Voids",
+        "order": 6,
         "metrics": "10^26 m (93 Billion Light Years)",
-        "camera_dist": 4200,
+        "camera_dist": 65000,
         "fov": 75,
-        "chronicle": "Filaments of matter, a web of infinite might, shaping the universe in eternal, cosmic light.",
+        "chronicle": "A cosmic sponge of dark matter filaments linking superclusters across light-years of silence.",
         "badge": "🕸️ Cosmic Web",
-        "particle_density": 55000
+        "particle_density": 65000
+    },
+    "multiverse_matrix": {
+        "id": "multiverse_matrix",
+        "name": "Bubble Multiverse & Cosmic Voids",
+        "order": 7,
+        "metrics": "10^29 m (Macro-Cosmic Bulk)",
+        "camera_dist": 220000,
+        "fov": 78,
+        "chronicle": "Vast hyperspherical bubble universes nucleating within the quantum inflationary void, each with distinct physical constants and cosmic structures.",
+        "badge": "🫧 Bubble Multiverse",
+        "particle_density": 85000
     }
 }
 
@@ -284,6 +306,141 @@ SOLAR_SYSTEM_PLANETS: List[Dict[str, Any]] = [
 ]
 
 
+# Comprehensive Multiverse Stellar & Galactic Systems Catalog
+STELLAR_SYSTEMS: List[Dict[str, Any]] = [
+    {
+        "id": "cygnus_blue_hypergiant",
+        "name": "Cygnus Leviathan (Blue Hypergiant)",
+        "type": "blue_hypergiant",
+        "sector": "Orion-Cygnus Molecular Arm",
+        "distance": "10x Solar Radius • 40,000 K",
+        "lore": "A colossal blue hypergiant star ten times larger than our solar system, blazing with incandescent cyan thermonuclear fire and carrying multiple solar systems in massive elliptical orbits.",
+        "color": "#00f3ff",
+        "frequency": "741.00 Hz"
+    },
+    {
+        "id": "alcyone",
+        "name": "Alcyone Major (Cluster Primary)",
+        "type": "cluster_star",
+        "sector": "Local Cluster Barycenter",
+        "distance": "0 LY (Center)",
+        "lore": "The supermassive golden anchor star around which our Sun and neighboring solar systems complete their grand orbital dance.",
+        "color": "#ffd166",
+        "frequency": "432.08 Hz"
+    },
+    {
+        "id": "sol",
+        "name": "Helios Prime (Our Sun)",
+        "type": "star_system",
+        "sector": "Orion Spur • Sector 00",
+        "distance": "350 AU from Primary",
+        "lore": "The radiant yellow dwarf carrying Earth, Mars, Jupiter, and 5 other worlds in harmonic Keplerian flight.",
+        "color": "#ffa200",
+        "frequency": "528.00 Hz"
+    },
+    {
+        "id": "alpha_centauri",
+        "name": "Alpha Centauri & Proxima b",
+        "type": "star_system",
+        "sector": "Orion Spur • Sector 01",
+        "distance": "4.37 Light Years",
+        "lore": "A trinary stellar system hosting the red dwarf Proxima Centauri and its potentially habitable terrestrial world Proxima b.",
+        "color": "#ffbe0b",
+        "frequency": "639.12 Hz"
+    },
+    {
+        "id": "kepler_452",
+        "name": "Kepler-452 ('Earth's Cousin')",
+        "type": "star_system",
+        "sector": "Cygnus Arm • Sector 12",
+        "distance": "1,400 Light Years",
+        "lore": "A G2-type solar twin orbited by a super-Earth in its circumstellar habitable zone.",
+        "color": "#00f3ff",
+        "frequency": "741.00 Hz"
+    },
+    {
+        "id": "trappist_1",
+        "name": "TRAPPIST-1 Seven Worlds",
+        "type": "star_system",
+        "sector": "Aquarius Arm • Sector 08",
+        "distance": "39.6 Light Years",
+        "lore": "An ultra-cool red dwarf encircled by seven Earth-sized terrestrial planets in tight resonant orbits.",
+        "color": "#ff007f",
+        "frequency": "417.00 Hz"
+    },
+    {
+        "id": "sirius",
+        "name": "Sirius A & White Dwarf Sirius B",
+        "type": "star_system",
+        "sector": "Canis Major • Sector 03",
+        "distance": "8.6 Light Years",
+        "lore": "The brightest diamond-white star in Earth's skies, orbited by the dense exotic white dwarf Sirius B.",
+        "color": "#e0f2fe",
+        "frequency": "852.00 Hz"
+    },
+    {
+        "id": "vega",
+        "name": "Vega & Circumstellar Debris Disc",
+        "type": "star_system",
+        "sector": "Lyra Constellation • Sector 05",
+        "distance": "25.0 Light Years",
+        "lore": "A rapidly spinning sapphire-white star flattened at its poles, wrapped in a radiant ring of nascent planetesimals.",
+        "color": "#38bdf8",
+        "frequency": "963.00 Hz"
+    },
+    {
+        "id": "betelgeuse",
+        "name": "Betelgeuse (Crimson Supergiant)",
+        "type": "supergiant",
+        "sector": "Orion Molecular Cloud",
+        "distance": "642.5 Light Years",
+        "lore": "A colossal pulsating red supergiant over 700 times larger than the Sun, destined for a supernova burst.",
+        "color": "#ef4444",
+        "frequency": "174.00 Hz"
+    },
+    {
+        "id": "sagittarius_a",
+        "name": "Sagittarius A* (Galactic Core)",
+        "type": "supermassive_black_hole",
+        "sector": "Milky Way Nucleus",
+        "distance": "26,000 Light Years",
+        "lore": "The 4-million solar mass supermassive black hole around which the entire Milky Way galaxy and 400 billion stars revolve.",
+        "color": "#9d4edd",
+        "frequency": "108.50 Hz"
+    },
+    {
+        "id": "andromeda",
+        "name": "Andromeda Galaxy Core (M31)",
+        "type": "galaxy",
+        "sector": "Local Group Barycenter",
+        "distance": "2.537 Million Light Years",
+        "lore": "A majestic spiral galaxy containing 1 trillion stars, approaching the Milky Way in a cosmic gravitational rendezvous.",
+        "color": "#00d4ff",
+        "frequency": "285.00 Hz"
+    },
+    {
+        "id": "great_attractor",
+        "name": "The Great Attractor",
+        "type": "cosmic_nexus",
+        "sector": "Laniakea Zone of Avoidance",
+        "distance": "250 Million Light Years",
+        "lore": "A colossal gravitational anomaly drawing millions of galaxies and superclusters along luminous velocity streamlines.",
+        "color": "#ff0055",
+        "frequency": "396.00 Hz"
+    },
+    {
+        "id": "multiverse_prime",
+        "name": "Universe Prime 4D Cosmic Hypercube",
+        "type": "multiverse_tesseract",
+        "sector": "Omniverse 125-Cell Dimensional Matrix",
+        "distance": "Macro-Dimensional Bulk",
+        "lore": "The 4-dimensional tesseract housing our observable cosmos, nestled within an infinite lattice of parallel bubble universes.",
+        "color": "#38ef7d",
+        "frequency": "963.00 Hz"
+    }
+]
+
+
 class AetheriaRequestHandler(SimpleHTTPRequestHandler):
     """Handles static assets and API requests for Aetheria 3D."""
 
@@ -291,7 +448,11 @@ class AetheriaRequestHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(BASE_DIR), **kwargs)
 
     def do_GET(self) -> None:
-        if self.path == "/api/status":
+        if self.path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
+        elif self.path == "/api/status":
             self.send_json_response({
                 "status": "ONLINE",
                 "app": "Aetheria 3D • Living Neural Cosmos",
@@ -299,6 +460,7 @@ class AetheriaRequestHandler(SimpleHTTPRequestHandler):
                 "provider": "NVIDIA NIM (Active Key)",
                 "port": DEFAULT_PORT,
                 "anomalies_count": len(FOUNDATIONAL_LORE),
+                "systems_count": len(STELLAR_SYSTEMS),
                 "timestamp": time.time()
             })
         elif self.path == "/api/lore":
@@ -315,6 +477,11 @@ class AetheriaRequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({
                 "status": "OK",
                 "planets": SOLAR_SYSTEM_PLANETS
+            })
+        elif self.path == "/api/systems":
+            self.send_json_response({
+                "status": "OK",
+                "systems": STELLAR_SYSTEMS
             })
         elif self.path == "/api/presets":
             self.send_json_response(self.get_presets())
@@ -429,35 +596,58 @@ class AetheriaRequestHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
 
-def run_server(port: int = DEFAULT_PORT, host: str = "0.0.0.0") -> None:
-    """Starts the threaded HTTP server."""
+class DualStackThreadingServer(ThreadingHTTPServer):
+    """Threading HTTP server supporting dual-stack IPv4 and IPv6."""
+    allow_reuse_address = True
+    daemon_threads = True
+
+    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
+        try:
+            self.address_family = socket.AF_INET6
+            super().__init__(server_address, RequestHandlerClass, bind_and_activate=False)
+            try:
+                self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+            except (AttributeError, OSError):
+                pass
+            if bind_and_activate:
+                self.server_bind()
+                self.server_activate()
+        except Exception:
+            self.address_family = socket.AF_INET
+            super().__init__(("0.0.0.0", server_address[1]), RequestHandlerClass, bind_and_activate=bind_and_activate)
+
+
+def run_server(port: int = DEFAULT_PORT, host: str = "") -> None:
+    """Starts the dual-stack threaded HTTP server."""
     init_db()
 
-    # Fallback to next port if busy
-    eff_port = port
-    for offset in range(10):
-        test_port = port + offset
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            try:
-                s.bind((host, test_port))
-                eff_port = test_port
-                break
-            except OSError:
-                continue
-
-    server_address = (host, eff_port)
-    httpd = ThreadingHTTPServer(server_address, AetheriaRequestHandler)
-    httpd.allow_reuse_address = True
+    httpd = None
+    for attempt in range(12):
+        try:
+            bind_host = "::" if socket.has_ipv6 else "0.0.0.0"
+            httpd = DualStackThreadingServer((bind_host, port), AetheriaRequestHandler)
+            break
+        except OSError as err:
+            if attempt < 11:
+                time.sleep(0.35)
+            else:
+                try:
+                    httpd = ThreadingHTTPServer(("0.0.0.0", port), AetheriaRequestHandler)
+                    httpd.allow_reuse_address = True
+                    break
+                except OSError:
+                    logger.error("Port %d is busy after retries: %s", port, err)
+                    sys.exit(1)
 
     print("\n" + "=" * 70)
     print("   🌌 AETHERIA 3D • Living Neural Cosmos & Generative Soundscape")
     print("=" * 70)
-    print(f"   • Local URL        : http://localhost:{eff_port}")
-    print(f"   • Network URL      : http://127.0.0.1:{eff_port}")
+    print(f"   • Local URL        : http://localhost:{port}")
+    print(f"   • Network URL      : http://127.0.0.1:{port}")
+    print(f"   • IPv6 URL         : http://[::1]:{port}")
     print(f"   • Intelligence Core: {NVIDIA_MODEL} (NVIDIA NIM)")
     print(f"   • Database         : SQLite ({DB_PATH.name})")
-    print(f"   • Status           : Server is ACTIVE and listening on 0.0.0.0:{eff_port}")
+    print(f"   • Dual-Stack Status: ACTIVE on [::]:{port} + 0.0.0.0:{port} (Zero Refusal)")
     print("=" * 70 + "\n")
     sys.stdout.flush()
 
@@ -471,6 +661,6 @@ def run_server(port: int = DEFAULT_PORT, host: str = "0.0.0.0") -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Aetheria 3D Server")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="Port to bind (default: 8095)")
-    parser.add_argument("--host", type=str, default="0.0.0.0", help="Host interface (default: 0.0.0.0)")
+    parser.add_argument("--host", type=str, default="", help="Host interface")
     args = parser.parse_args()
     run_server(port=args.port, host=args.host)
