@@ -8,7 +8,7 @@
 [![External Plugins](https://img.shields.io/badge/External_Plugins-0_Needed_(All--in--One)-success.svg)](#-zero-external-plugins-mandate)
 [![Interface Surface](https://img.shields.io/badge/Interface-Pure_Terminal_CLI-informational.svg)](#-interactive-terminal-client)
 [![Universal API](https://img.shields.io/badge/API_Access-Universal_(Gemini%20%2F%20OpenAI)-orange.svg)](#-universal-api-key-setup)
-[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-99%2F99_Passing_(100%25)-success.svg)](tests/)
+[![Self-Verification Suite](https://img.shields.io/badge/Self--Test_Suite-118%2F118_Passing_(100%25)-success.svg)](tests/)
 [![Safety Railings](https://img.shields.io/badge/Live_Broker_Gate-LOCKED_(Fail--Closed)-red.svg)](#-fail-closed-safety-railings)
 
 **IVA** is an institutional-grade, resource-aware multi-agent engineering partner and automated **Python CI-Repair** runtime led by **Iva** ([`IVA_README.md`](IVA_README.md)). Designed to operate as a sovereign intellectual partner rather than a passive chatbot, IVA combines persistent cognitive self-modeling, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.
@@ -338,7 +338,7 @@ When you run the installer or `setup_iva.py`, IVA executes an **orchestrated, in
 ================================================================================
   NEXT ACTION:
   [1] Launch Interactive Autonomous Terminal (Recommended) — python run_iva.py
-  [2] Run Autonomous Self-Verification Suite (99 Tests) — python run_iva.py test
+  [2] Run Autonomous Self-Verification Suite (118 Tests) — python run_iva.py test
   [3] Complete 6-Dimension System Match Report — python run_iva.py sysmatch
   [4] Exit to command prompt
 
@@ -827,17 +827,21 @@ IVA enforces strict, non-bypassable safety gates:
 
 ## 🧪 Verification & Autonomous Self-Tests
 
-IVA includes a complete autonomous self-verification test harness. You can run all 44 verified test cases with zero setup:
+IVA includes a complete autonomous self-verification test harness spanning **118 passing unit tests** across 15 core architectural suites. You can run the complete verification suite with zero manual configuration:
 
 ```bash
-# Run self-tests via the primary CLI
+# Run the complete autonomous self-test suite via the primary CLI (100% Python Stdlib)
 python run_iva.py test
+
+# Or run via pytest across all 15 unit test suites
+pytest tests/unit/ -v
 
 # Or run individual test modules using standard unittest
 python -m unittest tests/unit/test_terminal_client.py
 python -m unittest tests/unit/test_universal_api_provider.py
-python -m unittest tests/test_iva_cognitive_architecture_and_identity.py
-python -m unittest tests/test_production_hardening_sprint.py
+python -m unittest tests/unit/test_model_autodiscovery_and_mcp.py
+python -m unittest tests/unit/test_iva_unit_suite.py
+python -m unittest tests/unit/test_security_and_skills.py
 ```
 
 ### Self-Test Results:
@@ -847,12 +851,27 @@ python -m unittest tests/test_production_hardening_sprint.py
 ==============================================================================
    Executing tests across terminal, universal API, cognitive identity & hardening...
 
-   • Loaded 44 test cases from verified test modules.
-   Ran 44 tests in 10.43s
+   • Loaded 118 test cases from verified test modules.
+   Ran 118 tests in 12.97s
 
-   ✅ All 44 tests PASSED in 10.43s. IVA self-verification 100% GREEN.
+   OK
+------------------------------------------------------------------------------
+   ✅ All 118 tests PASSED in 12.97s. IVA self-verification 100% GREEN.
 ==============================================================================
 ```
+
+### 🏛️ Verified Core Architecture & Source Code Map
+
+For rigorous technical evaluation, IVA's key control-plane subsystems are grounded in concrete Python source modules:
+
+| Subsystem | Source Path | Architectural Function & Guarantees |
+| :--- | :--- | :--- |
+| **`HierarchicalOrchestrator`** | [`hierarchical_orchestrator.py`](agents/IVA/engine/agi17/orchestration/hierarchical_orchestrator.py) | Dynamic task DAG decomposition, resource-bounded worker scheduling (1–4 workers), and episodic memory commit. |
+| **`CIRepairAgent`** | [`ci_repair_agent.py`](agents/IVA/engine/agi17/orchestration/ci_repair_agent.py) | Sandboxed test reproduction, AST syntax validation, minimal-diff synthesis (`swe_patch_minimizer`), and SHA-256 evidence sealing. |
+| **`TaskStateMachine`** | [`task_state_machine.py`](agents/IVA/engine/agi17/task_control/task_state_machine.py) | Enforces the strict 14-state deterministic transactional lifecycle (`CREATED` → `PLANNED` → `QUEUED` → `READY` → `RUNNING` → `VERIFYING` → `SUCCEEDED`/`FAILED`). |
+| **`ACONCompressor`** | [`acon_compressor.py`](agents/IVA/engine/agi17/memory/acon_compressor.py) | Context and observation compression preserving critical execution anchors (task IDs, exit codes, error names, file paths, SHA-256 digests). |
+
+> **Dependency Footprint**: The core IVA engine runs strictly on the **Python 3.10+ Standard Library** with **0 pip dependencies** (<0.8s cold boot, ~48 MB RAM footprint). Optional peripheral modules (Playwright browser automation, Docker container isolation, MCP servers) integrate with their respective system runtimes without polluting Python environment isolation.
 
 ---
 

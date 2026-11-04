@@ -337,29 +337,13 @@ class TerminalClient:
         loader = unittest.TestLoader()
         suite = unittest.TestSuite()
 
-        test_files = [
-            repo_root / "tests" / "unit" / "test_terminal_client.py",
-            repo_root / "tests" / "unit" / "test_universal_api_provider.py",
-            repo_root / "tests" / "unit" / "test_model_autodiscovery_and_mcp.py",
-            repo_root / "tests" / "test_iva_cognitive_architecture_and_identity.py",
-            repo_root / "tests" / "test_production_hardening_sprint.py",
-        ]
-
-        found_count = 0
-        for tf in test_files:
-            if tf.is_file():
-                found_count += 1
-                try:
-                    loaded = loader.discover(start_dir=str(tf.parent), pattern=tf.name)
-                    suite.addTests(loaded)
-                except Exception as e:
-                    print(yellow(f"   ⚠️ Could not load {tf.name}: {e}"))
-
-        if found_count == 0 or suite.countTestCases() == 0:
+        unit_dir = repo_root / "tests" / "unit"
+        if unit_dir.is_dir():
+            suite.addTests(loader.discover(start_dir=str(unit_dir), pattern="test_*.py"))
+        else:
             tests_dir = repo_root / "tests"
             if tests_dir.is_dir():
-                discovered = loader.discover(start_dir=str(tests_dir), pattern="test_*.py")
-                suite.addTests(discovered)
+                suite.addTests(loader.discover(start_dir=str(tests_dir), pattern="test_*.py"))
 
         total_tests = suite.countTestCases()
         print(f"   • Loaded {bold(str(total_tests))} test cases from verified test modules.")
