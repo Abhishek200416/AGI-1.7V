@@ -25,12 +25,12 @@ This document provides a rigorous architectural and empirical comparison between
 │    Claude Code     │   OpenAI Codex     │  DeepSeek Harness  │           IVA           │
 │   (Anthropic)      │     (OpenAI)       │    (DeepSeek)      │   (Omega Architecture)  │
 ├────────────────────┼────────────────────┼────────────────────┼─────────────────────────┤
-│ • Node.js/npm      │ • Python/Pip       │ • Python CLI       │ • 100% Python Stdlib    │
-│ • Single Provider  │ • Single Provider  │ • Single Provider  │ • Universal Multi-API   │
-│ • Mid-turn prompts │ • Mid-turn prompts │ • Mid-turn prompts │ • Upfront Intake Only   │
-│ • Ephemeral ctx    │ • Cloud session    │ • Stateless CLI    │ • 10-Layer SQLite Memory│
-│ • Generic templates│ • Generic output   │ • Raw code blocks  │ • 5 Bespoke Aesthetics │
-│ • Single account   │ • Single API key   │ • Single API key   │ • 6-78 Chrome Profiles  │
+│ • Node.js/npm      │ • Python/Pip       │ • Cordis Plugin CLI│ • 100% Python Stdlib    │
+│ • Anthropic Only   │ • OpenAI Only      │ • DeepSeek Only    │ • Universal Multi-API   │
+│ • Interactive CLI  │ • App-Server API   │ • Pluggable Loop   │ • Upfront Intake & Auto │
+│ • Local Resumable  │ • Thread State     │ • Session Store    │ • 10-Layer SQLite WAL   │
+│ • Code-Centric CLI │ • Sandboxed Exec   │ • Open Adapter     │ • 5 Bespoke Aesthetics  │
+│ • Single Account   │ • Single API Key   │ • Single API Key   │ • 6-78 Chrome Profiles  │
 └────────────────────┴────────────────────┴────────────────────┴─────────────────────────┘
 ```
 
@@ -43,14 +43,14 @@ This document provides a rigorous architectural and empirical comparison between
 | **Runtime Dependencies** | Node.js, npm, heavy js modules | Python wheels, pip packages | Proprietary binary / Electron | Python, transformers / vLLM | **Zero 3rd-party pip/npm dependencies (100% Stdlib)** |
 | **Model Ecosystem** | Anthropic Claude only | OpenAI models only | Google Gemini only | DeepSeek-V3 / R1 only | **Universal: Gemini, NVIDIA NIM, OpenAI, Anthropic, Groq, DeepSeek** |
 | **Model Selection** | Hardcoded by CLI | Hardcoded by CLI | Hardcoded by IDE | Hardcoded by CLI | **Autonomous Researcher: 85 models sorted 550B $\to$ 1B with auto-swap** |
-| **Interruption Model** | Frequent mid-turn confirmation gates | Frequent mid-turn command prompts | Interactive IDE suggestions | Unbuffered raw stdout | **Upfront Intake: Locks requirements on Turn 1; zero mid-turn stalling** |
+| **Interruption Model** | Configurable permissions / hooks | Approvals & command prompts | Interactive IDE suggestions | Unbuffered raw stdout | **Upfront Intake: Locks requirements on Turn 1; zero mid-turn stalling** |
 | **Browser Automation** | None (terminal only) | Headless browser API (remote) | Chromium devtools integration | None (terminal only) | **Native Multi-Account (6 to 78 Chrome profiles with 24/7 rate-limit rotation)** |
 | **Multimodal Synthesis** | None | DALL-E API calls | Gemini multimodal docs | None | **ChatGPT browser bridge (DALL-E 3) + Gemini Omni/Veo video generator** |
-| **Persistent Memory** | Ephemeral markdown logs | Session history in cloud | Local workspace cache | None (stateless) | **10-Layer SQLite WAL memory (`omega_memory.db`) with semantic recall** |
-| **Specialist Contracts** | Generic single system prompt | Generic single system prompt | Workflow agent graphs | Coding-focused prompt | **100 Embedded Specialists across 16 families with transactional schemas** |
+| **Persistent Memory** | Resumable session transcripts | Cloud thread state & sessions | Local workspace cache | Cordis session storage | **10-Layer SQLite WAL memory (`omega_memory.db`) with cross-workspace semantic recall** |
+| **Agent Modular Architecture** | Subagents, skills, hooks, checkpoints | App-server & multi-agent runtime | Workflow agent graphs | Cordis plugin runtime | **100 Embedded Specialists across 16 families with transactional schemas** |
 | **Design Engine** | Generic CSS / Tailwind | Unstyled HTML/JS | Workspace UI templates | Raw script files | **Bespoke Design Generator (5 aesthetics: Cyber-Terminal, Neo-Glass, Brutalist...)** |
-| **Safety Architecture** | Ad-hoc user confirm | API token permissions | Workspace file sandbox | Shell execution warnings | **Fail-Closed Gatekeeper (`LIVE_ORDER_DISPATCH_ENABLED = False`) + JSON Audit Ledgers** |
-| **Self-Improvement** | None (static CLI) | None (static CLI) | None (static IDE) | None (static CLI) | **24/7 Autonomous Self-Evolution (`evolve`): AST audit, test validation, self-repair** |
+| **Safety Architecture** | Permission hooks & checkpoints | Remote sandboxing & approvals | Workspace file sandbox | Shell execution warnings | **Fail-Closed Gatekeeper (`LIVE_ORDER_DISPATCH_ENABLED = False`) + JSON Audit Ledgers** |
+| **Self-Improvement** | Static CLI / Model update | Static CLI / Model update | Static IDE / Extension | Static CLI / Model update | **24/7 Autonomous Self-Evolution (`evolve`): AST audit, test validation, self-repair** |
 
 ---
 
@@ -106,9 +106,9 @@ This document provides a rigorous architectural and empirical comparison between
      - Includes reactive client-side state stores, real-time search/filter tables, modal sheets, and 60fps dynamic spatial WebGL/Canvas visualizers.
      - Formally audited by [`AntiAiSlopLinter`](agents/IVA/engine/agi17/capabilities/creative_design_engine.py) to guarantee zero generic AI design clichés.
 
-### 2.5 100-Specialist Contract Governance
-- **The Competitor Flaw**:
-  Claude Code, Codex, and DeepSeek harness rely on one monolithic system prompt. When handling complex tasks spanning security audits, AST transformations, and quantitative options math, monolithic prompts suffer from catastrophic attention degradation and hallucination.
+### 2.5 100-Specialist Contract Governance vs Ad-Hoc Delegation
+- **The Architectural Comparison**:
+  Claude Code utilizes dynamic subagent delegation and skills, OpenAI Codex orchestrates worker threads and app-server endpoints, and DeepSeek Harness leverages the Cordis plugin framework. While flexible, dynamic subagent delegation without rigid schemas can suffer from context drift and unpredictable outputs during high-stakes multi-domain workflows (such as static security audits, compiler AST refactoring, or quantitative options mathematics).
 - **The IVA Solution**:
   IVA features **100 pre-compiled specialist contracts** distributed across 16 capability families:
   - *Planning & Architecture* (`plan_mission_decomposer`, `plan_systems_architect`, etc.)
@@ -116,7 +116,7 @@ This document provides a rigorous architectural and empirical comparison between
   - *Testing & QA* (`qa_unit_suite_runner`, `qa_regression_baseline_comparator`, etc.)
   - *Security & Safety* (`sec_permission_gate_enforcer`, `sec_secret_credential_scanner`, etc.)
   - *Quantitative Analytics* (`quant_analyst`, `math_probability_statistician`, etc.)
-  Each specialist is invoked with strict input schemas and produces verifiable, sealed outputs.
+  Each specialist is invoked with strict input schemas and produces verifiable, sealed outputs with cryptographic evidence hashes.
 
 ### 2.6 The Pressure Principle: Relentless Autonomous Failure Recovery
 - **The Competitor Flaw**:
@@ -145,9 +145,9 @@ While standard harnesses emit unstructured prose that rots immediately, IVA's Re
 4. `VERIFICATION_PLAN.md` — Test execution matrix, edge cases, and UAT pass criteria.
 5. `MEDIA_ASSETS_SPEC.md` — Prompts and recipes for DALL-E 3 and Google Gemini video generation.
 
-### 2.9 Multi-Session Tracking in Stateless Terminals (`SessionManager`)
-- **The Competitor Flaw**:
-  Claude Code and OpenAI Codex run in stateless terminal processes or rely on proprietary cloud session IDs. If the developer closes the terminal window, restarts SSH, or wants to work on two parallel features (e.g. `refactor-db` vs `frontend-ui`), the prompt context and history are destroyed or intermingled.
+### 2.9 Zero-Latency Local Session Branching (`SessionManager`)
+- **The Architectural Comparison**:
+  While Claude Code supports session resumption via local transcripts (`claude --resume`) and OpenAI Codex maintains cloud thread sessions, they generally isolate sessions to the current working tree and active terminal. Switching contexts between distinct parallel initiatives or exporting isolated git-diff snapshots often requires manual terminal juggling.
 - **The IVA Solution**:
   IVA incorporates the [`SessionManager`](agents/IVA/engine/agi17/runtime/session_manager.py):
   1. Creates and persists isolated local work sessions (`scratch/sessions/<session_id>.json`).
@@ -263,7 +263,34 @@ python applications/meetup_3d/run_app.py
 
 ---
 
-## 4. Conclusion & Philosophy
+## 4. The Open Head-to-Head Benchmark Challenge
+
+IVA 1.7 OMEGA formally welcomes the empirical benchmark challenge proposed by independent architectural auditors. We invite an open, reproducible, head-to-head evaluation across **Claude Code v2.1+**, **OpenAI Codex**, **DeepSeek Harness**, and **IVA 1.7 OMEGA**.
+
+Rather than debating advertised feature checklists, let the code speak for itself.
+
+### The 7-Stage Benchmark Protocol
+All four harnesses are presented with the exact same unfamiliar repository (10k+ LOC) and the same rigorous mission:
+1. **Unfamiliar Codebase Structural Mapping**: Parse and map the complete architectural dependency graph without prior index cache.
+2. **Subtle Concurrency / Race-Condition Diagnosis**: Detect and diagnose a deeply hidden race condition or memory leak from logs alone.
+3. **Autonomous Multi-File Architectural Plan**: Synthesize a comprehensive repair plan without mid-turn human hand-holding.
+4. **Minimal-Diff AST Implementation**: Implement the architectural fix adhering strictly to the cleanest, shortest diff (the Ponytail senior dev principle).
+5. **Hardened Test & Security Execution**: Execute full unit suites and static vulnerability scans (CWE-78, CWE-89, CWE-79) automatically.
+6. **Injected Failure Recovery (The Pressure Principle)**: Intentionally inject a breaking test failure; measure whether the agent can autonomously diagnose the traceback, refactor the AST, and achieve a 100% test pass rate without abandoning the task.
+7. **Cross-Restart Session Resumption**: Abruptly terminate the runtime process mid-task, reboot, and verify whether full context, memory, and task state are preserved.
+
+### The Evaluation Scoreboard
+| Evaluation Metric | What it Measures |
+| :--- | :--- |
+| **Autonomous Success Rate (%)** | Did the harness reach 100% passing tests with zero human code edits? |
+| **Human Interruption Count** | How many times did the agent stall or require manual operator permission? (Lower is better) |
+| **Patch Minimality & Hygiene** | Ratio of lines changed to callers fixed (clean shortest diff vs code bloat). |
+| **Cold Boot Latency & RAM Footprint** | Startup time from terminal launch to ready prompt, and idle system RAM. |
+| **Regression Recovery Quality** | Ability to repair broken code autonomously under execution pressure. |
+
+---
+
+## 5. Conclusion & Philosophy
 
 | Aspect | Industry Standard Harnesses | IVA 1.7 OMEGA |
 | :--- | :--- | :--- |
