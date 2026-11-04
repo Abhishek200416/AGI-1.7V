@@ -3,6 +3,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Development Status](https://img.shields.io/badge/Status-Beta_(v1.7.29)-yellow.svg)](pyproject.toml)
 [![Runtime Dependencies](https://img.shields.io/badge/Dependencies-0_Required_(Stdlib)-brightgreen.svg)](pyproject.toml)
 [![Embedded Specialists](https://img.shields.io/badge/Embedded_Specialists-100_Active_Contracts-blueviolet.svg)](agents/IVA/ecosystem/agent_registry/registry.json)
 [![External Plugins](https://img.shields.io/badge/External_Plugins-0_Needed_(All--in--One)-success.svg)](#-zero-external-plugins-mandate)
@@ -868,7 +869,7 @@ For rigorous technical evaluation, IVA's key control-plane subsystems are ground
 | :--- | :--- | :--- |
 | **`HierarchicalOrchestrator`** | [`hierarchical_orchestrator.py`](agents/IVA/engine/agi17/orchestration/hierarchical_orchestrator.py) | Dynamic task DAG decomposition, resource-bounded worker scheduling (1–4 workers), and episodic memory commit. |
 | **`CIRepairAgent`** | [`ci_repair_agent.py`](agents/IVA/engine/agi17/orchestration/ci_repair_agent.py) | Sandboxed test reproduction, AST syntax validation, minimal-diff synthesis (`swe_patch_minimizer`), and SHA-256 evidence sealing. |
-| **`TaskStateMachine`** | [`task_state_machine.py`](agents/IVA/engine/agi17/task_control/task_state_machine.py) | Enforces the strict 14-state deterministic transactional lifecycle (`CREATED` → `PLANNED` → `QUEUED` → `READY` → `RUNNING` → `VERIFYING` → `SUCCEEDED`/`FAILED`). |
+| **`TaskStateMachine`** | [`task_state_machine.py`](agents/IVA/engine/agi17/task_control/task_state_machine.py) | Enforces 14 canonical lifecycle states (`CREATED`, `PLANNED`, `QUEUED`, `READY`, `RUNNING`, `WAITING_FOR_RESOURCE`, `WAITING_FOR_INPUT`, `VERIFYING`, `SUCCEEDED`, `FAILED`, `TIMED_OUT`, `CANCELED`, `INTERRUPTED`, `BLOCKED`) with 6 backward-compatibility aliases in the Python Enum (`TASK_CREATED`, `AUTHORIZED`, `DISPATCHED`, `VALIDATING`, `COMPLETED`, `CANCELLED`). |
 | **`ACONCompressor`** | [`acon_compressor.py`](agents/IVA/engine/agi17/memory/acon_compressor.py) | Context and observation compression preserving critical execution anchors (task IDs, exit codes, error names, file paths, SHA-256 digests). |
 
 > **Dependency Footprint**: The core IVA engine runs strictly on the **Python 3.10+ Standard Library** with **0 pip dependencies** (<0.8s cold boot, ~48 MB RAM footprint). Optional peripheral modules (Playwright browser automation, Docker container isolation, MCP servers) integrate with their respective system runtimes without polluting Python environment isolation.

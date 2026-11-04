@@ -1,7 +1,7 @@
 # Architectural Harness Comparison: IVA vs Industry AI Harnesses
 
-> **Document Version**: 1.0.0 • **Target Runtime**: IVA 1.7 OMEGA COMMAND  
-> **Status**: Verified Production Specification • **Author**: Iva (Autonomous Engineering Partner)
+> **Document Version**: 1.1.0 • **Target Runtime**: IVA 1.7 OMEGA COMMAND  
+> **Status**: Active Beta Evaluation Specification (v1.7.29) • **Author**: Iva (Autonomous Engineering Partner)
 
 ---
 
@@ -36,7 +36,22 @@ This document provides a rigorous architectural and empirical comparison between
 
 ---
 
-## 1. Comprehensive Feature Matrix
+## 1. Comprehensive Feature Matrix & Realistic Landscape
+
+### 1.1 Realistic Capability Landscape: Where Each Harness Leads
+
+Rather than reducing complex multi-agent systems to simplistic checklist comparisons, a rigorous architectural audit reveals clear domain specialization across modern harnesses:
+
+| Capability Domain | Industry Benchmark | Key Architectural Strengths & Current Reality |
+| :--- | :--- | :--- |
+| **Mature Developer CLI Experience** | **Claude Code** | First-party Anthropic CLI with polished interactive flows, subagents, skills, hooks, and resumable session transcripts. |
+| **Open-Source Scalable Runtime** | **OpenAI Codex** | Cloud-native multi-agent runtime, git worktrees, thread-based resumable sessions, and sandboxed app-server execution. |
+| **Plugin-Oriented Extensibility** | **DeepSeek Harness** | Modular Cordis plugin framework allowing pluggable agent loops, custom tools, and alternative model adapters. |
+| **Local Persistent Memory & DAG Control Plane** | **IVA** | 10-layer SQLite WAL memory (`omega_memory.db`) with Ebbinghaus decay, 14-state transactional task machine, and 100% Python stdlib zero-dependency footprint. |
+| **Automated Containerized CI Repair** | **IVA** | Dedicated `CIRepairAgent` with pinned Docker sandboxing, AST syntax verification, minimal diff generation (`swe_patch_minimizer`), and SHA-256 evidence sealing. |
+| **Independently Proven Superiority** | **Open Challenge** | Unproven for any single harness across all tasks. We propose a reproducible head-to-head SWE-bench/HumanEval benchmark on identical models. |
+
+### 1.2 Architectural Feature Matrix
 
 | Architectural Dimension | Claude Code | OpenAI Codex | Google Antigravity | DeepSeek Harness | **IVA 1.7 OMEGA** |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -46,8 +61,8 @@ This document provides a rigorous architectural and empirical comparison between
 | **Interruption Model** | Configurable permissions / hooks | Approvals & command prompts | Interactive IDE suggestions | Unbuffered raw stdout | **Upfront Intake: Locks requirements on Turn 1; zero mid-turn stalling** |
 | **Browser Automation** | None (terminal only) | Headless browser API (remote) | Chromium devtools integration | None (terminal only) | **Native Multi-Account (6 to 78 Chrome profiles with 24/7 rate-limit rotation)** |
 | **Multimodal Synthesis** | None | DALL-E API calls | Gemini multimodal docs | None | **ChatGPT browser bridge (DALL-E 3) + Gemini Omni/Veo video generator** |
-| **Persistent Memory** | Resumable session transcripts | Cloud thread state & sessions | Local workspace cache | Cordis session storage | **10-Layer SQLite WAL memory (`omega_memory.db`) with cross-workspace semantic recall** |
-| **Agent Modular Architecture** | Subagents, skills, hooks, checkpoints | App-server & multi-agent runtime | Workflow agent graphs | Cordis plugin runtime | **100 Embedded Specialists across 16 families with transactional schemas** |
+| **Persistent Memory** | Resumable session transcripts | Cloud thread state & sessions | Local workspace cache | Cordis session storage | **10-Layer SQLite WAL memory (`omega_memory.db`) with triple-scored recall** |
+| **Agent Modular Architecture** | Subagents, skills, hooks, checkpoints | App-server & multi-agent runtime | Workflow agent graphs | Cordis plugin runtime | **100 Embedded Specialist Contracts across 16 families with transactional schemas** |
 | **Design Engine** | Generic CSS / Tailwind | Unstyled HTML/JS | Workspace UI templates | Raw script files | **Bespoke Design Generator (5 aesthetics: Cyber-Terminal, Neo-Glass, Brutalist...)** |
 | **Safety Architecture** | Permission hooks & checkpoints | Remote sandboxing & approvals | Workspace file sandbox | Shell execution warnings | **Fail-Closed Gatekeeper (`LIVE_ORDER_DISPATCH_ENABLED = False`) + JSON Audit Ledgers** |
 | **Self-Improvement** | Static CLI / Model update | Static CLI / Model update | Static IDE / Extension | Static CLI / Model update | **24/7 Autonomous Self-Evolution (`evolve`): AST audit, test validation, self-repair** |

@@ -13,26 +13,63 @@ from typing import Dict, Set
 
 
 class TaskState(str, Enum):
+    # --- 14 Canonical Task Lifecycle States ---
     CREATED = "CREATED"
-    TASK_CREATED = "TASK_CREATED"
     PLANNED = "PLANNED"
-    AUTHORIZED = "AUTHORIZED"
-    DISPATCHED = "DISPATCHED"
     QUEUED = "QUEUED"
     READY = "READY"
     RUNNING = "RUNNING"
     WAITING_FOR_RESOURCE = "WAITING_FOR_RESOURCE"
     WAITING_FOR_INPUT = "WAITING_FOR_INPUT"
     VERIFYING = "VERIFYING"
-    VALIDATING = "VALIDATING"
     SUCCEEDED = "SUCCEEDED"
-    COMPLETED = "COMPLETED"
     FAILED = "FAILED"
     TIMED_OUT = "TIMED_OUT"
     CANCELED = "CANCELED"
-    CANCELLED = "CANCELLED"
     INTERRUPTED = "INTERRUPTED"
     BLOCKED = "BLOCKED"
+
+    # --- 6 Backward-Compatibility Aliases ---
+    TASK_CREATED = "TASK_CREATED"  # Alias -> CREATED
+    AUTHORIZED = "AUTHORIZED"      # Transitional alias -> PLANNED
+    DISPATCHED = "DISPATCHED"      # Transitional alias -> QUEUED
+    VALIDATING = "VALIDATING"      # Alias -> VERIFYING
+    COMPLETED = "COMPLETED"        # Alias -> SUCCEEDED
+    CANCELLED = "CANCELLED"        # British spelling alias -> CANCELED
+
+    @classmethod
+    def canonical_states(cls) -> Set["TaskState"]:
+        """Returns the set of 14 canonical task lifecycle states."""
+        return {
+            cls.CREATED,
+            cls.PLANNED,
+            cls.QUEUED,
+            cls.READY,
+            cls.RUNNING,
+            cls.WAITING_FOR_RESOURCE,
+            cls.WAITING_FOR_INPUT,
+            cls.VERIFYING,
+            cls.SUCCEEDED,
+            cls.FAILED,
+            cls.TIMED_OUT,
+            cls.CANCELED,
+            cls.INTERRUPTED,
+            cls.BLOCKED,
+        }
+
+    @classmethod
+    def to_canonical(cls, state: "TaskState | str") -> "TaskState":
+        """Maps any compatibility alias to its canonical 14-state counterpart."""
+        val = state.value if isinstance(state, cls) else str(state)
+        alias_map = {
+            "TASK_CREATED": cls.CREATED,
+            "AUTHORIZED": cls.PLANNED,
+            "DISPATCHED": cls.QUEUED,
+            "VALIDATING": cls.VERIFYING,
+            "COMPLETED": cls.SUCCEEDED,
+            "CANCELLED": cls.CANCELED,
+        }
+        return alias_map.get(val, cls(val))
 
 
 class InvalidStateTransitionError(ValueError):
