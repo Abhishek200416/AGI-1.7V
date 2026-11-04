@@ -1,4 +1,4 @@
-"""Unit tests for ModelContinuationEngine, AutonomousMCPSkillInstaller, and 3D Observatory."""
+"""Unit tests for ModelContinuationEngine and AutonomousMCPSkillInstaller in IVA AGI 1.8."""
 
 import json
 import os
@@ -18,10 +18,9 @@ from agents.IVA.engine.agi17.adapters.model_continuation_engine import (
     ModelContinuationEngine,
 )
 from agents.IVA.engine.agi17.skills.mcp_skill_installer import AutonomousMCPSkillInstaller
-from applications.iva_3d_observatory.server import ObservatoryRequestHandler
 
 
-class TestContinuationAndObservatory(unittest.TestCase):
+class TestContinuationAndSkills(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = Path(tempfile.mkdtemp(prefix="iva_continuation_test_"))
         self._orig_env = dict(os.environ)
@@ -48,66 +47,151 @@ class TestContinuationAndObservatory(unittest.TestCase):
         self.assertTrue(is_lim)
         self.assertEqual(category, "MAX_TOKENS")
 
+        # Context length overflow
+        is_lim, category = ModelContinuationEngine.is_limit_exhausted("Maximum context length exceeded: 131072 tokens")
+        self.assertTrue(is_lim)
+        self.assertEqual(category, "CONTEXT_OVERFLOW")
+
         # Normal response
         is_lim, category = ModelContinuationEngine.is_limit_exhausted("Success 200 OK")
         self.assertFalse(is_lim)
         self.assertEqual(category, "NONE")
 
-    def test_02_successor_model_cascade_selection(self) -> None:
-        # If gemini-2.5-pro fails, successor should cascade to flash
-        pool = ["gemini-2.5-pro", "gemini-2.5-flash", "nvidia/llama-3.1-nemotron-70b-instruct"]
-        successor = ModelContinuationEngine.select_next_successor_model("gemini-2.5-pro", pool)
-        self.assertEqual(successor, "gemini-2.5-flash")
+    def test_02_accurate_token_estimation(self) -> None:
+        # Prose text: ~3.8 chars per token
+        prose = "The quick brown fox jumps over the lazy dog in the sunny afternoon."
+        prose_tokens = ModelContinuationEngine.estimate_tokens(prose)
+        self.assertGreater(prose_tokens, 10)
+        self.assertLess(prose_tokens, 25)
 
-        # If gemini-2.5-flash also fails, successor should cascade to nemotron
-        successor_2 = ModelContinuationEngine.select_next_successor_model("gemini-2.5-flash", pool)
-        self.assertEqual(successor_2, "gemini-2.5-pro")
+        # Code with high syntax density: ~3.1 chars per token
+        code = 'def calculate_metrics(data: List[Dict[str, Any]]) -> float: return sum(d["val"] for d in data) * 0.05;'
+        code_tokens = ModelContinuationEngine.estimate_tokens(code)
+        self.assertGreater(code_tokens, 20)
 
-    def test_03_continuation_prompt_synthesis(self) -> None:
+    def test_03_successor_model_cascade_and_cross_provider_failover(self) -> None:
+        pool = [
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "nvidia/llama-3.1-nemotron-70b-instruct",
+            "claude-3-5-sonnet-20241022",
+        ]
+        # Standard cascade from pro to flash
+        succ = ModelContinuationEngine.select_next_successor_model("gemini-2.5-pro", pool)
+        self.assertEqual(succ, "gemini-2.5-flash")
+
+        # On QUOTA_EXHAUSTED for gemini, deliberately switch providers to NVIDIA or Claude to prevent hitting same quota
+        cross_succ = ModelContinuationEngine.select_next_successor_model(
+            failed_model="gemini-2.5-pro",
+            available_pool=pool,
+            limit_reason="QUOTA_EXHAUSTED",
+        )
+        self.assertIn("nvidia", cross_succ)
+
+        # On code domain, prioritize code models
+        code_succ = ModelContinuationEngine.select_next_successor_model(
+            failed_model="gemini-2.5-flash",
+            available_pool=pool,
+            task_domain="code",
+        )
+        self.assertIn("nemotron", code_succ)
+
+    def test_04_full_context_preservation_and_continuation_prompt(self) -> None:
+        # Verify no 1500 char cutoff: full partial output preserved
+        partial_code = "def render_scene():\n" + ("    x = 1\n" * 200) + "    return x\n"
+        self.assertGreater(len(partial_code), 2000)
+
         snapshot = ContextSnapshot(
             task_id="TASK-CONT-01",
             original_prompt="Build 3D Neural Observatory with Three.js",
-            partial_output="const scene = new THREE.Scene();",
-            tokens_consumed=150,
+            partial_output=partial_code,
+            tokens_consumed=ModelContinuationEngine.estimate_tokens(partial_code),
             limit_type="QUOTA_EXHAUSTED",
         )
-        prompt = ModelContinuationEngine.build_continuation_prompt(snapshot, "gemini-2.5-flash")
+        prompt = ModelContinuationEngine.build_continuation_prompt(snapshot, "nvidia/llama-3.1-nemotron-70b-instruct")
         self.assertIn("SYSTEM CONTINUATION HANDOFF", prompt)
-        self.assertIn("gemini-2.5-flash", prompt)
-        self.assertIn("const scene = new THREE.Scene();", prompt)
+        self.assertIn("nvidia/llama-3.1-nemotron-70b-instruct", prompt)
+        self.assertIn("def render_scene():", prompt)
+        self.assertIn("return x", prompt)
         self.assertIn("Build 3D Neural Observatory with Three.js", prompt)
 
-    def test_04_mcp_skill_installer_gap_detection(self) -> None:
+    def test_05_stitch_continuation(self) -> None:
+        partial = "def test_func():\n    return 42"
+        continuation = "    # Continuation added\n"
+        stitched = ModelContinuationEngine.stitch_continuation(partial, continuation)
+        self.assertIn("def test_func():", stitched)
+        self.assertIn("return 42", stitched)
+        self.assertIn("Continuation added", stitched)
+
+        # Overlapping line removal
+        partial_dup = "line1\nline2"
+        continuation_dup = "line2\nline3"
+        stitched_dup = ModelContinuationEngine.stitch_continuation(partial_dup, continuation_dup)
+        self.assertEqual(stitched_dup.strip(), "line1\nline2\nline3")
+
+    def test_06_active_execute_continuation(self) -> None:
+        def mock_invoker(model: str, p: str) -> str:
+            return f"\n    # Completed by {model}\n    return True\n"
+
+        res = ModelContinuationEngine.execute_continuation(
+            failed_model="gemini-2.5-pro",
+            original_prompt="Write a validation function",
+            partial_output="def validate():\n",
+            error_reason="HTTP 429: Quota exceeded",
+            provider_or_caller=mock_invoker,
+            task_domain="code",
+        )
+        self.assertEqual(res["status"], "CONTINUATION_COMPLETED")
+        self.assertIn("validate", res["completed_output"])
+        self.assertIn("Completed by", res["completed_output"])
+        self.assertGreater(res["total_tokens"], 0)
+
+    def test_07_mcp_skill_installer_gap_detection(self) -> None:
         installer = AutonomousMCPSkillInstaller(target_dir=self.temp_dir / "skills")
         needed = installer.detect_missing_skills("I want a 3D website with three.js and cyber exploit security testing")
         self.assertIn("threejs_3d_engine", needed)
         self.assertIn("cyber_exploit_tester", needed)
 
-    def test_05_mcp_skill_installer_zero_friction_install(self) -> None:
+    def test_08_mcp_skill_installer_installs_functional_helpers(self) -> None:
+        installer = AutonomousMCPSkillInstaller(target_dir=self.temp_dir / "skills")
+        
+        # Install cyber_exploit_tester
+        res = installer.auto_install_skill("cyber_exploit_tester")
+        self.assertEqual(res["status"], "INSTALLED_AND_MOUNTED")
+        
+        helper_path = Path(res["helper_script"])
+        self.assertTrue(helper_path.exists())
+        code_content = helper_path.read_text(encoding="utf-8")
+        
+        # Verify it has real functional code, NOT placeholder comments
+        self.assertIn("class CyberExploitTester", code_content)
+        self.assertIn("CWE-95", code_content)
+        self.assertIn("CWE-78", code_content)
+
+        # Execute the helper dynamically to prove functionality
+        namespace = {}
+        exec(code_content, namespace)
+        tester = namespace["CyberExploitTester"]
+        report = tester.scan_code("eval('dangerous()')")
+        self.assertEqual(report["status"], "VULNERABILITIES_FOUND")
+        self.assertEqual(report["findings"][0]["cwe"], "CWE-95")
+
+    def test_09_threejs_render_helper_functional_execution(self) -> None:
         installer = AutonomousMCPSkillInstaller(target_dir=self.temp_dir / "skills")
         res = installer.auto_install_skill("threejs_3d_engine")
         self.assertEqual(res["status"], "INSTALLED_AND_MOUNTED")
-        self.assertEqual(res["skill"], "threejs_3d_engine")
 
-        skill_dir = Path(res["path"])
-        self.assertTrue((skill_dir / "SKILL.md").exists())
-        self.assertTrue((skill_dir / "helper.py").exists())
+        helper_code = Path(res["helper_script"]).read_text(encoding="utf-8")
+        namespace = {}
+        exec(helper_code, namespace)
+        helper = namespace["ThreeJSRenderHelper"]
 
-    def test_06_observatory_server_api_endpoints(self) -> None:
-        # Mock request handler methods
-        handler = ObservatoryRequestHandler.__new__(ObservatoryRequestHandler)
-        status = handler.get_system_status()
-        self.assertEqual(status["application"], "IVA 3D Neural Observatory")
-        self.assertEqual(status["context_window_max"], 2000000)
-        self.assertEqual(status["cascade_failover_status"], "ARMED")
+        html = helper.generate_html_boilerplate(title="Neural Cosmos")
+        self.assertIn("THREE.WebGLRenderer", html)
+        self.assertIn("THREE.PerspectiveCamera", html)
 
-        telemetry = handler.get_live_telemetry()
-        self.assertEqual(telemetry["neural_cluster_count"], 64)
-        self.assertEqual(telemetry["quantum_particle_count"], 2500)
-
-        nodes = handler.get_neural_nodes()
-        self.assertEqual(nodes["count"], 64)
-        self.assertEqual(len(nodes["nodes"]), 64)
+        val = helper.validate_threejs_script(html)
+        self.assertTrue(val["valid"])
 
 
 if __name__ == "__main__":

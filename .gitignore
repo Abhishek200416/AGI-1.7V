@@ -205,3 +205,7 @@ agents/IVA/finance/
 
 # Proprietary Client & Company Projects (Do Not Push)
 ropves-website/
+
+# Standalone Applications & Trial Prototypes (Decoupled from core agent harness)
+applications/
+run_aetheria.py

@@ -385,7 +385,11 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd_low.startswith("forget "):
             tc.execute_forget(args.command[7:].strip())
             return 0
-        elif cmd_low in ("evolve", "loop", "24", "self-improve"):
+        elif cmd_low in ("uninterrupted", "loop", "repair-loop") or cmd_low.startswith("loop "):
+            obj = args.command[5:].strip() if cmd_low.startswith("loop ") else ""
+            tc.execute_uninterrupted_loop(obj)
+            return 0
+        elif cmd_low in ("evolve", "24", "self-improve"):
             tc.execute_evolve()
             return 0
         elif cmd_low in ("audit", "security", "guard"):
