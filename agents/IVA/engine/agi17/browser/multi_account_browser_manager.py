@@ -1,12 +1,13 @@
-"""IVA Multi-Account Chrome Profile & Gemini Browser Automator.
+"""IVA Multi-Environment Workspace Profile Isolation & Browser Automator.
 ================================================================================
-Coordinates browser automation across 6 to 78+ Google Chrome profiles on the user's
-machine for 24/7 autonomous video generation, image creation, and frontier reasoning:
-1. Discovers all local Chrome user profiles (Default, Profile 1 .. Profile 78).
-2. Launches or connects to Chrome with specific user profiles (preserving logged-in Gemini Pro/Advanced sessions).
-3. Submits automated prompts for video generation (Veo / Imagen 3 / Gemini Omni Video) & research.
-4. 24/7 Rate-Limit & Cooldown Rotation: Automatically detects quota exhaustion, calculates
-   wait time estimates, and rotates to the next available Chrome profile without dying.
+Coordinates browser automation across isolated Chrome user profiles on the operator's
+machine for segregated testing, research, and workspace isolation:
+1. Discovers local Chrome user profiles (Default, Profile 1 .. Profile N) across isolated environments.
+2. Launches or connects to Chrome with dedicated workspace profiles (preserving environment-specific
+   sessions, credentials, and state without cross-contamination).
+3. Respects platform rate limits and provider quotas gracefully via backoff telemetry and respectful
+   traffic pacing.
+4. Ensures clean process lifecycle and sandbox containment adhering to BrowserPermissionsGate.
 
 Requires ZERO external PyPI dependencies (100% Python standard library).
 ================================================================================
@@ -155,14 +156,21 @@ class MultiAccountBrowserManager:
                             tasks_completed=prev.tasks_completed if prev else 0,
                         )
 
-        # If zero discovered (e.g. mock or clean test environment), provide mock profiles
+        # If zero discovered (e.g. mock or clean test environment), provide mock isolated workspace profiles
         if not discovered:
-            for i in range(1, 7):
-                p_id = f"Profile {i}"
+            env_names = [
+                ("Profile 1", "Workspace Profile 1 (Production Validation)", "prod-audit@workspace.local"),
+                ("Profile 2", "Workspace Profile 2 (Staging Integration)", "staging@workspace.local"),
+                ("Profile 3", "Workspace Profile 3 (QA Automation)", "qa-runner@workspace.local"),
+                ("Profile 4", "Workspace Profile 4 (Local Development)", "dev@workspace.local"),
+                ("Profile 5", "Workspace Profile 5 (Security Sandbox)", "sandbox@workspace.local"),
+                ("Profile 6", "Workspace Profile 6 (Telemetry & Audit)", "telemetry@workspace.local"),
+            ]
+            for p_id, display, email in env_names:
                 discovered[p_id] = ChromeProfileInfo(
                     profile_id=p_id,
-                    display_name=f"Google Account #{i} (Pro)",
-                    email=f"account{i}@pro.google.com",
+                    display_name=display,
+                    email=email,
                     directory_path=str(self.user_data_dir / p_id),
                 )
 

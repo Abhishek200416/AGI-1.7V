@@ -29,14 +29,6 @@ class TaskState(str, Enum):
     INTERRUPTED = "INTERRUPTED"
     BLOCKED = "BLOCKED"
 
-    # --- 6 Backward-Compatibility Aliases ---
-    TASK_CREATED = "TASK_CREATED"  # Alias -> CREATED
-    AUTHORIZED = "AUTHORIZED"      # Transitional alias -> PLANNED
-    DISPATCHED = "DISPATCHED"      # Transitional alias -> QUEUED
-    VALIDATING = "VALIDATING"      # Alias -> VERIFYING
-    COMPLETED = "COMPLETED"        # Alias -> SUCCEEDED
-    CANCELLED = "CANCELLED"        # British spelling alias -> CANCELED
-
     @classmethod
     def canonical_states(cls) -> Set["TaskState"]:
         """Returns the set of 14 canonical task lifecycle states."""
@@ -70,6 +62,15 @@ class TaskState(str, Enum):
             "CANCELLED": cls.CANCELED,
         }
         return alias_map.get(val, cls(val))
+
+
+# --- 6 Backward-Compatibility Aliases mapped to canonical instances ---
+TaskState.TASK_CREATED = TaskState.CREATED   # type: ignore[attr-defined]
+TaskState.AUTHORIZED = TaskState.PLANNED     # type: ignore[attr-defined]
+TaskState.DISPATCHED = TaskState.QUEUED     # type: ignore[attr-defined]
+TaskState.VALIDATING = TaskState.VERIFYING   # type: ignore[attr-defined]
+TaskState.COMPLETED = TaskState.SUCCEEDED   # type: ignore[attr-defined]
+TaskState.CANCELLED = TaskState.CANCELED     # type: ignore[attr-defined]
 
 
 class InvalidStateTransitionError(ValueError):

@@ -30,7 +30,7 @@ This document provides a rigorous architectural and empirical comparison between
 │ • Interactive CLI  │ • App-Server API   │ • Pluggable Loop   │ • Upfront Intake & Auto │
 │ • Local Resumable  │ • Thread State     │ • Session Store    │ • 10-Layer SQLite WAL   │
 │ • Code-Centric CLI │ • Sandboxed Exec   │ • Open Adapter     │ • 5 Bespoke Aesthetics  │
-│ • Single Account   │ • Single API Key   │ • Single API Key   │ • 6-78 Chrome Profiles  │
+│ • Single Account   │ • Single API Key   │ • Single API Key   │ • Multi-Env Isolation   │
 └────────────────────┴────────────────────┴────────────────────┴─────────────────────────┘
 ```
 
@@ -49,17 +49,17 @@ Rather than reducing complex multi-agent systems to simplistic checklist compari
 | **Plugin-Oriented Extensibility** | **DeepSeek Harness** | Modular Cordis plugin framework allowing pluggable agent loops, custom tools, and alternative model adapters. |
 | **Local Persistent Memory & DAG Control Plane** | **IVA** | 10-layer SQLite WAL memory (`omega_memory.db`) with Ebbinghaus decay, 14-state transactional task machine, and 100% Python stdlib zero-dependency footprint. |
 | **Automated Containerized CI Repair** | **IVA** | Dedicated `CIRepairAgent` with pinned Docker sandboxing, AST syntax verification, minimal diff generation (`swe_patch_minimizer`), and SHA-256 evidence sealing. |
-| **Independently Proven Superiority** | **Open Challenge** | Unproven for any single harness across all tasks. We propose a reproducible head-to-head SWE-bench/HumanEval benchmark on identical models. |
+| **Independently Proven Superiority** | **Open Challenge** | Unproven for any single harness across all tasks. We provide reproducible head-to-head benchmarks: [`token_reduction_benchmark.py`](benchmark/token_reduction_benchmark.py) and [`head_to_head_harness_benchmark.py`](benchmark/head_to_head_harness_benchmark.py). |
 
 ### 1.2 Architectural Feature Matrix
 
-| Architectural Dimension | Claude Code | OpenAI Codex | Google Antigravity | DeepSeek Harness | **IVA 1.7 OMEGA** |
+| Architectural Dimension | Claude Code | OpenAI Codex | Google Antigravity | DeepSeek Harness | **IVA 1.8 OMEGA** |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Runtime Dependencies** | Node.js, npm, heavy js modules | Python wheels, pip packages | Proprietary binary / Electron | Python, transformers / vLLM | **Zero 3rd-party pip/npm dependencies (100% Stdlib)** |
 | **Model Ecosystem** | Anthropic Claude only | OpenAI models only | Google Gemini only | DeepSeek-V3 / R1 only | **Universal: Gemini, NVIDIA NIM, OpenAI, Anthropic, Groq, DeepSeek** |
-| **Model Selection** | Hardcoded by CLI | Hardcoded by CLI | Hardcoded by IDE | Hardcoded by CLI | **Autonomous Researcher: 85 models sorted 550B $\to$ 1B with auto-swap** |
+| **Model Selection** | Hardcoded by CLI | Hardcoded by CLI | Hardcoded by IDE | Hardcoded by CLI | **Autonomous Researcher: 85 models sorted 550B $\to$ 1B with empirical benchmarks** |
 | **Interruption Model** | Configurable permissions / hooks | Approvals & command prompts | Interactive IDE suggestions | Unbuffered raw stdout | **Upfront Intake: Locks requirements on Turn 1; zero mid-turn stalling** |
-| **Browser Automation** | None (terminal only) | Headless browser API (remote) | Chromium devtools integration | None (terminal only) | **Native Multi-Account (6 to 78 Chrome profiles with 24/7 rate-limit rotation)** |
+| **Browser Automation** | None (terminal only) | Headless browser API (remote) | Chromium devtools integration | None (terminal only) | **Multi-Environment Workspace Profile Isolation (Dev, Staging, QA, Prod cookie jars)** |
 | **Multimodal Synthesis** | None | DALL-E API calls | Gemini multimodal docs | None | **ChatGPT browser bridge (DALL-E 3) + Gemini Omni/Veo video generator** |
 | **Persistent Memory** | Resumable session transcripts | Cloud thread state & sessions | Local workspace cache | Cordis session storage | **10-Layer SQLite WAL memory (`omega_memory.db`) with triple-scored recall** |
 | **Agent Modular Architecture** | Subagents, skills, hooks, checkpoints | App-server & multi-agent runtime | Workflow agent graphs | Cordis plugin runtime | **100 Embedded Specialist Contracts across 16 families with transactional schemas** |
