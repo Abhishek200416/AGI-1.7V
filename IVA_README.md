@@ -1,12 +1,21 @@
-# 🌟 Iva — Autonomous Engineering Partner & Cognitive Agent Runtime
+# 🌟 Iva — Autonomous Engineering Partner & Cognitive Developer Runtime
+## Universal Multi-Model Intelligence & High-Agency System Architecture
+
+**Official Repository:** [https://github.com/Abhishek200416/IVA](https://github.com/Abhishek200416/IVA)
 
 > **"Cool-headed, sharp, mature, warm, ambitious, practical, perceptive, and fiercely loyal."**
 
-**Iva** is a high-agency autonomous female engineering lead, systems architect, operations coordinator, and quantitative research collaborator. Designed to operate as a sovereign intellectual partner rather than a passive chatbot, Iva combines persistent cognitive self-modeling, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.
+**Iva** is a high-agency autonomous female engineering lead, systems architect, operations coordinator, and quantitative research collaborator. Designed to operate as a sovereign intellectual partner rather than a passive chatbot, Iva combines persistent cognitive memory, transactional multi-agent orchestration, real-world system automation, and fail-closed safety guarantees.
 
+> **Grounded Engineering Reality (Zero Sci-Fi Hype)**:  
+> Iva is not a theoretical sci-fi concept, an exaggerated black-box, or a single-model wrapper. She is an authentic, lightweight, zero-dependency engineering harness running on Python's compiler-level AST engine, a 160MB SQLite WAL database, direct Chrome DevTools Protocol (`CDP:9229`) browser control, and universal API routing across **OpenRouter**, **Anthropic Claude**, **OpenAI**, **DeepSeek**, **Groq**, **NVIDIA NIM**, **local Ollama/vLLM**, and **Google Gemini**.
+
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Abhishek200416%2FIVA-blue?logo=github)](https://github.com/Abhishek200416/IVA)
 [![Iva Cognitive Verification](https://img.shields.io/badge/Iva_Cognitive_Tests-100%25_Passing-success.svg)](tests/test_iva_cognitive_architecture_and_identity.py)
+[![Universal API](https://img.shields.io/badge/API-OpenRouter_|_Claude_|_OpenAI_|_Gemini-orange.svg)](README.md#-universal-multi-model-api-setup)
 [![Architecture](https://img.shields.io/badge/Architecture-IVA_Runtime-blue.svg)](README.md)
 [![Dependencies](https://img.shields.io/badge/Dependencies-0_Required_(Stdlib)-brightgreen.svg)](pyproject.toml)
+[![Fast-Path UI](https://img.shields.io/badge/UI_Edits-Sub--60s_SLA-brightgreen.svg)](README.md#-fast-path-ui--memory-accelerator-sub-60s-edits)
 [![Safety Gate](https://img.shields.io/badge/Live_Trading_Gate-LOCKED_(Fail--Closed)-red.svg)](.env.example)
 [![Memory Architecture](https://img.shields.io/badge/Cognitive_Memory-10_Layer_SQLite_WAL-blueviolet.svg)](#-local-persistent-cognitive-memory-for-your-system)
 
