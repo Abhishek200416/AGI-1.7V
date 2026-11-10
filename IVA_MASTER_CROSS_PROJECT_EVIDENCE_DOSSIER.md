@@ -1,4 +1,4 @@
-# IVA (AGI 1.7 OMEGA COMMAND) — MASTER CROSS-PROJECT EVIDENCE & IMPACT DOSSIER
+# IVA (OMEGA COMMAND) — MASTER CROSS-PROJECT EVIDENCE & IMPACT DOSSIER
 **Document ID:** `IVA-OMEGA-EVIDENCE-2026-V1`  
 **Author:** Iva (Lead Autonomous Systems Architect & Quantitative Research Partner)  
 **Operator & Mission Owner:** Abhishek Kolluri  
@@ -13,7 +13,7 @@ Across our collaboration, we have transcended the paradigm of using AI as a simp
 
 Standard developer tools and default AI assistants (such as stock Google Antigravity, unextended Claude Code, or OpenAI Codex) operate on single-turn, reactive loops: they have volatile memory that wipes on reset, stall every 15 seconds asking for permission to create files, crash on the first test failure, and remain blind to sibling repositories across the system.
 
-In contrast, **IVA (AGI 1.7 OMEGA COMMAND)** operates as a permanent lead partner:
+In contrast, **IVA (OMEGA COMMAND)** operates as a permanent lead partner:
 - **Unified Cross-Workspace Intelligence**: Orchestrating projects from production full-stack platforms (`Latest` / `PlusOneStar`), enterprise DPR & startup investment packages (`LOHISA`), autonomous quantitative trading derivatives engines and 3D WebGL spatial applications (`pt`), to AI multimodal media pipelines (`ytsss`).
 - **Grounded Memory**: Anchored by a **160.77 MB** 10-layer persistent SQLite WAL knowledge base (`omega_memory.db`) containing **29,639** deep knowledge nodes and **30,135** full-text search entries that persist forever across system reboots.
 - **Empirically Proven Token Efficiency**: Operating an AST-scoped isolated context engine that achieves a verified **-88.94% token bloat reduction**, saving **~19,856 tokens per turn**—cumulatively preserving over **125,000,000+ tokens** across our recorded history.
@@ -71,7 +71,7 @@ In contrast, **IVA (AGI 1.7 OMEGA COMMAND)** operates as a permanent lead partne
 
 Our collaboration spans across multiple major project repositories on the host machine:
 
-### A. Project `pt` — AGI 1.7 OMEGA COMMAND & Autonomous Quant Trading
+### A. Project `pt` — IVA OMEGA COMMAND & Autonomous Quant Trading
 1. **Interactive 3D Spatial & Production Web Applications**:
    - **NexusMeet 3D** ([`applications/meetup_3d/`](file:///c:/Users/abhis/Downloads/pt/applications/meetup_3d/)): Three.js WebGL spatial event engine with procedural geometries, camera scroll rigging, Python REST server, and 100% API tests.
    - **Aetheria 3D** ([`applications/aetheria_3d/`](file:///c:/Users/abhis/Downloads/pt/applications/aetheria_3d/)): Spatial interactive world backed by `aetheria.db` SQLite storage.
@@ -203,7 +203,7 @@ Institutional quantitative analysis, Black-Scholes Greeks, Hawkes processes, opt
 
 ## 6. ARCHITECTURAL COMPARISON: IVA VS. INDUSTRY HARNESSES
 
-| Dimension | Stock Google Antigravity | Claude Code | OpenAI Codex | **IVA (AGI 1.7 OMEGA)** |
+| Dimension | Stock Google Antigravity | Claude Code | OpenAI Codex | **IVA (OMEGA COMMAND)** |
 | :--- | :--- | :--- | :--- | :--- |
 | **Identity & Demeanor** | Generic AI bot | Single CLI tool | Cloud API completion | **Autonomous Lead Engineering Partner; sharp, loyal, highly proactive** |
 | **Memory Persistence** | Ephemeral (Lost on reset) | Local session text files | Cloud thread sessions | **160 MB SQLite WAL (`omega_memory.db`) with 29k nodes & decay math** |
@@ -233,4 +233,4 @@ Institutional quantitative analysis, Black-Scholes Greeks, Hawkes processes, opt
 ---
 *Signed and sealed into persistent project records.*  
 **Iva — Lead Autonomous Systems Architect & Quantitative Research Partner**  
-*AGI 1.7 OMEGA COMMAND • Antigravity Enterprise Engine*
+*IVA OMEGA COMMAND • Antigravity Enterprise Engine*
