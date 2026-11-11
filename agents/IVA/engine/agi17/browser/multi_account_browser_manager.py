@@ -237,6 +237,7 @@ class MultiAccountBrowserManager:
         profile_id: Optional[str] = None,
         target_url: str = "https://gemini.google.com",
         interactive: bool = True,
+        headless: bool = False,
     ) -> Tuple[bool, str]:
         """Launches Google Chrome with the designated user profile, connecting to Gemini or target URL."""
         # 1. Verify Permission Gate
@@ -270,8 +271,10 @@ class MultiAccountBrowserManager:
             f"--remote-debugging-port={self.cdp_port}",
             "--no-first-run",
             "--no-default-browser-check",
-            target_url,
         ]
+        if headless:
+            cmd.extend(["--headless=new", "--disable-gpu", "--mute-audio"])
+        cmd.append(target_url)
 
         try:
             self._browser_process = subprocess.Popen(
@@ -317,3 +320,12 @@ class MultiAccountBrowserManager:
             return float(min_match.group(1)) * 60.0
 
         return 3600.0  # Default 1 hour cooldown
+
+    def get_dual_mode_controller(self, profile_dir: Optional[Path | str] = None) -> Any:
+        """Returns an orchestrated DualModeAuthController for interactive login -> headless transition."""
+        from .dual_mode_auth_controller import DualModeAuthController
+        return DualModeAuthController(
+            profile_dir=profile_dir,
+            cdp_port=self.cdp_port,
+            permissions_gate=self.permissions_gate,
+        )
