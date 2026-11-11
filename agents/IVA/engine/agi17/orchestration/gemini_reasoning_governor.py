@@ -28,6 +28,7 @@ import logging
 import os
 import re
 import sqlite3
+import sys
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -62,10 +63,15 @@ class GeminiReasoningGovernor:
             # Check standard persistent paths
             d_path = Path(r"D:\AGI_Storage\AGI_1_7\memory\omega_memory.db")
             local_path = PROJECT_ROOT / "agents" / "IVA" / "memory" / "omega_memory.db"
-            if d_path.exists():
+            mac_path = Path.home() / "Library" / "Application Support" / "IVA" / "memory" / "omega_memory.db"
+            if sys.platform == "darwin" and mac_path.exists():
+                self.memory_db_path = mac_path
+            elif d_path.exists():
                 self.memory_db_path = d_path
             elif local_path.exists():
                 self.memory_db_path = local_path
+            elif sys.platform == "darwin":
+                self.memory_db_path = mac_path
             else:
                 self.memory_db_path = Path.home() / ".iva" / "memory" / "omega_memory.db"
 

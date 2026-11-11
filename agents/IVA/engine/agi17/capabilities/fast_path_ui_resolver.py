@@ -23,6 +23,7 @@ import logging
 import os
 import re
 import sqlite3
+import sys
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -117,8 +118,11 @@ class FastPathUIResolver:
             self.db_path = Path(db_path)
         else:
             default_d = Path("D:/AGI_Storage/AGI_1_7/memory/omega_memory.db")
+            mac_path = Path.home() / "Library" / "Application Support" / "IVA" / "memory" / "omega_memory.db"
             if default_d.parent.exists():
                 self.db_path = default_d
+            elif sys.platform == "darwin" and mac_path.parent.exists():
+                self.db_path = mac_path
             else:
                 self.db_path = Path.cwd() / "scratch" / "omega_memory_local.db"
         self.db_path.parent.mkdir(parents=True, exist_ok=True)

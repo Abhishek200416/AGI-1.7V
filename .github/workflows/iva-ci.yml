@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.12"]
 
     steps:
@@ -78,6 +78,12 @@ jobs:
 
       - name: Run CLI Startup & Capability Profile Smoke Check
         run: python run_iva.py --profile-only
+
+      - name: Verify POSIX Shell Launcher (macOS & Linux)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x run_iva.sh run_agent.sh
+          ./run_iva.sh --profile-only
 
   verify-real-docker-sandbox-linux:
     name: Real Docker Engine Container Isolation & Security Proof (ubuntu-latest)

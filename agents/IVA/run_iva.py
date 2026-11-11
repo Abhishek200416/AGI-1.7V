@@ -22,6 +22,8 @@ def _resolve_storage_root(preferred: str | None) -> Path:
         candidate = Path(preferred)
     elif sys.platform == "win32" and os.path.exists("D:\\"):
         candidate = Path(r"D:\AGI_Storage\AGI_1_7")
+    elif sys.platform == "darwin":
+        candidate = Path.home() / "Library" / "Application Support" / "IVA" / "storage"
     else:
         candidate = Path.home() / ".iva" / "storage"
 

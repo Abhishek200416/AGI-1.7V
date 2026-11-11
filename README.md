@@ -43,8 +43,9 @@ cd IVA
 py -3 setup_iva.py
 # (Or simply run: .\setup.bat or .\setup.ps1)
 
-# Linux / macOS / Android Termux:
-python3 setup_iva.py
+# macOS (MacBook Air/Pro M1-M4 & Intel) / Linux:
+./run_iva.sh
+# (Or run directly: python3 run_iva.py)
 ```
 
 > **Windows Tip**: On Windows, official Python installs the `py` launcher. Run `py -3 setup_iva.py` (or `.\setup.bat`). If typing `python` displays *"Python was not found; run without arguments to install from the Microsoft Store"*, use `py -3` or run `.\setup.bat` / `.\setup.ps1` directly!
