@@ -41,12 +41,12 @@ In contrast, **IVA (OMEGA COMMAND)** operates as a permanent lead partner:
 1. **Measured -88.94% Token Bloat Reduction**:
    - *Baseline Naive Workspace Dump*: An un-indexed agent loop dumping workspace files into the system prompt consumes **~22,326 BPE tokens per turn**.
    - *IVA Isolated CWD + AST Indexer*: Extracts only class structures, method signatures, and relevant active files via Python `ast` parsing, reducing input overhead to **~2,470 tokens per turn**.
-   - *Direct Turn Savings*: **19,856 tokens saved per turn** (independently verified in [`benchmark/token_reduction_benchmark.py`](file:///c:/Users/abhis/Downloads/pt/benchmark/token_reduction_benchmark.py)).
+   - *Direct Turn Savings*: **19,856 tokens saved per turn** (independently verified in [`benchmark/token_reduction_benchmark.py`](file:///./benchmark/token_reduction_benchmark.py)).
 2. **Cumulative Token Volume**:
    - `D:\AGI_Storage\AGI_1_7\token_ledger\token_usage_ledger.jsonl` logs **5,617+ turns**.
    - Across thousands of multi-project turns in `pt`, `Latest`, and external tasks, IVA has compressed away an estimated **125,000,000+ potential tokens**, directly preventing context window degradation and massive API billing overhead.
 3. **Multi-Account Profile Rotation**:
-   - When hitting rate limits (e.g. Gemini Video or ChatGPT quotas), [`MultiAccountBrowserManager`](file:///c:/Users/abhis/Downloads/pt/agents/IVA/engine/agi17/browser/multi_account_browser_manager.py) autonomously cycles through local Chrome profiles (`Profile 1` through `Profile 78`), completely eliminating 429 quota dead-ends without spending additional API tokens.
+   - When hitting rate limits (e.g. Gemini Video or ChatGPT quotas), [`MultiAccountBrowserManager`](file:///./agents/IVA/engine/agi17/browser/multi_account_browser_manager.py) autonomously cycles through local Chrome profiles (`Profile 1` through `Profile 78`), completely eliminating 429 quota dead-ends without spending additional API tokens.
 
 ### 1.2 Time Savings & Developer Velocity
 - **1,500+ Senior Engineering Hours Saved**:
@@ -73,29 +73,29 @@ Our collaboration spans across multiple major project repositories on the host m
 
 ### A. Project `pt` — IVA OMEGA COMMAND & Autonomous Quant Trading
 1. **Interactive 3D Spatial & Production Web Applications**:
-   - **NexusMeet 3D** ([`applications/meetup_3d/`](file:///c:/Users/abhis/Downloads/pt/applications/meetup_3d/)): Three.js WebGL spatial event engine with procedural geometries, camera scroll rigging, Python REST server, and 100% API tests.
-   - **Aetheria 3D** ([`applications/aetheria_3d/`](file:///c:/Users/abhis/Downloads/pt/applications/aetheria_3d/)): Spatial interactive world backed by `aetheria.db` SQLite storage.
-   - **IVA 3D Observatory** ([`applications/iva_3d_observatory/`](file:///c:/Users/abhis/Downloads/pt/applications/iva_3d_observatory/)): WebGL cosmological observation platform.
-   - **IVA NVIDIA Studio** ([`applications/iva_nvidia_studio/`](file:///c:/Users/abhis/Downloads/pt/applications/iva_nvidia_studio/)): Model benchmarking and compute hub.
-   - **Ropves Production Web Platform** ([`ropves-website/`](file:///c:/Users/abhis/Downloads/pt/ropves-website/)): Vite-powered production web platform with zero-error bundle output.
+   - **NexusMeet 3D** ([`applications/meetup_3d/`](file:///./applications/meetup_3d/)): Three.js WebGL spatial event engine with procedural geometries, camera scroll rigging, Python REST server, and 100% API tests.
+   - **Aetheria 3D** ([`applications/aetheria_3d/`](file:///./applications/aetheria_3d/)): Spatial interactive world backed by `aetheria.db` SQLite storage.
+   - **IVA 3D Observatory** ([`applications/iva_3d_observatory/`](file:///./applications/iva_3d_observatory/)): WebGL cosmological observation platform.
+   - **IVA NVIDIA Studio** ([`applications/iva_nvidia_studio/`](file:///./applications/iva_nvidia_studio/)): Model benchmarking and compute hub.
+   - **Ropves Production Web Platform** ([`ropves-website/`](file:///./ropves-website/)): Vite-powered production web platform with zero-error bundle output.
    - **Standalone Trading Dashboard V1 - V5** (Port 8088): Live multi-tab trading dashboard with options chain inspection, Greeks calculation, and order tracking.
 2. **Quantitative Trading Derivatives Engine (NIFTY 50 & BANKNIFTY)**:
-   - **Indestructible Paytm Overlay Guardian** ([`persistent_overlay_guardian_daemon.py`](file:///c:/Users/abhis/Downloads/pt/persistent_overlay_guardian_daemon.py), [`inject_indestructible_overlay.py`](file:///c:/Users/abhis/Downloads/pt/inject_indestructible_overlay.py)): CDP (port 9229) browser automation that mounts a persistent trading HUD directly into the Paytm Money web SPA without reload destruction.
-   - **Afternoon Gamma Hunter & Symmetrical Engine** ([`afternoon_gamma_hunter_daemon.py`](file:///c:/Users/abhis/Downloads/pt/afternoon_gamma_hunter_daemon.py)): Real-time gamma spike detector and options volatility arbitrage scanner.
-   - **Live Trailing Stop Guardian** ([`live_position_trailing_guardian.py`](file:///c:/Users/abhis/Downloads/pt/live_position_trailing_guardian.py)): Monotonic ATR trailing stop manager with dynamic risk escalation.
+   - **Indestructible Paytm Overlay Guardian** ([`persistent_overlay_guardian_daemon.py`](file:///./persistent_overlay_guardian_daemon.py), [`inject_indestructible_overlay.py`](file:///./inject_indestructible_overlay.py)): CDP (port 9229) browser automation that mounts a persistent trading HUD directly into the Paytm Money web SPA without reload destruction.
+   - **Afternoon Gamma Hunter & Symmetrical Engine** ([`afternoon_gamma_hunter_daemon.py`](file:///./afternoon_gamma_hunter_daemon.py)): Real-time gamma spike detector and options volatility arbitrage scanner.
+   - **Live Trailing Stop Guardian** ([`live_position_trailing_guardian.py`](file:///./live_position_trailing_guardian.py)): Monotonic ATR trailing stop manager with dynamic risk escalation.
    - **Institutional Indian Regulatory RMS**: Strict deduction of Indian statutory taxes (STT, NSE Turnover, SEBI Fee, GST, Stamp Duty) and SEBI derivatives margin rules (min notional ₹15 Lakhs, ELM margin).
    - **TauricResearch Dialectical Debate Engine** (arXiv:2412.20138): Bullish vs. Bearish multi-agent dialectic consensus system.
 
 ### B. Project `Latest` — PlusOneStar Full-Stack Production Enterprise
 1. **Production Microservices & Container Orchestration**:
-   - Full container stack: [`docker-compose.coolify.yml`](file:///c:/Users/abhis/Downloads/Latest/docker-compose.coolify.yml), [`docker-compose.local.yml`](file:///c:/Users/abhis/Downloads/Latest/docker-compose.local.yml), NGINX reverse proxy (`nginx.conf`), Redis session cache, MongoDB replica set initialization (`local_mongo_rs`), and Prometheus monitoring (`prometheus.yml`).
-   - Enterprise Deployment Scripts: [`start-production-suite.bat`](file:///c:/Users/abhis/Downloads/Latest/start-production-suite.bat), [`start-stack.bat`](file:///c:/Users/abhis/Downloads/Latest/start-stack.bat), [`deploy.ps1`](file:///c:/Users/abhis/Downloads/Latest/development/deploy.ps1).
+   - Full container stack: [`docker-compose.coolify.yml`](file:///../Latest/docker-compose.coolify.yml), [`docker-compose.local.yml`](file:///../Latest/docker-compose.local.yml), NGINX reverse proxy (`nginx.conf`), Redis session cache, MongoDB replica set initialization (`local_mongo_rs`), and Prometheus monitoring (`prometheus.yml`).
+   - Enterprise Deployment Scripts: [`start-production-suite.bat`](file:///../Latest/start-production-suite.bat), [`start-stack.bat`](file:///../Latest/start-stack.bat), [`deploy.ps1`](file:///../Latest/development/deploy.ps1).
 2. **Global Tunneling & Edge Routing**:
-   - Zero-trust edge exposure using integrated Cloudflare Tunnel binary ([`cloudflared.exe`](file:///c:/Users/abhis/Downloads/Latest/cloudflared.exe), [`start-cloudflare-tunnel.bat`](file:///c:/Users/abhis/Downloads/Latest/start-cloudflare-tunnel.bat)).
+   - Zero-trust edge exposure using integrated Cloudflare Tunnel binary ([`cloudflared.exe`](file:///../Latest/cloudflared.exe), [`start-cloudflare-tunnel.bat`](file:///../Latest/start-cloudflare-tunnel.bat)).
 3. **Model & MCP Router Architecture**:
    - **GonkaRouter**: Complete multi-model routing interface with dedicated MCP server, UI, and client (`gonkarouter-mcp`, `gonkarouter-interface`, `gonkarouter-ui`).
 4. **Persistent Project Memory**:
-   - Massive 1.52 MB architectural memory store ([`APPLICATION_MEMORY.md`](file:///c:/Users/abhis/Downloads/Latest/APPLICATION_MEMORY.md)) maintaining full state across development cycles.
+   - Massive 1.52 MB architectural memory store ([`APPLICATION_MEMORY.md`](file:///../Latest/APPLICATION_MEMORY.md)) maintaining full state across development cycles.
 
 ### C. Projects `LOHISA`, `PlusOneStar` & Venture Engineering
 1. **Institutional DPR & Investor Packages**:
@@ -110,7 +110,7 @@ Our collaboration spans across multiple major project repositories on the host m
 ### D. Projects `ytsss` & `yt` — Autonomous AI Media Studio
 1. **Acoustic Mastering & Voice Synthesis Engine**:
    - Professional audio mixing pipelines (`clean_test_mixed.wav`, `clean_test_voice.wav`, ElevenLabs voice models).
-2. **Autonomous Video Creator Subagent** ([`video-creator.md`](file:///C:/Users/abhis/.gemini/config/agents/video-creator.md)):
+2. **Autonomous Video Creator Subagent** ([`video-creator.md`](file:///~/.gemini/config/agents/video-creator.md)):
    - Automated generation of retention-engineered vertical YouTube Shorts / Dark Matters videos using Google Gemini video models (`gemini_generated_video_*.mp4`), lower-third kinetic captions, and sound effects orchestration.
 
 ### E. Projects `FaithCenter` & `MangaStory`
@@ -166,7 +166,7 @@ IVA operates an autonomous self-evolution engine running across **71+ continuous
 3. **Test-Driven Verification Gates**:
    - No self-improvement is committed unless existing and newly generated unit test suites pass at **100%**. If a regression is detected, changes are immediately rolled back.
 4. **Metacognitive Steering & Brain Tuning**:
-   - Every prompt optimization and steering outcome is logged in [`scratch/brain_tuning_ledger.json`](file:///c:/Users/abhis/Downloads/pt/scratch/brain_tuning_ledger.json).
+   - Every prompt optimization and steering outcome is logged in [`scratch/brain_tuning_ledger.json`](file:///./scratch/brain_tuning_ledger.json).
    - Injects pre-generation schema constraints to eliminate LLM hallucinations and enforce deterministic JSON/AST compliance.
 5. **ChatGPT Desktop Browser Bridge**:
    - Connects directly to ChatGPT Plus in Chrome to query frontier research papers (arXiv), ingest modern mathematical formulations, and write the extracted insights into `omega_memory.db`.
