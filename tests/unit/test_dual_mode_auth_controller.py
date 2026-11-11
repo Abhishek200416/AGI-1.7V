@@ -96,6 +96,43 @@ class TestDualModeAuthController(unittest.TestCase):
         self.assertIsInstance(dm, DualModeAuthController)
         self.assertEqual(dm.cdp_port, mgr.cdp_port)
 
+    @patch.object(DualModeAuthController, "cdp_list_tabs")
+    def test_check_authentication_status_detection(self, mock_tabs):
+        """Verifies tab inspection detects when user reaches authenticated dashboard."""
+        # Scenario 1: Still on login page
+        mock_tabs.return_value = [{"url": "https://chatgpt.com/auth/login", "title": "Log in", "type": "page"}]
+        authed, reason = self.controller.check_authentication_status()
+        self.assertFalse(authed)
+
+        # Scenario 2: Successfully logged in and on chat session
+        mock_tabs.return_value = [{"url": "https://chatgpt.com/c/67890-uuid", "title": "ChatGPT", "type": "page"}]
+        authed, reason = self.controller.check_authentication_status()
+        self.assertTrue(authed)
+        self.assertIn("Authentication confirmed", reason)
+
+    @patch.object(DualModeAuthController, "cdp_list_tabs")
+    @patch.object(DualModeAuthController, "complete_login_and_switch_to_headless")
+    def test_wait_for_auth_and_switch_auto_transition(self, mock_switch, mock_tabs):
+        """Verifies automated polling transitions to headless as soon as auth succeeds."""
+        mock_tabs.return_value = [{"url": "https://gemini.google.com/app", "title": "Gemini", "type": "page"}]
+        expected_state = BrowserTransitionState(
+            mode=BrowserExecutionMode.HEADLESS_OPTIMIZED,
+            active_pid=99999,
+            cdp_port=9299,
+            persistent_profile_dir=str(self.profile_dir),
+            target_url="https://gemini.google.com/app",
+            is_headless=True,
+            estimated_ram_mb=65.0,
+            ram_savings_pct=90.0,
+            message="Auto-transitioned",
+        )
+        mock_switch.return_value = expected_state
+
+        state = self.controller.wait_for_auth_and_switch(timeout_sec=1.0, poll_interval_sec=0.1)
+        self.assertEqual(state.mode, BrowserExecutionMode.HEADLESS_OPTIMIZED)
+        self.assertEqual(state.active_pid, 99999)
+        mock_switch.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

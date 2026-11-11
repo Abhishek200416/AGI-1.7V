@@ -27,7 +27,9 @@ import time
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
+import urllib.request
+import urllib.error
 
 from ..security.browser_permissions_gate import BrowserPermissionsGate, PermissionScope
 
@@ -348,3 +350,94 @@ class DualModeAuthController:
             ram_savings_pct=savings,
             message=f"Mode: {self.current_mode.value} | PID: {pid} | Headless: {is_headless} | RAM: {ram_mb}MB",
         )
+
+    def cdp_list_tabs(self) -> List[Dict[str, Any]]:
+        """Queries local CDP endpoint to inspect active tabs, URLs, and titles."""
+        endpoint = f"http://127.0.0.1:{self.cdp_port}/json"
+        try:
+            req = urllib.request.Request(endpoint, headers={"User-Agent": "IVA-CDP-Client"})
+            with urllib.request.urlopen(req, timeout=1.0) as resp:
+                if resp.status == 200:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    return [tab for tab in data if tab.get("type") == "page"]
+        except Exception as exc:
+            logger.debug("CDP tab inspection skip: %s", exc)
+        return []
+
+    def check_authentication_status(
+        self,
+        auth_predicate: Optional[Callable[[str, str], bool]] = None,
+    ) -> Tuple[bool, str]:
+        """Sniffs CDP tabs to detect if user has successfully authenticated and exited login gates."""
+        tabs = self.cdp_list_tabs()
+        if not tabs:
+            return False, "No active browser tabs found on CDP port"
+
+        for tab in tabs:
+            url = tab.get("url", "").lower()
+            title = tab.get("title", "").lower()
+
+            # Custom predicate if supplied
+            if auth_predicate:
+                if auth_predicate(url, title):
+                    return True, f"Authentication verified via custom predicate on {url}"
+                continue
+
+            # Default heuristic for ChatGPT / Claude / Gemini / Broker logins
+            # If target was a login page and now navigated to dashboard / app / main chat
+            is_login_page = any(kw in url for kw in ("/login", "/auth", "signin", "accounts.google.com"))
+            is_authenticated_page = (
+                ("chatgpt.com" in url and not is_login_page and len(url.replace("https://chatgpt.com", "").strip("/")) > 0)
+                or ("gemini.google.com/app" in url)
+                or ("claude.ai/chat" in url)
+                or ("/dashboard" in url or "/holdings" in url)
+            )
+
+            if is_authenticated_page:
+                return True, f"Authentication confirmed on tab: {tab.get('url')}"
+
+        return False, "User still at login or authentication challenge page"
+
+    def wait_for_auth_and_switch(
+        self,
+        timeout_sec: float = 300.0,
+        poll_interval_sec: float = 2.0,
+        auth_predicate: Optional[Callable[[str, str], bool]] = None,
+    ) -> BrowserTransitionState:
+        """Automated watcher: Patiently waits for user login completion, then auto-transitions to headless."""
+        start_time = time.time()
+        logger.info("Awaiting user login on CDP port %s (timeout: %ss)...", self.cdp_port, timeout_sec)
+
+        while time.time() - start_time < timeout_sec:
+            authenticated, reason = self.check_authentication_status(auth_predicate)
+            if authenticated:
+                logger.info("Login detected: %s. Initiating headless transition...", reason)
+                time.sleep(2.0)  # Grace period for SQLite WAL session flush
+                return self.complete_login_and_switch_to_headless()
+
+            time.sleep(poll_interval_sec)
+
+        # Timeout reached: return current status
+        st = self.get_status()
+        st.message = f"Login timeout ({timeout_sec}s reached) without detected authentication."
+        return st
+
+    def cdp_navigate(self, url: str) -> bool:
+        """High-speed headless page navigation via CDP HTTP endpoint."""
+        tabs = self.cdp_list_tabs()
+        if not tabs:
+            return False
+        first_tab_id = tabs[0].get("id")
+        if not first_tab_id:
+            return False
+
+        # Use CDP HTTP activate endpoint
+        endpoint = f"http://127.0.0.1:{self.cdp_port}/json/activate/{first_tab_id}"
+        try:
+            req = urllib.request.Request(endpoint, method="GET")
+            with urllib.request.urlopen(req, timeout=1.0) as resp:
+                self.active_url = url
+                return resp.status == 200
+        except Exception as exc:
+            logger.debug("CDP navigation skip: %s", exc)
+            return False

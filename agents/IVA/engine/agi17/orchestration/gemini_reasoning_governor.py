@@ -159,14 +159,24 @@ class GeminiReasoningGovernor:
         except Exception as exc:
             logger.debug("Turn-zero memory lookup non-fatal skip: %s", exc)
 
-        # 3. Turn-zero background daemon health & code update audit
+        # 3. Turn-zero total situational rehydration (daemon IPC, preflight, SQLite goals)
         try:
-            from agents.IVA.engine.agi17.orchestration.antigravity_preflight_guardian import AntigravityPreflightGuardian
-            guardian = AntigravityPreflightGuardian()
-            preflight = guardian.evaluate_preflight_on_chat()
-            results["preflight_background_health"] = preflight.to_dict()
+            from agents.IVA.engine.agi17.orchestration.turn_zero_context_rehydrator import TurnZeroContextRehydrator
+            rehydrator = TurnZeroContextRehydrator(memory_db_path=self.memory_db_path)
+            ctx = rehydrator.rehydrate()
+            results["rehydrated_context"] = ctx.to_dict()
+            results["preflight_background_health"] = {
+                "background_task_running": ctx.is_daemon_alive,
+                "active_pids": ctx.active_pids,
+                "current_git_commit": ctx.git_commit,
+                "code_update_detected": ctx.code_updated,
+                "surgical_experiment_passed": ctx.surgical_experiment_passed,
+                "task_name": ctx.task_name,
+                "phase": ctx.execution_phase,
+                "progress_pct": ctx.progress_pct,
+            }
         except Exception as p_exc:
-            logger.debug("Preflight guardian non-fatal skip: %s", p_exc)
+            logger.debug("Turn-zero context rehydration non-fatal skip: %s", p_exc)
 
         return results
 
