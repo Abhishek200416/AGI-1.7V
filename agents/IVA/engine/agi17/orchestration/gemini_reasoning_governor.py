@@ -198,16 +198,19 @@ class GeminiReasoningGovernor:
         elif category == "DEEP_REASONING":
             return ReasoningConfig(
                 task_category=category,
-                thinking_level="high",
-                thinking_budget=4096,
+                thinking_level="medium" if is_gemini_3 else "high",
+                thinking_budget=2048,
                 max_output_tokens=8192,
-                sla_seconds=180.0,
+                sla_seconds=90.0,
                 anti_overanalysis_prompt=(
-                    "REASONING DIRECTIVE:\n"
-                    "Execute rigorous mathematical/algorithmic verification with bounded step PRM verification."
+                    "MAX-PERFORMANCE ARCHITECT DIRECTIVE:\n"
+                    "Deliver institutional-grade depth, mathematical rigor, and peak code quality in a single comprehensive pass.\n"
+                    "DO NOT enter meta-reasoning spirals, circular reflections, or second-guess completed deductions.\n"
+                    "Focus 100% of reasoning compute on high-performance solution craftsmanship."
                 ),
                 auto_injected_memory=memory,
             )
+
 
         else:  # MODERATE_REFACTOR
             return ReasoningConfig(
