@@ -239,8 +239,19 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Launch the interactive terminal session with Iva (zero GUI/voice overlays, pure terminal CLI)",
     )
+    parser.add_argument(
+        "--antigravity-probe", "--handshake",
+        action="store_true",
+        help="Run non-destructive Antigravity surgical compatibility and integration experiment",
+    )
     parser.add_argument("--detached-pid-file", default=None, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+
+    if args.antigravity_probe:
+        from agents.IVA.engine.agi17.orchestration.antigravity_surgical_handshake import AntigravitySurgicalHandshake
+        handshake = AntigravitySurgicalHandshake(args.storage_root)
+        res = handshake.run_surgical_experiment(verbose=True)
+        return 0 if res.status == "SUCCESS" else 1
 
     # Conversational & Operational Query Fast-Path (Phase 17.26)
     if args.query:
