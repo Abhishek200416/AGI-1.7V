@@ -159,6 +159,15 @@ class GeminiReasoningGovernor:
         except Exception as exc:
             logger.debug("Turn-zero memory lookup non-fatal skip: %s", exc)
 
+        # 3. Turn-zero background daemon health & code update audit
+        try:
+            from agents.IVA.engine.agi17.orchestration.antigravity_preflight_guardian import AntigravityPreflightGuardian
+            guardian = AntigravityPreflightGuardian()
+            preflight = guardian.evaluate_preflight_on_chat()
+            results["preflight_background_health"] = preflight.to_dict()
+        except Exception as p_exc:
+            logger.debug("Preflight guardian non-fatal skip: %s", p_exc)
+
         return results
 
     def govern_reasoning(self, prompt: str, model_name: str = "gemini-3.8-flash", files_affected: int = 1) -> ReasoningConfig:
