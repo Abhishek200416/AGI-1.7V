@@ -868,6 +868,13 @@ class UniversalAPIProvider(BaseModelProvider):
             if any(fast_kw in prompt_l for fast_kw in ["button", "color", "css", "ui", "change", "edit", "tweak", "fix", "what is", "who are", "status"]):
                 payload["reasoning_effort"] = "low"
 
+        # OpenRouter Universal Reasoning Specification
+        if "openrouter.ai" in getattr(self, "base_url", ""):
+            eff = payload.get("reasoning_effort") or ("low" if any(fast_kw in request.prompt.lower() for fast_kw in ["button", "color", "css", "ui", "change", "edit", "tweak", "fix", "what is", "who are", "status"]) else None)
+            if eff:
+                payload["reasoning"] = {"effort": eff}
+
+
 
         headers = {
             "Content-Type": "application/json",
