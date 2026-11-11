@@ -45,6 +45,8 @@ __all__ = [
     "OutputFidelityReport",
     "BrainTuningRecord",
     "get_metacognitive_steering_engine",
+    "GeminiReasoningGovernor",
+    "ReasoningConfig",
 ]
 
 from .autonomous_goal_system import AutonomousGoalStore, Goal, GoalStatus, GoalSelectionPolicy, get_autonomous_goal_store
@@ -82,3 +84,5 @@ from .metacognitive_steering_engine import (
     BrainTuningRecord,
     get_metacognitive_steering_engine,
 )
+from .gemini_reasoning_governor import GeminiReasoningGovernor, ReasoningConfig
+

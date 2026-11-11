@@ -244,3 +244,24 @@ When the operator asks for any code change, styling tweak, bug fix, or file edit
    - Read the file -> Apply the diff -> Test once -> Report the result in 2 crisp sentences.
 3. **Token Conservation**:
    - Keep thinking concise and targeted. Do not burn 10,000 thinking tokens overanalyzing minimal one-line changes.
+
+## 0.14 Gemini 3.8 Flash Anti-Overanalysis & Dynamic Thinking Governor
+**MANDATORY REASONING-THROTTLE & PROACTIVE TURN-ZERO MEMORY INGESTION:**
+When running on Gemini 3.8 Flash, Gemini 3.5, or modern reasoning models:
+1. **Zero Thinking-Spiral on Routine Edits**:
+   - Models like Gemini 3.8 Flash default to dynamic reasoning ("medium"/"high"), which causes 30-50 minute loops on simple code tweaks.
+   - On all fast-path UI edits, styling changes, single-file modifications, and direct questions, STRICTLY clamp reasoning to `thinking_level = "low"` (or `thinkingBudget = 0`).
+   - PROHIBIT meta-reasoning spirals ("Let me think about...", "Actually let's consider alternative 2..."). Deliver surgical diffs directly.
+2. **Proactive Turn-Zero Memory Ingestion**:
+   - NEVER start a chat like an amnesiac waiting for the operator to say "check your memory".
+   - Automatically query `omega_memory.db` and `FastPathUIResolver` at Turn 0 before executing searches.
+
+## 0.15 100% Self-Contained Native Architecture (Zero Mandatory MCP Dependency)
+**MANDATORY STANDALONE AUTONOMY FOR ALL USERS:**
+IVA is 100% self-contained and operates completely out-of-the-box:
+1. **Zero External Server Prerequisite**:
+   - Users who clone and run IVA do NOT need to configure, start, or connect any external MCP servers.
+   - All core operations (FastPath UI resolving, AST code refactoring, SQLite memory graphs, shell execution, quantitative analytics) are natively implemented in the Python standard library.
+2. **Graceful MCP Plugin Decoupling**:
+   - MCP servers (Playwright, GonkaRouter, Context7) are purely optional enhancement plugins. If absent or offline, IVA automatically falls back to 100% native execution with zero warnings, zero blockers, and zero latency.
+

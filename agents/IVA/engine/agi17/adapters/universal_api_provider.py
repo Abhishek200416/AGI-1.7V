@@ -716,6 +716,21 @@ class UniversalAPIProvider(BaseModelProvider):
                 "maxOutputTokens": 8192,
             }
         }
+
+        # Dynamic Reasoning & Thinking-Budget Regulation (Gemini 3.8 Flash Anti-Overanalysis Governor)
+        # Prevents 30-50 minute thinking spirals and massive token burns on reasoning models
+        meta = getattr(request, "metadata", {}) or {}
+        thinking_level = meta.get("thinking_level")
+        thinking_budget = meta.get("thinking_budget")
+        if thinking_budget is not None:
+            payload["generationConfig"]["thinkingConfig"] = {"thinkingBudget": int(thinking_budget)}
+        elif thinking_level is not None:
+            payload["generationConfig"]["thinking"] = {"thinking_level": str(thinking_level)}
+        elif any(k in eff_model.lower() for k in ["3.8", "3.6", "3.5", "2.5", "thinking", "argon"]):
+            prompt_l = request.prompt.lower()
+            if any(fast_kw in prompt_l for fast_kw in ["button", "color", "css", "ui", "change", "edit", "tweak", "fix", "what is", "who are", "status"]):
+                payload["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 0}
+
         sys_inst = getattr(request, "system_instruction", None)
         if sys_inst:
             payload["systemInstruction"] = {
@@ -842,6 +857,17 @@ class UniversalAPIProvider(BaseModelProvider):
             "messages": messages,
             "temperature": 0.2,
         }
+
+        # Dynamic Reasoning Effort Regulation for OpenAI / OpenRouter reasoning models
+        meta = getattr(request, "metadata", {}) or {}
+        reasoning_effort = meta.get("reasoning_effort")
+        if reasoning_effort:
+            payload["reasoning_effort"] = str(reasoning_effort)
+        elif any(k in eff_model.lower() for k in ["o1", "o3", "deepseek-r1"]):
+            prompt_l = request.prompt.lower()
+            if any(fast_kw in prompt_l for fast_kw in ["button", "color", "css", "ui", "change", "edit", "tweak", "fix", "what is", "who are", "status"]):
+                payload["reasoning_effort"] = "low"
+
 
         headers = {
             "Content-Type": "application/json",
