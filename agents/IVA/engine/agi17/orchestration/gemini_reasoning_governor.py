@@ -122,7 +122,7 @@ class GeminiReasoningGovernor:
                 if cursor.fetchone():
                     for word in words[:5]:
                         cursor.execute(
-                            "SELECT component_name, file_path, line_number, selector FROM workspace_ui_component_registry WHERE component_name LIKE ? OR file_path LIKE ? LIMIT 3",
+                            "SELECT component_id, file_rel_path, line_number, identifier FROM workspace_ui_component_registry WHERE component_id LIKE ? OR file_rel_path LIKE ? LIMIT 3",
                             (f"%{word}%", f"%{word}%")
                         )
                         for row in cursor.fetchall():
@@ -135,14 +135,14 @@ class GeminiReasoningGovernor:
             except Exception:
                 pass
 
-            # 2. Check general facts / memory nodes
+            # 2. Check general facts / memory nodes (bounded to recent 500 records for sub-10ms response)
             try:
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='memory_nodes'")
                 if cursor.fetchone():
-                    for word in words[:4]:
+                    for word in words[:3]:
                         cursor.execute(
-                            "SELECT content FROM memory_nodes WHERE content LIKE ? ORDER BY updated_at DESC LIMIT 2",
-                            (f"%{word}%",)
+                            "SELECT content FROM memory_nodes WHERE id > (SELECT COALESCE(MAX(id), 0) - 500 FROM memory_nodes) AND (content LIKE ? OR topic LIKE ?) ORDER BY id DESC LIMIT 2",
+                            (f"%{word}%", f"%{word}%")
                         )
                         for row in cursor.fetchall():
                             results["relevant_facts"].append(row[0][:300])
