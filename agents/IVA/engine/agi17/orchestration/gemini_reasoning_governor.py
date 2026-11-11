@@ -222,3 +222,80 @@ class GeminiReasoningGovernor:
                 ),
                 auto_injected_memory=memory,
             )
+
+    def get_model_payload_patch(
+        self,
+        model_name: str,
+        prompt: str,
+        files_affected: int = 1,
+    ) -> Dict[str, Any]:
+        """Generates the universal provider-specific payload patch to regulate thinking across ANY model.
+        
+        Supports:
+        - Google Gemini (Gemini 3.8 Flash, 3.5, 2.5) via thinking_level / thinkingBudget
+        - OpenAI / OpenRouter (o1, o3, o3-mini, deepseek-r1) via reasoning_effort
+        - Anthropic Claude (Claude 3.7 Sonnet) via thinking budget_tokens
+        - Groq / Local / Ollama (Llama, Mistral, Qwen) via max_tokens and direct single-pass directives
+        """
+        cfg = self.govern_reasoning(prompt, model_name=model_name, files_affected=files_affected)
+        m_lower = model_name.lower()
+
+        patch: Dict[str, Any] = {
+            "task_category": cfg.task_category,
+            "sla_seconds": cfg.sla_seconds,
+            "system_instruction_addon": cfg.anti_overanalysis_prompt,
+            "turn_zero_memory": cfg.auto_injected_memory,
+            "payload_fields": {},
+        }
+
+        # 1. Google Gemini Family (Gemini 3.8 Flash, 3.5, 2.5 Pro/Flash)
+        if "gemini" in m_lower or "argon" in m_lower:
+            gen_cfg: Dict[str, Any] = {
+                "maxOutputTokens": cfg.max_output_tokens,
+                "temperature": 0.2,
+            }
+            if cfg.thinking_budget == 0:
+                gen_cfg["thinkingConfig"] = {"thinkingBudget": 0}
+                gen_cfg["thinking"] = {"thinking_level": "low"}
+            else:
+                gen_cfg["thinkingConfig"] = {"thinkingBudget": cfg.thinking_budget}
+                gen_cfg["thinking"] = {"thinking_level": cfg.thinking_level}
+            patch["payload_fields"] = {"generationConfig": gen_cfg}
+
+        # 2. OpenAI / OpenRouter Reasoning Models (o1, o3, o3-mini, deepseek-r1)
+        elif any(k in m_lower for k in ["o1", "o3", "deepseek-r1"]):
+            patch["payload_fields"] = {
+                "reasoning_effort": "low" if cfg.thinking_budget <= 1024 else "medium",
+                "max_completion_tokens": cfg.max_output_tokens,
+            }
+
+        # 3. Anthropic Extended Thinking (Claude 3.7 Sonnet)
+        elif "claude" in m_lower and ("3-7" in m_lower or "3.7" in m_lower):
+            if cfg.thinking_budget > 0 and cfg.task_category == "DEEP_REASONING":
+                patch["payload_fields"] = {
+                    "thinking": {
+                        "type": "enabled",
+                        "budget_tokens": cfg.thinking_budget,
+                    },
+                    "max_tokens": cfg.thinking_budget + 4096,
+                }
+            else:
+                patch["payload_fields"] = {
+                    "max_tokens": cfg.max_output_tokens,
+                    "temperature": 0.2,
+                }
+
+        # 4. Universal Standard Models (Groq, OpenAI GPT-4o, DeepSeek-V3, Local Ollama)
+        else:
+            patch["payload_fields"] = {
+                "temperature": 0.2,
+                "max_tokens": cfg.max_output_tokens,
+            }
+
+        return patch
+
+
+# Universal Aliases for global model interoperability
+UniversalReasoningGovernor = GeminiReasoningGovernor
+IVAReasoningGovernor = GeminiReasoningGovernor
+

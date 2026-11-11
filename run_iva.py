@@ -34,7 +34,7 @@ if hasattr(sys.stderr, "reconfigure"):
     except Exception:
         pass
 
-from agents.IVA.run_agi_17 import main
+from agents.IVA.run_iva import main
 
 if __name__ == "__main__":
     sys.exit(main() or 0)

@@ -1,11 +1,11 @@
-"""AGI 1.7 Adapters Package."""
+"""IVA Adapters Package."""
 
 from .model_adapter import DirectiveZeroViolationError, ModelAdapter
 
 def __getattr__(name: str):
-    if name == "AGI17Adapter":
-        from .agi_17_adapter import AGI17Adapter
-        return AGI17Adapter
+    if name in ("IVAAdapter", "AGI17Adapter"):
+        from .iva_adapter import IVAAdapter
+        return IVAAdapter
     elif name in (
         "OmniRouteAdapter",
         "OmniRouteConfig",
@@ -27,6 +27,7 @@ def __getattr__(name: str):
 __all__ = [
     "DirectiveZeroViolationError",
     "ModelAdapter",
+    "IVAAdapter",
     "AGI17Adapter",
     "OmniRouteAdapter",
     "TaskType",

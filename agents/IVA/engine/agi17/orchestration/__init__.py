@@ -46,6 +46,8 @@ __all__ = [
     "BrainTuningRecord",
     "get_metacognitive_steering_engine",
     "GeminiReasoningGovernor",
+    "UniversalReasoningGovernor",
+    "IVAReasoningGovernor",
     "ReasoningConfig",
 ]
 
@@ -84,5 +86,11 @@ from .metacognitive_steering_engine import (
     BrainTuningRecord,
     get_metacognitive_steering_engine,
 )
-from .gemini_reasoning_governor import GeminiReasoningGovernor, ReasoningConfig
+from .gemini_reasoning_governor import (
+    GeminiReasoningGovernor,
+    UniversalReasoningGovernor,
+    IVAReasoningGovernor,
+    ReasoningConfig,
+)
+
 
