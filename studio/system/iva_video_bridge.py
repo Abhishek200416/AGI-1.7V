@@ -99,12 +99,13 @@ def verify_and_register_unique_assets(project_id: str, asset_paths: list[str]) -
 
 
 REQUIRE_REAL_WORLD_VISUALS = True
+MIN_SOURCE_HEIGHT_PX = 720  # Strictly >=720p minimum; target 4K (2160p) -> 1080p real clips/images
 
 
 def audit_real_world_scenes(scene_assets: list[dict], allow_code_demo: bool = False) -> dict:
     """
     Fail closed if a narrative/real-world Short relies on pure procedural code cartoons
-    (e.g. Canvas stick figures) instead of verified outside photographs and real video clips.
+    or sub-720p low-res visuals instead of verified >=720p/4K outside photographs and video clips.
     """
     if allow_code_demo:
         return {"status": "ALLOWED_CODE_DEMO", "real_media_count": len(scene_assets)}
@@ -112,7 +113,16 @@ def audit_real_world_scenes(scene_assets: list[dict], allow_code_demo: bool = Fa
     if not real_items:
         raise RuntimeError(
             "REAL_WORLD_VISUALS GATE FAIL: At least 1 verified outside camera photo or real video clip "
-            "is required per scene. Pure code-run/stick-figure Canvas scenes are blocked."
+            "(>=720p minimum, 4K preferred) is required per scene. Pure code-run/stick-figure scenes are blocked."
+        )
+    low_res = [
+        a for a in real_items
+        if min(int(a.get("width", 0)), int(a.get("height", 0))) < MIN_SOURCE_HEIGHT_PX
+        and max(int(a.get("width", 0)), int(a.get("height", 0))) < 1280
+    ]
+    if low_res:
+        raise RuntimeError(
+            f"RESOLUTION GATE FAIL: {len(low_res)} source asset(s) below 720p minimum quality."
         )
     return {
         "status": "PASS",
@@ -131,9 +141,9 @@ def assemble_real_world_montage(
     fps: int = 30,
 ) -> dict:
     """
-    Compile full-bleed 1080x1920 vertical Shorts directly from verified REAL-WORLD video clips
-    and high-resolution photographs using FFmpeg (Ken Burns camera motion + ASS kinetic captions
-    + -14 LUFS audio). Eliminates stick-figure/pure-code cartoon scenes.
+    Compile full-bleed 1080x1920 vertical Shorts directly from verified 4K/HD (>=720p) REAL-WORLD
+    video clips and high-resolution photographs using FFmpeg lanczos scaling + Ken Burns motion
+    + ASS kinetic captions + -14 LUFS audio. Zero cartoon/stick-figure code scenes.
     """
     audit_real_world_scenes(scene_assets, allow_code_demo=False)
     os.makedirs(os.path.dirname(os.path.abspath(out_mp4)), exist_ok=True)
@@ -145,7 +155,7 @@ def assemble_real_world_montage(
             seg_mp4 = os.path.join(work_dir, f"seg_{idx:03d}.mp4")
             dur = float(asset.get("duration_s", clip_duration_s))
             if asset.get("media_kind") == "video":
-                vf = f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps={fps},format=yuv420p"
+                vf = f"scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,fps={fps},format=yuv420p"
                 cmd = [
                     FFMPEG, "-y", "-stream_loop", "-1", "-i", src,
                     "-t", f"{dur:.3f}", "-vf", vf, "-an",

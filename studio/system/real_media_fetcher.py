@@ -43,8 +43,11 @@ def _download_file(url: str, dest: str, timeout: int = 20) -> bool:
     return True
 
 
-def _validate_visual_file(path: str, min_dim: int = 480) -> dict | None:
-    """Verify image or video file decodes cleanly via ffprobe and meets minimum resolution."""
+MIN_MEDIA_HEIGHT = 720  # Strictly >=720p minimum; prefer 4K (2160p) -> 1440p -> 1080p -> 720p
+
+
+def _validate_visual_file(path: str, min_dim: int = MIN_MEDIA_HEIGHT) -> dict | None:
+    """Verify image or video file decodes cleanly via ffprobe and meets >=720p minimum quality."""
     try:
         out = subprocess.check_output(
             [FFPROBE, "-v", "quiet", "-print_format", "json", "-show_streams", path],
@@ -56,7 +59,7 @@ def _validate_visual_file(path: str, min_dim: int = 480) -> dict | None:
         if not vstreams:
             return None
         w, h = int(vstreams[0].get("width", 0)), int(vstreams[0].get("height", 0))
-        if w < min_dim or h < min_dim:
+        if min(w, h) < min_dim and max(w, h) < 1280:
             return None
         return {"path": path, "width": w, "height": h}
     except Exception:
@@ -187,21 +190,27 @@ def search_wikimedia_images(query: str, limit: int = 6) -> list[str]:
 def download_yt_dlp_clip(query: str, dest_mp4: str, max_duration_s: int = 240) -> dict | None:
     """
     Download a real-world movie scene, scientific documentary clip, or web video via `yt_dlp`
-    (HD <=1080p MP4/WebM) and validate via ffprobe.
+    prioritizing 4K (2160p) -> 1440p -> 1080p -> 720p minimum, validated via ffprobe.
     """
     os.makedirs(os.path.dirname(os.path.abspath(dest_mp4)), exist_ok=True)
+    fmt = (
+        "bestvideo[height>=2160][ext=mp4]/best[height>=2160][ext=mp4]/"
+        "bestvideo[height>=1440][ext=mp4]/best[height>=1440][ext=mp4]/"
+        "bestvideo[height>=1080][ext=mp4]/best[height>=1080][ext=mp4]/"
+        "bestvideo[height>=720][ext=mp4]/best[height>=720]/best[height>=720]"
+    )
     cmd = [
         sys.executable, "-m", "yt_dlp",
         "--no-playlist",
         "--match-filter", f"duration <= {max_duration_s}",
-        "-f", "bestvideo[height<=1080][ext=mp4]/best[height<=1080][ext=mp4]/best[height<=1080]",
+        "-f", fmt,
         "--merge-output-format", "mp4",
         "-o", dest_mp4,
         f"ytsearch3:{query}",
     ]
     try:
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=45, check=True)
-        meta = _validate_visual_file(dest_mp4, min_dim=480)
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60, check=True)
+        meta = _validate_visual_file(dest_mp4, min_dim=MIN_MEDIA_HEIGHT)
         if meta:
             meta["media_kind"] = "video"
             meta["query"] = query
