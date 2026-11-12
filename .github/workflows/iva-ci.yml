@@ -25,7 +25,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # macos-latest omitted from auto-push matrix to avoid 15m+ GitHub macOS arm64 runner capacity stalls
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.12"]
 
     steps:

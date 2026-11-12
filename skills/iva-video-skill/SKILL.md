@@ -1,11 +1,11 @@
 ---
 name: iva-video-skill
-description: Autonomous code-driven animation, cinematic directing, and motion-graphics film creation system integrated into IVA. Generates short films, scientific micro-documentaries, data visualizations, and kinetic animations entirely through code (Canvas, Three.js, Python, FFmpeg) with 101 distinct visual styles, rhythm-synced camera grammar, acoustic mastering (-14 LUFS), and cinematic foley.
+description: Autonomous real-world visual directing, sound architecture, and kinetic caption compositing system integrated into IVA. Combines verified real-world camera photographs and real outside video clips (`real_media_fetcher.py` + FFmpeg) with rhythm-synced camera motion, lower-third typography, acoustic mastering (-14 LUFS), and cinematic foley. Never substitutes stick-figure/geometric code cartoons for real-world subjects.
 ---
 
-# IVA Video Skill: Autonomous Code-Driven Film & Motion Directing
+# IVA Video Skill: Real-World Film Directing & Motion Compositing
 
-IVA Video Skill is IVA's integrated autonomous directing and animation framework that creates cinematic films, animations, and micro-documentaries purely through deterministic code, eliminating reliance on unpredictable diffusion video models.
+IVA Video Skill is IVA's integrated autonomous directing framework. For any real-world, science, nature, news, or story subject, it **MUST drive every visual beat using verified real outside-world photographs and real video footage** (`studio/system/real_media_fetcher.py` + `assemble_real_world_montage`), using FFmpeg / Canvas strictly for camera motion (pan/zoom), transitions, kinetic lower-third captions, and `-14 LUFS` foley audio mastering—**NEVER synthetic stick-figure/cartoon code drawings**. Canvas/code rendering is reserved solely for explicit software/codebase walkthroughs (`codebase_motion_generator.py`).
 
 ---
 

@@ -92,15 +92,78 @@ def search_nasa_media(query: str, media_type: str = "image", limit: int = 6) -> 
     return urls
 
 
+def search_wikimedia_videos(query: str, limit: int = 4) -> list[str]:
+    """Search Wikimedia Commons for real-world documentary MP4/WebM video clips."""
+    q = urllib.parse.quote_plus(f"{query} filetype:video")
+    url = (
+        "https://commons.wikimedia.org/w/api.php?"
+        f"action=query&generator=search&gsrsearch={q}&gsrnamespace=6"
+        f"&gsrlimit={limit * 3}&prop=imageinfo&iiprop=url|mime|size&format=json"
+    )
+    urls: list[str] = []
+    try:
+        data = _http_get_json(url)
+        for p in data.get("query", {}).get("pages", {}).values():
+            info = (p.get("imageinfo") or [{}])[0]
+            mime = info.get("mime", "")
+            w = int(info.get("width", 0))
+            if mime in ("video/webm", "video/mp4") and w >= 640 and info.get("url"):
+                urls.append(info["url"])
+            if len(urls) >= limit:
+                break
+    except Exception:
+        pass
+    return urls
+
+
+def search_pexels_media(query: str, media_type: str = "video", limit: int = 4) -> list[str]:
+    """Fetch real-world outside HD stock video clips or photos from Pexels when PEXELS_API_KEY is set."""
+    api_key = os.environ.get("PEXELS_API_KEY", "").strip()
+    if not api_key:
+        return []
+    q = urllib.parse.quote_plus(query)
+    endpoint = (
+        f"https://api.pexels.com/videos/search?query={q}&orientation=portrait&per_page={limit}"
+        if media_type == "video"
+        else f"https://api.pexels.com/v1/search?query={q}&orientation=portrait&per_page={limit}"
+    )
+    urls: list[str] = []
+    try:
+        req = urllib.request.Request(endpoint, headers={"Authorization": api_key, **UA})
+        data = json.loads(urllib.request.urlopen(req, timeout=12).read().decode("utf-8", errors="ignore"))
+        if media_type == "video":
+            for v in data.get("videos", []):
+                files = sorted(
+                    [f for f in v.get("video_files", []) if f.get("file_type") == "video/mp4" and int(f.get("width", 0)) >= 720],
+                    key=lambda f: int(f.get("width", 0)),
+                    reverse=True,
+                )
+                if files:
+                    urls.append(files[0]["link"])
+        else:
+            for ph in data.get("photos", []):
+                src = ph.get("src", {}).get("large2x") or ph.get("src", {}).get("original")
+                if src:
+                    urls.append(src)
+    except Exception:
+        pass
+    return urls[:limit]
+
+
 def search_wikimedia_images(query: str, limit: int = 6) -> list[str]:
-    """Search Wikimedia Commons for real, topic-exact high-resolution photographs."""
+    """Search Wikimedia Commons for real, topic-exact high-resolution photographs (never diagrams/cartoons)."""
     q = urllib.parse.quote_plus(query)
     url = (
         "https://commons.wikimedia.org/w/api.php?"
         f"action=query&generator=search&gsrsearch=intitle:{q}&gsrnamespace=6"
-        f"&gsrlimit={limit * 3}&prop=imageinfo&iiprop=url|mime|size&format=json"
+        f"&gsrlimit={limit * 4}&prop=imageinfo&iiprop=url|mime|size&format=json"
     )
-    skip_words = ("pamphlet", "document", "manuscript", "book", "page_", "signature", "diagram")
+    skip_words = (
+        "pamphlet", "document", "manuscript", "book", "page_", "signature",
+        "diagram", "cartoon", "clipart", "vector", "svg", "drawing", "sketch",
+        "logo", "icon", "schematic", "infographic", "chart", "map_of",
+        "psm_", "plate_", "illustration", "engraving",
+    )
     urls: list[str] = []
     try:
         data = _http_get_json(url)
@@ -122,9 +185,10 @@ def search_wikimedia_images(query: str, limit: int = 6) -> list[str]:
 
 
 def search_bing_images(query: str, limit: int = 6) -> list[str]:
-    """Fallback real web image search for general topics (apps, cinema, tech, news)."""
-    q = urllib.parse.quote_plus(query)
+    """Fallback real photography search for outside world subjects (filters out clipart/diagrams)."""
+    q = urllib.parse.quote_plus(f"{query} real photograph -cartoon -vector -diagram -clipart -illustration")
     url = f"https://www.bing.com/images/search?q={q}&form=HDRSC2"
+    skip_tokens = ("cartoon", "clipart", "vector", "stick-figure", "diagram", "infographic", "shutterstock", "istockphoto")
     urls: list[str] = []
     try:
         req = urllib.request.Request(
@@ -132,7 +196,10 @@ def search_bing_images(query: str, limit: int = 6) -> list[str]:
         )
         html = urllib.request.urlopen(req, timeout=12).read().decode("utf-8", errors="ignore")
         for m in re.findall(r'murl&quot;:&quot;(https?://[^&]+?)&quot;', html):
-            if any(ext in m.lower() for ext in (".jpg", ".jpeg", ".png", ".webp")):
+            m_low = m.lower()
+            if any(tok in m_low for tok in skip_tokens):
+                continue
+            if any(ext in m_low for ext in (".jpg", ".jpeg", ".png", ".webp")):
                 urls.append(m)
             if len(urls) >= limit:
                 break
@@ -145,11 +212,11 @@ def fetch_unique_real_visuals(
     project_id: str,
     beat_queries: list[str],
     out_dir: str,
-    include_video_clip: bool = False,
+    include_video_clip: bool = True,
 ) -> list[dict]:
     """
-    Download one unique, non-recycled, resolution-validated real image (and optional
-    real NASA MP4 keyframe/clip) for each narration beat query.
+    Download one unique, non-recycled, resolution-validated REAL-WORLD photo or real video clip
+    for each narration beat query (video footage prioritized when include_video_clip=True).
     """
     os.makedirs(out_dir, exist_ok=True)
     ledger = {}
@@ -159,18 +226,23 @@ def fetch_unique_real_visuals(
 
     results = []
     for idx, query in enumerate(beat_queries, 1):
-        candidates = (
-            search_wikimedia_images(query, limit=4)
+        video_candidates = (
+            search_pexels_media(query, media_type="video", limit=3)
+            + search_nasa_media(query, media_type="video", limit=2)
+            + search_wikimedia_videos(query, limit=2)
+        ) if include_video_clip else []
+        photo_candidates = (
+            search_pexels_media(query, media_type="image", limit=3)
+            + search_wikimedia_images(query, limit=4)
             + search_nasa_media(query, media_type="image", limit=4)
             + search_bing_images(query, limit=5)
         )
-        if include_video_clip:
-            candidates = search_nasa_media(query, media_type="video", limit=2) + candidates
+        candidates = video_candidates + photo_candidates
 
         chosen = None
         for cand_i, url in enumerate(candidates):
             ext = os.path.splitext(urllib.parse.urlparse(url).path)[1].lower()
-            if ext not in (".jpg", ".jpeg", ".png", ".webp", ".mp4"):
+            if ext not in (".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm"):
                 ext = ".jpg"
             dest = os.path.join(out_dir, f"beat_{idx:02d}_{cand_i}{ext}")
             try:
@@ -190,7 +262,7 @@ def fetch_unique_real_visuals(
                 ledger[digest] = project_id
                 meta["query"] = query
                 meta["source_url"] = url
-                meta["media_kind"] = "video" if ext == ".mp4" else "image"
+                meta["media_kind"] = "video" if ext in (".mp4", ".webm") else "image"
                 chosen = meta
                 break
             except Exception:
