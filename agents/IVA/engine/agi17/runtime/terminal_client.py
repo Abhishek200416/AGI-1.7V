@@ -417,8 +417,92 @@ class TerminalClient:
                 print(dim("   (Provider models list cached or endpoint returned default catalog)"))
         else:
             print(yellow("   ⚠️ No external API key linked in .env yet."))
-            print("   Using local mock / test provider. Link a GEMINI_API_KEY to activate remote models.")
+            print("   • Using local mock / test provider. Link a GEMINI_API_KEY to activate remote models.")
         print(cyan("=" * 78) + "\n")
+
+    def execute_swap_model(self, target: str) -> None:
+        """Live-swap active IVA model (supports AUTO, ALL, or an explicit model ID) without restarting."""
+        target = (target or "").strip()
+        if not target:
+            print(yellow("   Usage: swap <AUTO|ALL|model-id>  (e.g. `swap AUTO`, `swap gemini-2.5-pro`)"))
+            return
+        os.environ["IVA_MODEL"] = target
+        os.environ["ACTIVE_MODEL"] = target
+        model_adapter = getattr(self.adapter, "model_adapter", None)
+        provider = getattr(model_adapter, "api_provider", None) if model_adapter else None
+        if provider is not None and hasattr(provider, "model_name"):
+            provider.model_name = target
+        repo_env = Path(__file__).resolve().parents[5] / ".env"
+        candidates = [repo_env]
+        if self.storage_root:
+            candidates.append(Path(self.storage_root).resolve() / ".env")
+        for candidate in candidates:
+            if candidate.exists():
+                lines = [
+                    l for l in candidate.read_text(encoding="utf-8", errors="ignore").splitlines()
+                    if not l.strip().startswith(("IVA_MODEL=", "ACTIVE_MODEL="))
+                ]
+                lines.extend([f"ACTIVE_MODEL={target}", f"IVA_MODEL={target}"])
+                candidate.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                break
+        print(green(f"   ✅ Active Model Swapped -> {bold(target)} (live in session & saved to .env)"))
+
+    def execute_category_mode(self, arg: str = "") -> None:
+        """Switch or display IVA's 3 core operating categories: Build (24/7), Studios, or Marketing Studio."""
+        modes = {
+            "build": "IVA Build & Engineering (24/7 Autonomous Coding & Debugging)",
+            "1": "IVA Build & Engineering (24/7 Autonomous Coding & Debugging)",
+            "studios": "IVA Studios (IVA Video Skill Directing, Real Web Visuals & YouTube Upload)",
+            "2": "IVA Studios (IVA Video Skill Directing, Real Web Visuals & YouTube Upload)",
+            "marketing": "IVA Marketing Studio (Hybrid Marketing + Studios: YT/IG/LinkedIn + Inbox)",
+            "marketing_studio": "IVA Marketing Studio (Hybrid Marketing + Studios: YT/IG/LinkedIn + Inbox)",
+            "3": "IVA Marketing Studio (Hybrid Marketing + Studios: YT/IG/LinkedIn + Inbox)",
+        }
+        canonical = {"1": "build", "2": "studios", "3": "marketing_studio", "marketing": "marketing_studio"}
+        clean = (arg or "").strip().lower()
+        if clean in modes:
+            mode_key = canonical.get(clean, clean)
+            os.environ["IVA_ACTIVE_CATEGORY"] = mode_key
+            repo_env = Path(__file__).resolve().parents[5] / ".env"
+            if repo_env.exists():
+                lines = [l for l in repo_env.read_text(encoding="utf-8", errors="ignore").splitlines() if not l.strip().startswith("IVA_ACTIVE_CATEGORY=")]
+                lines.append(f"IVA_ACTIVE_CATEGORY={mode_key}")
+                repo_env.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print(green(f"   ✅ Switched Operating Category -> {bold(modes[clean])}"))
+            return
+        cur = os.environ.get("IVA_ACTIVE_CATEGORY", "build")
+        print(f"\n   Active Category: {bold(cyan(cur))}")
+        print("   Switch with `mode build` | `mode studios` | `mode marketing_studio`\n")
+
+    def execute_report_schedule(self, time_arg: str = "") -> None:
+        """Set or view daily end-of-day analytics report schedule (default 21:30)."""
+        clean = (time_arg or "").strip()
+        if clean:
+            os.environ["IVA_DAILY_REPORT_TIME"] = clean
+            repo_env = Path(__file__).resolve().parents[5] / ".env"
+            if repo_env.exists():
+                lines = [l for l in repo_env.read_text(encoding="utf-8", errors="ignore").splitlines() if not l.strip().startswith("IVA_DAILY_REPORT_TIME=")]
+                lines.append(f"IVA_DAILY_REPORT_TIME={clean}")
+                repo_env.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print(green(f"   ✅ Daily End-of-Day Report Schedule updated -> {bold(clean)}"))
+            return
+        sched = os.environ.get("IVA_DAILY_REPORT_TIME", "21:30")
+        print(f"\n   📅 Daily Analytics Report Schedule: {bold(cyan(sched))} (change with `report time HH:MM`)\n")
+
+    def execute_platform_login(self, platform: str) -> None:
+        """Delegate external browser interactive login to studio platform_browser_auth if present."""
+        import subprocess
+        plat = (platform or "").strip().lower()
+        candidates = [
+            Path(__file__).resolve().parents[5] / "studio" / "system" / "platform_browser_auth.py",
+            Path(r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO\system\platform_browser_auth.py"),
+        ]
+        for script in candidates:
+            if script.exists():
+                print(cyan(f"   🌐 Launching external browser login verifier for {plat.upper()}..."))
+                subprocess.run([sys.executable, str(script), plat], check=False)
+                return
+        print(yellow("   ⚠️ platform_browser_auth.py not found in studio/system."))
 
     def print_sysmatch(self) -> None:
         """Displays complete 6-dimension system match report."""
@@ -2721,6 +2805,20 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
 
             elif low in ("models", "model", "providers"):
                 self.print_models()
+            elif low.startswith("swap "):
+                self.execute_swap_model(line[5:].strip())
+            elif low.startswith("model ") and len(line.split()) >= 2:
+                self.execute_swap_model(line[6:].strip())
+            elif low in ("category", "categories", "mode", "studios", "marketing", "marketing_studio"):
+                self.execute_category_mode("marketing_studio" if "marketing" in low else ("studios" if low == "studios" else ""))
+            elif low.startswith("mode "):
+                self.execute_category_mode(line[5:].strip())
+            elif low == "report":
+                self.execute_report_schedule("")
+            elif low.startswith("report time "):
+                self.execute_report_schedule(line[12:].strip())
+            elif low.startswith("login "):
+                self.execute_platform_login(line[6:].strip())
             elif low in ("sysmatch", "match", "compat"):
                 self.print_sysmatch()
             elif low in ("status", "health"):

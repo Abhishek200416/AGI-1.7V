@@ -21,7 +21,7 @@ import shutil
 import sqlite3
 import platform
 from pathlib import Path
-from typing import Optional, Tuple, List
+from typing import Dict, List, Optional, Tuple
 
 # Ensure UTF-8 output encoding across Windows command prompts
 if sys.platform == "win32":
@@ -186,9 +186,10 @@ def select_model_dialog(models: List[str], prov: str) -> str:
     print("  [Company] Model Identifier [Params] [Speed Tier] ★ Specialty Badge")
     print("  " + "─" * 84)
 
-    # Highlight Dynamic Swapper as Option [0]
+    # Highlight Dynamic Swapper as Option [0] and All Models as [A]
     print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper (Recommended for Autonomous Operation)")
-    print("       ⚡ Swaps dynamically per action: 7B/8B for fast routing, 90B for vision, 253B for deep code")
+    print("       ⚡ Automatically picks the best model per task; swap any model live later via `swap <model>`")
+    print("  [ A] 🌐 [ALL]  Enable ALL Remote Models (Full Adaptive Routing Pool)")
     print("  " + "─" * 84)
 
     rec_index = 1
@@ -228,6 +229,9 @@ def select_model_dialog(models: List[str], prov: str) -> str:
     elif m_choice.lower() in ("0", "auto", "swapper", "dynamic"):
         print("  🎯 Selected: AUTO (Dynamic Action-Based Model Swapper)")
         return "AUTO"
+    elif m_choice.lower() in ("a", "all"):
+        print(f"  🎯 Selected: ALL ({len(sorted_meta)} remote models active — adaptive routing enabled)")
+        return "ALL"
     elif m_choice.lower() in ("rec", "recommended", "best"):
         chosen = sorted_meta[rec_index - 1]["model_id"]
         print(f"  🎯 Selected Recommended Workhorse: {chosen}")
@@ -686,6 +690,89 @@ def check_safety_invariants() -> None:
     else:
         print("  ⚠️ Notice: Operating under custom safety boundaries.")
 
+
+def select_iva_category(env_file: Path, interactive: bool = True) -> str:
+    """Configure primary IVA operating category: Build (24/7), Studios, or Marketing Studio."""
+    existing = os.environ.get("IVA_ACTIVE_CATEGORY", "")
+    cat_map = {
+        "1": "build",
+        "build": "build",
+        "2": "studios",
+        "studios": "studios",
+        "3": "marketing_studio",
+        "marketing": "marketing_studio",
+        "marketing_studio": "marketing_studio",
+    }
+    labels = {
+        "build": "IVA Build & Engineering (24/7 Autonomous Coding & Debugging)",
+        "studios": "IVA Studios (IVA Video Skill Directing, Real Web Visuals & YouTube Upload)",
+        "marketing_studio": "IVA Marketing Studio (Hybrid Marketing + IVA Studios: YT/IG/LinkedIn + Inbox)",
+    }
+
+    selected = existing if existing in labels else "build"
+    if interactive:
+        print("\n" + "  " + "═" * 74)
+        print("  🧭 SELECT IVA OPERATING CATEGORY")
+        print("  " + "═" * 74)
+        print("  [1] IVA Build & Engineering (24/7) — App building, auto-debugging & CI tests")
+        print("  [2] IVA Studios                    — Complete video editing, real web visuals & YT upload")
+        print("  [3] IVA Marketing Studio           — Hybrid Marketing + Studios (YT/IG/LinkedIn + Comment/DM replies)")
+        try:
+            raw = input("\n  Choose category [1-3, default: 1]: ").strip().lower()
+            selected = cat_map.get(raw, selected)
+        except (KeyboardInterrupt, EOFError):
+            pass
+
+    lines = env_file.read_text(encoding="utf-8", errors="ignore").splitlines() if env_file.exists() else []
+    new_lines = [
+        l for l in lines
+        if not l.strip().startswith((
+            "IVA_ACTIVE_CATEGORY=",
+            "IVA_DAILY_REPORT_TIME=",
+            "IVA_STUDIO_BRAND_NAME=",
+            "IVA_STUDIO_NICHE=",
+        ))
+    ]
+    brand_name = os.environ.get("IVA_STUDIO_BRAND_NAME", "My Studio")
+    studio_niche = os.environ.get("IVA_STUDIO_NICHE", "Custom User-Defined Niche")
+    if interactive and selected in ("studios", "marketing_studio"):
+        try:
+            bn = input("\n  What Channel / Brand Name do you want to create or manage? (e.g. TechPulse): ").strip()
+            if bn:
+                brand_name = bn
+            ni = input("  What niche / content style & method do you want? (e.g. App Demos, Finance, Science, Custom): ").strip()
+            if ni:
+                studio_niche = ni
+        except (KeyboardInterrupt, EOFError):
+            pass
+
+    report_time = os.environ.get("IVA_DAILY_REPORT_TIME", "21:30")
+    if interactive:
+        try:
+            rt = input("\n  Daily analytics report time (24h HH:MM, default: 21:30 for 9:30 PM): ").strip()
+            if rt and ":" in rt:
+                report_time = rt
+        except (KeyboardInterrupt, EOFError):
+            pass
+
+    new_lines.extend([
+        f"IVA_ACTIVE_CATEGORY={selected}",
+        f"IVA_DAILY_REPORT_TIME={report_time}",
+        f"IVA_STUDIO_BRAND_NAME={brand_name}",
+        f"IVA_STUDIO_NICHE={studio_niche}",
+    ])
+    env_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+    os.environ["IVA_ACTIVE_CATEGORY"] = selected
+    os.environ["IVA_DAILY_REPORT_TIME"] = report_time
+    os.environ["IVA_STUDIO_BRAND_NAME"] = brand_name
+    os.environ["IVA_STUDIO_NICHE"] = studio_niche
+    print(f"  ✅ Active IVA Category: {labels[selected]}")
+    if selected in ("studios", "marketing_studio"):
+        print(f"  ✅ Studio Brand & Niche: {brand_name} ({studio_niche})")
+    print(f"  ✅ Daily Analytics Report Schedule: {report_time}")
+    return selected
+
+
 def print_ready_guide(db_path: Path, selected_model: str, provider: str, interactive: bool = True):
     print("\n" + "=" * 80)
     print("  🚀 IVA SETUP COMPLETE & FULLY OPERATIONAL ON YOUR SYSTEM!")
@@ -763,7 +850,8 @@ def main():
     verify_specialist_and_mcp_ecosystem()
     check_complete_system_match()
     check_safety_invariants()
-    return print_ready_guide(db_path, selected_model or "gemini-2.5-flash", active_prov, interactive=interactive)
+    select_iva_category(env_file, interactive=interactive)
+    return print_ready_guide(db_path, selected_model or "AUTO", active_prov, interactive=interactive)
 
 if __name__ == "__main__":
     sys.exit(main() or 0)
