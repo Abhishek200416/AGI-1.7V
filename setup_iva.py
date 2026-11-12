@@ -764,29 +764,24 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
 
     brand_name = os.environ.get("IVA_STUDIO_BRAND_NAME", "My Studio")
     studio_niche = os.environ.get("IVA_STUDIO_NICHE", "Custom User-Defined Niche")
+    report_time = os.environ.get("IVA_DAILY_REPORT_TIME", "21:30")
     if interactive and selected in ("studios", "marketing_studio"):
         try:
-            bn = input("\n  What Channel / Brand Name do you want to create or manage? (or 'back'): ").strip()
-            if bn.lower() in ("0", "back"):
+            print("\n  " + "─" * 74)
+            print("  🎨 STUDIO FOCUS & CHANNEL CONFIGURATION (Quick Setup)")
+            print("  Describe your channel / niche in plain English (or press Enter for defaults):")
+            print("  Examples: 'App Demos Channel', 'manage my existing app demos', 'Tech & AI'")
+            print("  " + "─" * 74)
+            summary_input = input("  Studio Focus [Enter for defaults, or type description]: ").strip()
+            if summary_input.lower() in ("0", "back", "b"):
                 return "__BACK__"
-            if bn:
-                brand_name = bn
-            ni = input("  What niche / real-world topic do you want? (e.g. App Demos, Finance, Science): ").strip()
-            if ni.lower() in ("0", "back"):
-                return "__BACK__"
-            if ni:
-                studio_niche = ni
-        except (KeyboardInterrupt, EOFError):
-            pass
-
-    report_time = os.environ.get("IVA_DAILY_REPORT_TIME", "21:30")
-    if interactive:
-        try:
-            rt = input("\n  Daily analytics report time (24h HH:MM, default: 21:30 | 'back' for previous step): ").strip()
-            if rt.lower() in ("0", "back"):
-                return "__BACK__"
-            if rt and ":" in rt:
-                report_time = rt
+            if summary_input:
+                brand_name = summary_input
+                studio_niche = summary_input
+                import re
+                time_match = re.search(r"\b([01]?\d|2[0-3]):[0-5]\d\b", summary_input)
+                if time_match:
+                    report_time = time_match.group(0)
         except (KeyboardInterrupt, EOFError):
             pass
 

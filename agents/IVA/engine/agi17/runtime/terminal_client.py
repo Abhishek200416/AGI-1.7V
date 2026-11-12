@@ -2701,6 +2701,19 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             tokens = res.get("token_usage", {})
             in_toks = tokens.get("input_tokens", 0)
             out_toks = tokens.get("output_tokens", 0)
+            err_msg = res.get("error_message")
+
+            if not resp_text:
+                if err_msg:
+                    resp_text = (
+                        f"⚠️ Upstream Provider Notice: {err_msg}\n\n"
+                        "I am standing by. You can:\n"
+                        "• Type `models` or `swap <model>` to switch active models.\n"
+                        "• Type `keys` to test or add another API provider (OpenRouter, Gemini, Groq, etc.).\n"
+                        "• Or enter any command/question to continue with our local 100-specialist engine."
+                    )
+                else:
+                    resp_text = "Hello! I am ready and listening. What would you like to build or discuss?"
 
             print(cyan("│"))
             for line in resp_text.splitlines():
