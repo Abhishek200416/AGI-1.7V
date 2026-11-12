@@ -162,7 +162,7 @@ def search_wikimedia_images(query: str, limit: int = 6) -> list[str]:
         "pamphlet", "document", "manuscript", "book", "page_", "signature",
         "diagram", "cartoon", "clipart", "vector", "svg", "drawing", "sketch",
         "logo", "icon", "schematic", "infographic", "chart", "map_of",
-        "psm_", "plate_", "illustration", "engraving",
+        "psm_", "psm ", "plate_", "plate ", "illustration", "engraving",
     )
     urls: list[str] = []
     try:
@@ -182,6 +182,35 @@ def search_wikimedia_images(query: str, limit: int = 6) -> list[str]:
     except Exception:
         pass
     return urls
+
+
+def download_yt_dlp_clip(query: str, dest_mp4: str, max_duration_s: int = 240) -> dict | None:
+    """
+    Download a real-world movie scene, scientific documentary clip, or web video via `yt_dlp`
+    (HD <=1080p MP4/WebM) and validate via ffprobe.
+    """
+    os.makedirs(os.path.dirname(os.path.abspath(dest_mp4)), exist_ok=True)
+    cmd = [
+        sys.executable, "-m", "yt_dlp",
+        "--no-playlist",
+        "--match-filter", f"duration <= {max_duration_s}",
+        "-f", "bestvideo[height<=1080][ext=mp4]/best[height<=1080][ext=mp4]/best[height<=1080]",
+        "--merge-output-format", "mp4",
+        "-o", dest_mp4,
+        f"ytsearch3:{query}",
+    ]
+    try:
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=45, check=True)
+        meta = _validate_visual_file(dest_mp4, min_dim=480)
+        if meta:
+            meta["media_kind"] = "video"
+            meta["query"] = query
+            meta["source_url"] = f"ytsearch3:{query}"
+            return meta
+    except Exception:
+        if os.path.exists(dest_mp4):
+            os.remove(dest_mp4)
+    return None
 
 
 def search_bing_images(query: str, limit: int = 6) -> list[str]:
@@ -268,6 +297,17 @@ def fetch_unique_real_visuals(
             except Exception:
                 if os.path.exists(dest):
                     os.remove(dest)
+        if not chosen and include_video_clip:
+            yt_dest = os.path.join(out_dir, f"beat_{idx:02d}_yt.mp4")
+            yt_meta = download_yt_dlp_clip(query, yt_dest)
+            if yt_meta:
+                digest = bridge.sha256_file(yt_dest)
+                if digest in ledger and ledger[digest] != project_id:
+                    os.remove(yt_dest)
+                else:
+                    bridge.verify_and_register_unique_assets(project_id, [yt_dest])
+                    ledger[digest] = project_id
+                    chosen = yt_meta
         if chosen:
             results.append(chosen)
 
