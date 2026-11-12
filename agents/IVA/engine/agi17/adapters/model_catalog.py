@@ -582,7 +582,7 @@ class ModelMetadataCatalog:
         - 'default': Selects balanced workhorse (Nemotron 70B).
         """
         if not available_models:
-            return "nvidia/llama-3.1-nemotron-70b-instruct"
+            return "meta-llama/llama-3.3-70b-instruct"
 
         action = (action_type or "default").lower().strip()
         models_lower = {m.lower(): m for m in available_models}
@@ -632,7 +632,8 @@ class ModelMetadataCatalog:
         # 3. Dedicated Coding & AST Refactoring Action
         elif action in ("coding", "code", "ast", "refactor", "debug", "patch"):
             code_prefs = [
-                "nvidia/llama-3.1-nemotron-70b-instruct",
+                "meta/llama-3.3-70b-instruct",
+                "meta-llama/llama-3.3-70b-instruct",
                 "deepseek-ai/deepseek-coder-6.7b-instruct",
                 "mistralai/codestral-22b-instruct-v0.1",
                 "ibm/granite-34b-code-instruct",
@@ -649,7 +650,8 @@ class ModelMetadataCatalog:
             quant_prefs = [
                 "nvidia/nemotron-3-super-120b-a12b",
                 "writer/palmyra-fin-70b-32k",
-                "nvidia/llama-3.1-nemotron-70b-instruct",
+                "meta/llama-3.3-70b-instruct",
+                "meta-llama/llama-3.3-70b-instruct",
                 "nvidia/llama-3.1-nemotron-ultra-253b-v1",
             ]
             for qp in quant_prefs:
@@ -665,7 +667,8 @@ class ModelMetadataCatalog:
                 "nvidia/nemotron-3-ultra-550b-a55b",
                 "mistralai/mixtral-8x22b-v0.1",
                 "mistralai/mistral-large-2-instruct",
-                "nvidia/llama-3.1-nemotron-70b-instruct",
+                "meta/llama-3.3-70b-instruct",
+                "meta-llama/llama-3.3-70b-instruct",
                 "claude-3-5-sonnet-20241022",
                 "gpt-4o",
             ]
@@ -680,7 +683,10 @@ class ModelMetadataCatalog:
 
         # Default fallback: prefer recommended workhorse
         workhorse_prefs = [
-            "nvidia/llama-3.1-nemotron-70b-instruct",
+            "meta-llama/llama-3.3-70b-instruct",
+            "meta/llama-3.3-70b-instruct",
+            "meta-llama/llama-3.2-3b-instruct:free",
+            "google/gemini-2.0-flash-exp:free",
             "gemini-2.5-flash",
             "gpt-4o",
             "claude-3-5-sonnet-20241022",

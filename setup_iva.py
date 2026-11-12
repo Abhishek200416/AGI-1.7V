@@ -89,6 +89,7 @@ def save_key_and_model_to_env(
     model: str,
     selected_models: Optional[List[str]] = None,
     extra_keys_for_provider: Optional[List[str]] = None,
+    is_active_provider: bool = True,
 ) -> None:
     """Safely records verified API key(s) and model target(s) into .env without clobbering settings."""
     key_var_map = {
@@ -104,31 +105,32 @@ def save_key_and_model_to_env(
     target_var = key_var_map.get(prov_low, "GEMINI_API_KEY")
     updated_keys: Dict[str, str] = {
         target_var: key,
-        "ACTIVE_MODEL": model,
-        "IVA_MODEL": model,
-        "ACTIVE_PROVIDER": prov_low,
         f"{provider.upper()}_MODEL": model,
     }
+    if is_active_provider:
+        updated_keys["ACTIVE_MODEL"] = model
+        updated_keys["IVA_MODEL"] = model
+        updated_keys["ACTIVE_PROVIDER"] = prov_low
+        if prov_low == "nvidia":
+            updated_keys["OPENAI_API_KEY"] = key
+            updated_keys["OPENAI_BASE_URL"] = "https://integrate.api.nvidia.com/v1"
+        elif prov_low == "deepseek":
+            updated_keys["OPENAI_API_KEY"] = key
+            updated_keys["OPENAI_BASE_URL"] = "https://api.deepseek.com/v1"
+        elif prov_low == "openrouter":
+            updated_keys["OPENAI_API_KEY"] = key
+            updated_keys["OPENAI_BASE_URL"] = "https://openrouter.ai/api/v1"
+        elif prov_low == "groq":
+            updated_keys["OPENAI_API_KEY"] = key
+            updated_keys["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
+
     if extra_keys_for_provider:
         deduped = list(dict.fromkeys([k for k in extra_keys_for_provider if k]))
         if len(deduped) > 1:
             updated_keys[f"{provider.upper()}_API_KEYS"] = ",".join(deduped)
             updated_keys["MULTI_PROVIDER_ENABLED"] = "true"
-    if selected_models:
+    if selected_models and is_active_provider:
         updated_keys["IVA_SELECTED_MODELS"] = ",".join(dict.fromkeys(selected_models))
-
-    if prov_low == "nvidia":
-        updated_keys["OPENAI_API_KEY"] = key
-        updated_keys["OPENAI_BASE_URL"] = "https://integrate.api.nvidia.com/v1"
-    elif prov_low == "deepseek":
-        updated_keys["OPENAI_API_KEY"] = key
-        updated_keys["OPENAI_BASE_URL"] = "https://api.deepseek.com/v1"
-    elif prov_low == "openrouter":
-        updated_keys["OPENAI_API_KEY"] = key
-        updated_keys["OPENAI_BASE_URL"] = "https://openrouter.ai/api/v1"
-    elif prov_low == "groq":
-        updated_keys["OPENAI_API_KEY"] = key
-        updated_keys["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
 
     upsert_env_vars(env_path, updated_keys)
 
@@ -613,6 +615,7 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 selected_model or "AUTO",
                 selected_models=selected_pool,
                 extra_keys_for_provider=keys_list,
+                is_active_provider=False,
             )
 
     if active_key and active_prov != "none":
@@ -623,6 +626,7 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
             selected_model or "AUTO",
             selected_models=selected_pool,
             extra_keys_for_provider=per_prov_keys.get(active_prov),
+            is_active_provider=True,
         )
         print(f"  💾 Saved {len(pool_entries)} API key(s) & model target ({selected_model}) to .env")
 

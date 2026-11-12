@@ -93,6 +93,30 @@ class TestApiFallbackAndFreeModels(unittest.TestCase):
             self.assertEqual(pool["nvidia"]["default_model"], "meta/llama-3.3-70b-instruct")
             self.assertIn("openrouter.ai", pool["openrouter"]["base_url"])
 
+    def test_auto_model_resolves_valid_active_models(self):
+        """Verifies AUTO model targets resolve to active supported endpoints, never deprecated ones."""
+        # OpenRouter provider
+        or_provider = UniversalAPIProvider(
+            provider_type="openrouter",
+            api_key="sk-or-v1-mock",
+            model_name="AUTO",
+            base_url="https://openrouter.ai/api/v1",
+        )
+        req = ModelRequest(task_id="t1", prompt="hello")
+        eff_or = or_provider.resolve_effective_model(req)
+        self.assertNotIn("nvidia/llama-3.1-nemotron-70b-instruct", eff_or)
+
+        # NVIDIA NIM provider
+        nv_provider = UniversalAPIProvider(
+            provider_type="nvidia",
+            api_key="nvapi-mock",
+            model_name="AUTO",
+            base_url="https://integrate.api.nvidia.com/v1",
+        )
+        eff_nv = nv_provider.resolve_effective_model(req)
+        self.assertNotEqual(eff_nv, "nvidia/llama-3.1-nemotron-70b-instruct")
+        self.assertTrue(any(valid in eff_nv.lower() for valid in ["nemotron", "llama", "mistral"]))
+
 
 if __name__ == "__main__":
     unittest.main()

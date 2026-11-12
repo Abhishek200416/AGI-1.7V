@@ -433,12 +433,12 @@ class UniversalAPIProvider(BaseModelProvider):
                 "anthropic": "claude-3-5-sonnet-20241022",
                 "groq": "llama-3.3-70b-versatile",
                 "deepseek": "deepseek-chat",
-                "openrouter": "anthropic/claude-3.5-sonnet",
-                "nvidia": "nvidia/llama-3.1-nemotron-70b-instruct",
+                "openrouter": "meta-llama/llama-3.3-70b-instruct",
+                "nvidia": "meta/llama-3.3-70b-instruct",
                 "openai": "gpt-4o-mini",
             }
             actual_prov = "nvidia" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else self.provider_type
-            return defaults.get(actual_prov, defaults.get(self.provider_type, "gemini-2.5-flash"))
+            return defaults.get(actual_prov, defaults.get(self.provider_type, "meta-llama/llama-3.3-70b-instruct"))
 
         preferences = {
             "gemini": [
@@ -451,15 +451,16 @@ class UniversalAPIProvider(BaseModelProvider):
                 "gemini-1.5-flash-8b",
             ],
             "nvidia": [
+                "meta/llama-3.3-70b-instruct",
+                "meta/llama-3.1-70b-instruct",
+                "nvidia/nemotron-4-340b-instruct",
+                "mistralai/mistral-large-2-instruct",
                 "nvidia/nemotron-3.5-bolt-e4b",
                 "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
                 "nvidia/nemotron-3.5-lightning-30b-a3b",
-                "nvidia/llama-3.1-nemotron-70b-instruct",
-                "mistralai/mistral-large-2-instruct",
                 "deepseek-ai/deepseek-coder-6.7b-instruct",
                 "meta/llama-3.2-11b-vision-instruct",
                 "nvidia/llama-3.1-nemotron-51b-instruct",
-                "nvidia/nemotron-4-340b-instruct",
                 "meta/llama-3.2-90b-vision-instruct",
             ],
             "openai": [
@@ -533,7 +534,10 @@ class UniversalAPIProvider(BaseModelProvider):
     def resolve_effective_model(self, request: ModelRequest) -> str:
         """Determines active model target for execution, running dynamic action swapping if enabled."""
         override = getattr(request, "model_override", None)
-        target = override or self.model_name or "nvidia/llama-3.1-nemotron-70b-instruct"
+        is_or = "openrouter.ai" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("sk-or-")
+        is_nv = getattr(self, "api_key", "").startswith("nvapi-") or "integrate.api.nvidia.com" in getattr(self, "base_url", "")
+        default_target = "meta-llama/llama-3.3-70b-instruct" if is_or else ("meta/llama-3.3-70b-instruct" if is_nv else "gemini-2.5-flash")
+        target = override or self.model_name or default_target
         if target.upper() != "AUTO":
             return target
 
@@ -558,15 +562,22 @@ class UniversalAPIProvider(BaseModelProvider):
         if self.available_models:
             models_pool = self.available_models
         else:
-            is_nv = getattr(self, "api_key", "").startswith("nvapi-") or "integrate.api.nvidia.com" in getattr(self, "base_url", "")
-            if is_nv:
+            if is_or:
                 models_pool = [
-                    "nvidia/llama-3.1-nemotron-70b-instruct",
-                    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+                    "meta-llama/llama-3.3-70b-instruct",
+                    "meta-llama/llama-3.2-3b-instruct:free",
+                    "google/gemini-2.0-flash-exp:free",
+                    "qwen/qwen-2.5-72b-instruct:free",
+                    "mistralai/mistral-7b-instruct:free",
+                    "liquid/lfm-3-1.7b:free",
+                ]
+            elif is_nv:
+                models_pool = [
+                    "meta/llama-3.3-70b-instruct",
+                    "meta/llama-3.1-70b-instruct",
+                    "nvidia/nemotron-4-340b-instruct",
+                    "mistralai/mistral-large-2-instruct",
                     "nvidia/nemotron-3-super-120b-a12b",
-                    "meta/llama-3.2-90b-vision-instruct",
-                    "mistralai/mistral-7b-instruct-v0.3",
-                    "ibm/granite-3.0-8b-instruct",
                 ]
             elif self.provider_type == "gemini":
                 models_pool = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
@@ -714,26 +725,23 @@ class UniversalAPIProvider(BaseModelProvider):
         if res.get("status") == "FAILED" or not res.get("response_text"):
             try:
                 pool = self.get_configured_providers_pool()
+                my_brand = getattr(self, "provider_brand", self.provider_type)
                 for other_prov, cfg in pool.items():
-                    if other_prov == self.provider_type:
+                    if other_prov == my_brand:
                         continue
                     other_key = cfg.get("key")
                     if not other_key:
                         continue
-                    logger.info("Primary provider '%s' failed. Auto-failing over to '%s' in provider pool...", self.provider_type, other_prov)
+                    logger.info("Primary provider '%s' failed. Auto-failing over to '%s' in provider pool...", my_brand, other_prov)
                     alt_provider = UniversalAPIProvider(
                         provider_type=other_prov,
                         api_key=other_key,
                         model_name=cfg.get("default_model") or "AUTO",
                         base_url=cfg.get("base_url"),
                     )
-                    if other_prov == "gemini":
-                        alt_res = alt_provider._call_gemini_rest(request, t0)
-                    elif other_prov == "anthropic":
-                        alt_res = alt_provider._call_anthropic_rest(request, t0)
-                    else:
-                        alt_res = alt_provider._call_openai_rest(request, t0)
+                    alt_res = alt_provider.generate(request)
                     if alt_res.get("status") == "SUCCEEDED" and alt_res.get("response_text"):
+                        os.environ["ACTIVE_PROVIDER"] = other_prov
                         return alt_res
             except Exception as pool_exc:
                 logger.debug("Cross-provider pool failover notice: %s", pool_exc)
@@ -895,7 +903,20 @@ class UniversalAPIProvider(BaseModelProvider):
         """Calls OpenAI-compatible /chat/completions endpoint using standard library urllib."""
         eff_model = self.resolve_effective_model(request)
         if eff_model.upper() == "AUTO":
-            eff_model = "nvidia/llama-3.1-nemotron-70b-instruct" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else "gpt-4o-mini"
+            is_or = "openrouter.ai" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("sk-or-")
+            is_nv = "integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")
+            is_gr = "groq.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("gsk_")
+            is_ds = "deepseek.com" in getattr(self, "base_url", "")
+            if is_or:
+                eff_model = "meta-llama/llama-3.3-70b-instruct"
+            elif is_nv:
+                eff_model = "meta/llama-3.3-70b-instruct"
+            elif is_gr:
+                eff_model = "llama-3.3-70b-versatile"
+            elif is_ds:
+                eff_model = "deepseek-chat"
+            else:
+                eff_model = "gpt-4o-mini"
         endpoint = f"{self.base_url}/chat/completions"
 
         messages = []
