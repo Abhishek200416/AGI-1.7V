@@ -18,8 +18,13 @@ from datetime import datetime, timezone
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
-FFMPEG = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe"
+import shutil
+BASE_DIR = os.environ.get("IVA_STUDIO_BASE_DIR") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FFMPEG = (
+    r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe"
+    if os.path.exists(r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe")
+    else (shutil.which("ffmpeg") or "ffmpeg")
+)
 OUTPUT_DIR = os.path.join(BASE_DIR, "uploads", "instagram")
 
 def generate_social_post(topic: str, media_format: str = "post", angle: str = "Investigation", brand_name: str = "IVA Studios"):

@@ -495,8 +495,10 @@ class TerminalClient:
         plat = (platform or "").strip().lower()
         candidates = [
             Path(__file__).resolve().parents[5] / "studio" / "system" / "platform_browser_auth.py",
-            Path(r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO\system\platform_browser_auth.py"),
         ]
+        env_studio = os.environ.get("IVA_STUDIO_DIR")
+        if env_studio:
+            candidates.append(Path(env_studio) / "system" / "platform_browser_auth.py")
         for script in candidates:
             if script.exists():
                 print(cyan(f"   🌐 Launching external browser login verifier for {plat.upper()}..."))

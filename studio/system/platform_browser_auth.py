@@ -12,7 +12,9 @@ import sys
 import time
 from playwright.sync_api import sync_playwright
 
-DEFAULT_USER_DATA_DIR = r"C:\Users\abhis\AppData\Local\ms-playwright-mcp\mcp-chrome-08d3779"
+DEFAULT_USER_DATA_DIR = os.environ.get("IVA_CHROME_USER_DATA_DIR") or os.path.join(
+    os.path.expanduser("~"), "AppData", "Local", "ms-playwright-mcp", "mcp-chrome-08d3779"
+)
 
 PLATFORM_AUTH_MAP = {
     "chatgpt": {

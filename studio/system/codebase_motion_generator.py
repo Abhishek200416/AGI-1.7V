@@ -182,6 +182,7 @@ if __name__ == "__main__":
     import tempfile
     with tempfile.TemporaryDirectory() as td:
         out = os.path.join(td, "codebase_motion.html")
-        res = build_codebase_motion_html(r"C:\Users\abhis\Projects\IVA", out)
+        repo_sample = str(Path(__file__).resolve().parents[2])
+        res = build_codebase_motion_html(repo_sample, out)
         print(f"[PASS] Codebase Motion HTML built for {res['summary']['repo_name']}: "
               f"{res['summary']['total_code_files']} files, {res['summary']['total_loc']:,} LOC")
