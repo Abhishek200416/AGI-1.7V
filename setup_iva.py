@@ -142,17 +142,28 @@ def check_python_version() -> bool:
     print(f"  ✅ Python {py_ver} ({platform.system()} {platform.machine()}) verified.")
     return True
 
+PROVIDER_DEFAULT_MODELS: Dict[str, str] = {
+    "openrouter": "meta-llama/llama-3.3-70b-instruct",
+    "nvidia": "meta/llama-3.3-70b-instruct",
+    "gemini": "gemini-2.5-flash",
+    "groq": "llama-3.3-70b-versatile",
+    "deepseek": "deepseek-chat",
+    "openai": "gpt-4o",
+    "anthropic": "claude-3-5-sonnet-20241022",
+    "offline": "offline-cognitive-partner",
+}
+
 def select_provider_dialog() -> str:
     """Prompts the operator to select their API provider when ambiguous or switching."""
-    print("\n  Select your API provider:")
+    print("\n  Select your AI Provider (Zero lock-in — any API key works):")
     print("     [0] ⬅️  Back to previous menu")
-    print("     [1] NVIDIA NIM / NVIDIA Build (nvapi-... | integrate.api.nvidia.com)")
-    print("     [2] Google Gemini (AIzaSy... | Free 10s: https://aistudio.google.com/app/apikey)")
-    print("     [3] OpenAI / ChatGPT (sk-proj-... / sk-... | api.openai.com)")
-    print("     [4] DeepSeek (sk-... | api.deepseek.com)")
-    print("     [5] OpenRouter (sk-or-... | openrouter.ai)")
-    print("     [6] Groq (gsk_... | api.groq.com)")
-    print("     [7] Anthropic Claude (sk-ant-... | api.anthropic.com)")
+    print("     [1] OpenRouter (sk-or-... | 400+ models, 20+ FREE models: https://openrouter.ai/keys)")
+    print("     [2] NVIDIA NIM / NVIDIA Build (nvapi-... | Free credits: https://build.nvidia.com)")
+    print("     [3] Google Gemini (AIzaSy... | Free tier: https://aistudio.google.com/app/apikey)")
+    print("     [4] Groq LPU (gsk_... | Ultra-fast 500+ tok/s: https://console.groq.com/keys)")
+    print("     [5] DeepSeek AI (sk-... | Low cost V3 & R1: https://platform.deepseek.com)")
+    print("     [6] OpenAI / ChatGPT (sk-proj-... / sk-... | https://platform.openai.com)")
+    print("     [7] Anthropic Claude (sk-ant-... | https://console.anthropic.com)")
     try:
         p_sel = input("     Select provider [0-7, default: 1]: ").strip().lower()
     except (KeyboardInterrupt, EOFError):
@@ -160,20 +171,28 @@ def select_provider_dialog() -> str:
     if p_sel in ("0", "back", "b"):
         return "__BACK__"
     p_map = {
-        "1": "nvidia",
-        "2": "gemini",
-        "3": "openai",
-        "4": "deepseek",
-        "5": "openrouter",
-        "6": "groq",
+        "1": "openrouter",
+        "2": "nvidia",
+        "3": "gemini",
+        "4": "groq",
+        "5": "deepseek",
+        "6": "openai",
         "7": "anthropic",
+        "openrouter": "openrouter",
+        "nvidia": "nvidia",
+        "gemini": "gemini",
+        "groq": "groq",
+        "deepseek": "deepseek",
+        "openai": "openai",
+        "anthropic": "anthropic",
+        "claude": "anthropic",
     }
-    return p_map.get(p_sel, "nvidia")
+    return p_map.get(p_sel, "openrouter")
 
 def select_model_dialog(models: List[str], prov: str) -> str:
     """Ranks and presents remote models with Single, Multi-Model (1,3,5), ALL, AUTO & Back options."""
     if not models:
-        return "AUTO" if prov == "nvidia" else ("gemini-2.5-flash" if prov == "gemini" else "gpt-4o-mini")
+        return PROVIDER_DEFAULT_MODELS.get(prov, "AUTO")
 
     try:
         from agents.IVA.engine.agi17.adapters.model_catalog import ModelMetadataCatalog
@@ -297,31 +316,44 @@ def configure_multi_provider_pool(env_file: Path) -> None:
     print("\n  " + "═" * 74)
     print("  🌐 MULTI-PROVIDER INTELLIGENCE POOL CONFIGURATION")
     print("  " + "═" * 74)
-    print("  Configure multiple AI providers simultaneously to activate multi-agent orchestration:")
-    print("  • NVIDIA NIM   : Ultra-scale Nemotron 253B/120B/550B & Palmyra for deep reasoning")
-    print("  • Google Gemini: Real-time search grounding, 2M token context & multimodal")
-    print("  • OpenAI / ChatGPT: High-precision logic & function calling")
-    print("  • DeepSeek AI  : Fast mathematical & algorithmic reasoning")
-    print("  • Groq LPU     : Ultrafast inference (500+ tokens/sec)")
+    print("  Configure multiple AI providers simultaneously for intelligent cross-failover:")
+    print("  • OpenRouter     : 400+ models & zero-cost free tier (:free models)")
+    print("  • NVIDIA Build   : Ultra-scale Nemotron 550B/340B & Llama 3.3 70B")
+    print("  • Google Gemini  : Real-time search grounding & 2M token context")
+    print("  • Groq LPU       : Ultrafast inference (500+ tokens/sec)")
+    print("  • DeepSeek AI    : Mathematical reasoning & code synthesis (V3 & R1)")
+    print("  • OpenAI         : High-precision logic & function calling (GPT-4o)")
+    print("  • Anthropic      : Architectural analysis & nuanced code (Claude 3.5 Sonnet)")
     print("  (Press Enter on any provider to keep current value / leave unset)")
     print("  " + "═" * 74)
 
+    cur_openrouter = os.environ.get("OPENROUTER_API_KEY", "")
     cur_nvidia = os.environ.get("NVIDIA_API_KEY", "")
     cur_gemini = os.environ.get("GEMINI_API_KEY", "")
-    cur_openai = os.environ.get("OPENAI_API_KEY", "")
-    cur_deepseek = os.environ.get("DEEPSEEK_API_KEY", "")
     cur_groq = os.environ.get("GROQ_API_KEY", "")
+    cur_deepseek = os.environ.get("DEEPSEEK_API_KEY", "")
+    cur_openai = os.environ.get("OPENAI_API_KEY", "")
+    cur_anthropic = os.environ.get("ANTHROPIC_API_KEY", "")
 
     new_keys = {}
 
-    print(f"\n  [1/5] NVIDIA NIM Key (Current: {mask_key(cur_nvidia) or 'None'}):")
+    print(f"\n  [1/7] OpenRouter Key (Current: {mask_key(cur_openrouter) or 'None'}):")
+    print("        👉 Free models available: https://openrouter.ai/keys")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["OPENROUTER_API_KEY"] = val
+
+    print(f"\n  [2/7] NVIDIA NIM / NVIDIA Build Key (Current: {mask_key(cur_nvidia) or 'None'}):")
+    print("        👉 Free credits: https://build.nvidia.com")
     try:
         val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
     except (KeyboardInterrupt, EOFError):
         val = ""
     if val: new_keys["NVIDIA_API_KEY"] = val
 
-    print(f"\n  [2/5] Google Gemini Key (Current: {mask_key(cur_gemini) or 'None'}):")
+    print(f"\n  [3/7] Google Gemini Key (Current: {mask_key(cur_gemini) or 'None'}):")
     print("        👉 Free key (instant in 10s): https://aistudio.google.com/app/apikey")
     try:
         val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
@@ -329,26 +361,37 @@ def configure_multi_provider_pool(env_file: Path) -> None:
         val = ""
     if val: new_keys["GEMINI_API_KEY"] = val
 
-    print(f"\n  [3/5] OpenAI Key (Current: {mask_key(cur_openai) or 'None'}):")
+    print(f"\n  [4/7] Groq Key (Current: {mask_key(cur_groq) or 'None'}):")
+    print("        👉 Free tier (500+ tok/s): https://console.groq.com/keys")
     try:
         val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
     except (KeyboardInterrupt, EOFError):
         val = ""
-    if val: new_keys["OPENAI_API_KEY"] = val
+    if val: new_keys["GROQ_API_KEY"] = val
 
-    print(f"\n  [4/5] DeepSeek Key (Current: {mask_key(cur_deepseek) or 'None'}):")
+    print(f"\n  [5/7] DeepSeek Key (Current: {mask_key(cur_deepseek) or 'None'}):")
+    print("        👉 Low-cost V3 & R1: https://platform.deepseek.com/api_keys")
     try:
         val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
     except (KeyboardInterrupt, EOFError):
         val = ""
     if val: new_keys["DEEPSEEK_API_KEY"] = val
 
-    print(f"\n  [5/5] Groq Key (Current: {mask_key(cur_groq) or 'None'}):")
+    print(f"\n  [6/7] OpenAI Key (Current: {mask_key(cur_openai) or 'None'}):")
+    print("        👉 https://platform.openai.com/api-keys")
     try:
         val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
     except (KeyboardInterrupt, EOFError):
         val = ""
-    if val: new_keys["GROQ_API_KEY"] = val
+    if val: new_keys["OPENAI_API_KEY"] = val
+
+    print(f"\n  [7/7] Anthropic Claude Key (Current: {mask_key(cur_anthropic) or 'None'}):")
+    print("        👉 https://console.anthropic.com")
+    try:
+        val = input("        Enter Key (or Enter to keep): ").strip().strip("'\"")
+    except (KeyboardInterrupt, EOFError):
+        val = ""
+    if val: new_keys["ANTHROPIC_API_KEY"] = val
 
     new_keys["MULTI_PROVIDER_ENABLED"] = "true"
 
@@ -436,19 +479,26 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 prov_obj = UniversalAPIProvider.create_from_env()
                 if prov_obj:
                     status = prov_obj.get_model_discovery_status()
-                    selected_model = status.get("active_model", "gemini-2.5-flash")
+                    selected_model = status.get("active_model", PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO"))
             except Exception:
-                selected_model = "gemini-2.5-flash"
-        return env_file, active_key, selected_model or "gemini-2.5-flash", active_prov
+                selected_model = PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO")
+        return env_file, active_key, selected_model or PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO"), active_prov
 
     def _prompt_add_key() -> Optional[Dict[str, object]]:
         while True:
             print("\n  " + "═" * 74)
-            print("  🔑 ADD / LINK API KEY (NVIDIA, Gemini, OpenAI, DeepSeek, Groq, Claude)")
+            print("  🔑 ADD / LINK API KEY — Universal Multi-Provider Support")
             print("  " + "═" * 74)
+            print("  IVA works seamlessly with ANY AI provider (zero vendor lock-in):")
+            print("  • OpenRouter     : https://openrouter.ai/keys (400+ models, 20+ FREE :free models)")
+            print("  • NVIDIA Build   : https://build.nvidia.com (Free credits: Nemotron, Llama 3.3, Mistral)")
+            print("  • Google Gemini  : https://aistudio.google.com/app/apikey (Instant free tier, 2M context)")
+            print("  • Groq LPU       : https://console.groq.com/keys (500+ tok/s ultra-fast inference)")
+            print("  • DeepSeek AI    : https://platform.deepseek.com/api_keys (Ultra-low cost DeepSeek-V3 & R1)")
+            print("  • OpenAI/Claude  : https://platform.openai.com/api-keys | https://console.anthropic.com")
+            print("  " + "─" * 74)
             print("  [0] ⬅️  Back to API Key Hub")
-            print("  Or paste an API key directly below:")
-            print("  👉 Free Google Gemini Key (10s): https://aistudio.google.com/app/apikey")
+            print("  Paste your API key directly below (or leave blank for offline local mode):")
             print("  " + "═" * 74)
             try:
                 entered = input("  Paste API Key (or '0' / 'back'): ").strip().strip("'\"")
@@ -487,7 +537,7 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
             _test_entry(first_entry)
         else:
             print("  ℹ️  No API key entered. Continuing in offline sandbox mode.")
-            return env_file, None, "gemini-2.5-flash", "offline"
+            return env_file, None, "offline-cognitive-partner", "offline"
 
     while True:
         print("\n  " + "═" * 74)
@@ -539,13 +589,13 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                     continue
                 selected_model, selected_pool = _normalize_model_choice(raw_m)
             else:
-                selected_model = selected_model or ("AUTO" if active_prov == "nvidia" else "gemini-2.5-flash")
+                selected_model = selected_model or PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO")
             break
         elif hub_choice in ("4", "next", "n"):
             primary = next((e for e in pool_entries if e["verified"] is True), pool_entries[0])
             active_prov = str(primary["provider"])
             active_key = str(primary["key"])
-            selected_model = selected_model or ("AUTO" if active_prov == "nvidia" else "gemini-2.5-flash")
+            selected_model = selected_model or PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO")
             break
 
     # Persist all added API keys (primary + multi-provider + multi-key rotation lists)

@@ -146,7 +146,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 model_name
                 or os.environ.get("NVIDIA_MODEL")
                 or os.environ.get("IVA_MODEL")
-                or "nvidia/nemotron-3.5-bolt-e4b"
+                or "meta/llama-3.3-70b-instruct"
             )
             self.base_url = (
                 base_url
@@ -201,7 +201,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 model_name
                 or os.environ.get("OPENROUTER_MODEL")
                 or os.environ.get("IVA_MODEL")
-                or "anthropic/claude-3.5-sonnet"
+                or "meta-llama/llama-3.3-70b-instruct"
             )
             self.base_url = (
                 base_url
@@ -626,8 +626,8 @@ class UniversalAPIProvider(BaseModelProvider):
                 "name": "NVIDIA NIM / NVIDIA Build",
                 "key": nv_key,
                 "base_url": "https://integrate.api.nvidia.com/v1",
-                "default_model": os.environ.get("NVIDIA_MODEL") or "nvidia/llama-3.1-nemotron-70b-instruct",
-                "specialty": "Ultra-Scale Reasoning, Nemotron 253B/120B/550B, Coding",
+                "default_model": os.environ.get("NVIDIA_MODEL") or "meta/llama-3.3-70b-instruct",
+                "specialty": "Ultra-Scale Reasoning, Nemotron 550B/340B, Llama 3.3 70B, Coding",
             }
         gem_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
         if gem_key:
@@ -672,8 +672,8 @@ class UniversalAPIProvider(BaseModelProvider):
                 "name": "OpenRouter",
                 "key": or_key,
                 "base_url": "https://openrouter.ai/api/v1",
-                "default_model": os.environ.get("OPENROUTER_MODEL") or "anthropic/claude-3.5-sonnet",
-                "specialty": "Multi-Model Router, Global Fallback",
+                "default_model": os.environ.get("OPENROUTER_MODEL") or "meta-llama/llama-3.3-70b-instruct",
+                "specialty": "Multi-Model Router, 400+ Models, 20+ Free Zero-Cost Models (:free)",
             }
         ant_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
         if ant_key:
@@ -693,9 +693,14 @@ class UniversalAPIProvider(BaseModelProvider):
 
         if not self.api_key and not (self.base_url and ("localhost" in self.base_url or "127.0.0.1" in self.base_url)):
             raise RuntimeError(
-                "UniversalAPIProvider requires an API key. Please set GEMINI_API_KEY (Google Gemini), "
-                "ANTHROPIC_API_KEY (Anthropic Claude), OPENAI_API_KEY (OpenAI), GROQ_API_KEY (Groq), "
-                "or DEEPSEEK_API_KEY in your local .env file or environment variable."
+                "UniversalAPIProvider requires an API key. Supported providers: "
+                "OPENROUTER_API_KEY (OpenRouter: 400+ models & free tier), "
+                "NVIDIA_API_KEY (NVIDIA Build: free credits for Nemotron/Llama 3.3), "
+                "GEMINI_API_KEY (Google Gemini: 2M context free tier), "
+                "GROQ_API_KEY (Groq LPU: 500+ tok/s ultra-fast), "
+                "DEEPSEEK_API_KEY (DeepSeek: V3/R1 low-cost), "
+                "OPENAI_API_KEY (OpenAI), or ANTHROPIC_API_KEY (Claude). "
+                "Set any of these in your local .env or type `keys` in the terminal."
             )
 
         if self.provider_type == "gemini":

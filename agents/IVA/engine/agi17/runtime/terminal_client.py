@@ -417,7 +417,15 @@ class TerminalClient:
                 print(dim("   (Provider models list cached or endpoint returned default catalog)"))
         else:
             print(yellow("   ⚠️ No external API key linked in .env yet."))
-            print("   • Using local mock / test provider. Link a GEMINI_API_KEY to activate remote models.")
+            print("   • Running on local cognitive partner engine (100% functional offline).")
+            print("   • To unlock remote frontier LLMs, link any API key (zero vendor lock-in):")
+            print("     - OpenRouter   : Type `key add openrouter <sk-or-...>` (400+ models, 20+ free models)")
+            print("     - NVIDIA Build : Type `key add nvidia <nvapi-...>` (Free credits for Nemotron & Llama 3.3)")
+            print("     - Google Gemini: Type `key add gemini <AIzaSy...>` (Instant free tier, 2M context)")
+            print("     - Groq LPU     : Type `key add groq <gsk_...>` (500+ tok/s ultra-fast inference)")
+            print("     - DeepSeek     : Type `key add deepseek <sk-...>` (Low-cost V3 & R1 reasoning)")
+            print("     - OpenAI       : Type `key add openai <sk-...>` (GPT-4o, GPT-4o-mini)")
+            print("     - Anthropic    : Type `key add anthropic <sk-ant-...>` (Claude 3.5 Sonnet)")
         print(cyan("=" * 78) + "\n")
 
     def execute_swap_model(self, target: str) -> None:
@@ -1135,27 +1143,118 @@ class TerminalClient:
 
     def execute_keys_command(self, arg: str) -> None:
         """Displays configured API keys across providers and allows linking new keys."""
-        from ..adapters.universal_api_provider import load_repo_dotenv
+        from ..adapters.universal_api_provider import UniversalAPIProvider, load_repo_dotenv
         load_repo_dotenv()
 
+        arg_clean = (arg or "").strip()
+        tokens = [t.strip("'\"") for t in arg_clean.split() if t.strip("'\"")]
+
+        # Check if user wants to add or update a key
+        if tokens and tokens[0].lower() in ("add", "set", "link", "update") and len(tokens) > 1:
+            tokens = tokens[1:]
+
+        key_var_map = {
+            "openrouter": "OPENROUTER_API_KEY",
+            "nvidia": "NVIDIA_API_KEY",
+            "gemini": "GEMINI_API_KEY",
+            "groq": "GROQ_API_KEY",
+            "deepseek": "DEEPSEEK_API_KEY",
+            "openai": "OPENAI_API_KEY",
+            "anthropic": "ANTHROPIC_API_KEY",
+        }
+
+        if len(tokens) >= 1 and tokens[0].lower() not in ("list", "status", "show", "help", "links"):
+            raw_prov = ""
+            raw_key = ""
+            if len(tokens) == 1:
+                # User passed raw key: auto-detect provider
+                raw_key = tokens[0]
+                raw_prov = UniversalAPIProvider.detect_provider_from_key(raw_key)
+                if raw_prov == "unknown":
+                    print(yellow(f"   ⚠️ Could not infer provider for key '{raw_key[:8]}...'. Please specify: `key add <provider> <key>`"))
+                    return
+            else:
+                raw_prov = tokens[0].lower()
+                raw_key = tokens[1]
+                if raw_prov in ("nim", "nvidia-nim", "nvidia_build", "build"):
+                    raw_prov = "nvidia"
+                elif raw_prov in ("or", "open-router"):
+                    raw_prov = "openrouter"
+                elif raw_prov in ("claude",):
+                    raw_prov = "anthropic"
+                elif raw_prov in ("chatgpt",):
+                    raw_prov = "openai"
+
+            env_var = key_var_map.get(raw_prov)
+            if not env_var:
+                print(yellow(f"   ⚠️ Unknown provider '{raw_prov}'. Supported: openrouter, nvidia, gemini, groq, deepseek, openai, anthropic"))
+                return
+
+            print(f"\n   ⏳ Verifying key with {raw_prov.upper()} endpoint ({raw_key[:4]}...{raw_key[-4:] if len(raw_key) > 8 else ''})...")
+            is_valid, resolved_prov, models, err = UniversalAPIProvider.verify_and_fetch_models(raw_key, provider_type=raw_prov)
+            if is_valid:
+                print(green(f"   ✅ PASS: {resolved_prov.upper()} key verified! ({len(models)} models available)"))
+            else:
+                print(yellow(f"   ⚠️ Endpoint warning: {err} (saving key regardless)"))
+
+            # Update environment
+            os.environ[env_var] = raw_key
+            os.environ["ACTIVE_PROVIDER"] = raw_prov
+
+            # Save to .env
+            repo_env = Path(__file__).resolve().parents[5] / ".env"
+            candidates = [repo_env]
+            if self.storage_root:
+                candidates.append(Path(self.storage_root).resolve() / ".env")
+            for c in candidates:
+                lines = []
+                if c.exists():
+                    lines = c.read_text(encoding="utf-8", errors="ignore").splitlines()
+                lines = [l for l in lines if not l.strip().startswith((f"{env_var}=", "ACTIVE_PROVIDER="))]
+                lines.append(f"{env_var}={raw_key}")
+                lines.append(f"ACTIVE_PROVIDER={raw_prov}")
+                c.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+            # Hot-swap live provider in session
+            try:
+                new_prov = UniversalAPIProvider.create_from_env()
+                if hasattr(self.adapter, "model_adapter") and self.adapter.model_adapter:
+                    self.adapter.model_adapter.api_provider = new_prov
+                print(green(f"   🚀 Live provider hot-swapped to {bold(raw_prov.upper())}! Type `models` to see discovered models."))
+            except Exception as ex:
+                print(dim(f"   (Provider saved; reload on next query: {ex})"))
+            return
+
         providers = [
-            ("NVIDIA NIM", "NVIDIA_API_KEY", "integrate.api.nvidia.com (85 Models: 550B, 405B, 70B...)"),
+            ("OpenRouter", "OPENROUTER_API_KEY", "openrouter.ai (400+ Models, 20+ Free Models :free)"),
+            ("NVIDIA NIM", "NVIDIA_API_KEY", "integrate.api.nvidia.com (85 Models: 550B, 340B, 70B...)"),
             ("Google Gemini", "GEMINI_API_KEY", "generativelanguage.googleapis.com (Gemini 2.5 Pro / Flash)"),
+            ("Groq LPU", "GROQ_API_KEY", "api.groq.com (Llama 3.3 70B @ 500+ tok/s)"),
+            ("DeepSeek", "DEEPSEEK_API_KEY", "api.deepseek.com (DeepSeek-V3, R1)"),
             ("OpenAI", "OPENAI_API_KEY", "api.openai.com (GPT-4o, GPT-4o-mini)"),
             ("Anthropic", "ANTHROPIC_API_KEY", "api.anthropic.com (Claude 3.5 Sonnet)"),
-            ("DeepSeek", "DEEPSEEK_API_KEY", "api.deepseek.com (DeepSeek-V3, R1)"),
-            ("Groq", "GROQ_API_KEY", "api.groq.com (Llama 3.3 70B @ 500+ tok/s)"),
         ]
 
         print("\n" + cyan("=" * 78))
-        print(bold(magenta("   🔑 MULTI-PROVIDER API KEYS & INTELLIGENCE POOL STATUS")))
+        print(bold(magenta("   🔑 UNIVERSAL MULTI-PROVIDER API KEYS & POOL STATUS")))
         print(cyan("=" * 78))
         for name, env_var, desc in providers:
             k = os.environ.get(env_var, "")
             status = green("CONFIGURED") if k else yellow("NOT SET")
             masked = (k[:4] + "..." + k[-4:]) if len(k) > 10 else ("***" if k else "None")
             print(f"   • {bold(name.ljust(15))} [{status}]: Key: {cyan(masked.ljust(14))} | {dim(desc)}")
-        print("\n   " + dim("To add a key: key add <provider> <key>  (e.g. key add gemini AIzaSy...)"))
+
+        print("\n   " + bold("💡 Free & Instant API Keys Available:"))
+        print("   • OpenRouter  : https://openrouter.ai/keys (Access 400+ models, 20+ zero-cost :free models)")
+        print("   • NVIDIA Build: https://build.nvidia.com (Free credits: Nemotron, Llama 3.3, Mistral)")
+        print("   • Google Gemini: https://aistudio.google.com/app/apikey (Instant free tier, 2M context)")
+        print("   • Groq LPU    : https://console.groq.com/keys (500+ tok/s ultra-fast free tier)")
+        print("   • DeepSeek    : https://platform.deepseek.com/api_keys (Ultra-low cost V3 & R1)")
+
+        print("\n   " + bold("Commands to link a key live in this session:"))
+        print("   • " + cyan("key add <provider> <key>") + "  (e.g. key add openrouter sk-or-...)")
+        print("   • " + cyan("key add <key>") + "             (auto-detects provider from key prefix)")
+        print("   • " + cyan("models") + "                    (view discovered remote models)")
         print(cyan("=" * 78) + "\n")
 
     def print_color_diff(self, target: Optional[str] = None) -> None:

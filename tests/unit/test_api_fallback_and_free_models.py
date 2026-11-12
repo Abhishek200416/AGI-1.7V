@@ -72,5 +72,27 @@ class TestApiFallbackAndFreeModels(unittest.TestCase):
         self.assertIn("Local Cognitive Partner Engine", res.get("model", ""))
 
 
+    def test_provider_key_auto_detection_and_multi_pool(self):
+        """Verifies accurate detection of OpenRouter, NVIDIA, Gemini, Groq, Anthropic keys."""
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-or-v1-abc12345"), "openrouter")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("nvapi-xyz987654"), "nvidia")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("AIzaSyB1234567"), "gemini")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("gsk_ultra999"), "groq")
+        self.assertEqual(UniversalAPIProvider.detect_provider_from_key("sk-ant-api03-test"), "anthropic")
+
+        # Verify pool contains OpenRouter and NVIDIA with valid active models
+        with patch.dict("os.environ", {
+            "OPENROUTER_API_KEY": "sk-or-v1-mock",
+            "NVIDIA_API_KEY": "nvapi-mock",
+            "GEMINI_API_KEY": "AIzaSyMock",
+        }):
+            pool = UniversalAPIProvider.get_configured_providers_pool()
+            self.assertIn("openrouter", pool)
+            self.assertIn("nvidia", pool)
+            self.assertIn("gemini", pool)
+            self.assertEqual(pool["nvidia"]["default_model"], "meta/llama-3.3-70b-instruct")
+            self.assertIn("openrouter.ai", pool["openrouter"]["base_url"])
+
+
 if __name__ == "__main__":
     unittest.main()
