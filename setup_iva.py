@@ -123,6 +123,8 @@ def save_key_and_model_to_env(
         elif prov_low == "groq":
             updated_keys["OPENAI_API_KEY"] = key
             updated_keys["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
+        if model in ("FREE", "FREE_AUTO", "FREE_ALL") or model.startswith("FREE:") or ":free" in model:
+            updated_keys["IVA_FREE_ONLY"] = "true"
 
     if extra_keys_for_provider:
         deduped = list(dict.fromkeys([k for k in extra_keys_for_provider if k]))
@@ -228,6 +230,8 @@ def select_model_dialog(models: List[str], prov: str) -> str:
 
     print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper (Recommended for Autonomous Operation)")
     print("       ⚡ Automatically picks the best model per task; swap any model live later via `swap <model>`")
+    print("  [ F] 🆓 [FREE] Use ONLY 100% Free Models (Zero-Cost Routing Pool)")
+    print("       ⚡ Restricts routing strictly to verified zero-cost/free models (:free on OpenRouter, Gemini free-tier, etc.)")
     print("  [ A] 🌐 [ALL]  Enable ALL Remote Models (Full Adaptive Routing Pool)")
     print("  [ B] ⬅️  [BACK] Return to previous API Key step")
     print("  " + "─" * 84)
@@ -257,6 +261,7 @@ def select_model_dialog(models: List[str], prov: str) -> str:
         prompt_txt = (
             f"\n  Select active model target(s):\n"
             f"    • Enter [0] or 'auto' for Dynamic Swapper (fastest response per action)\n"
+            f"    • Enter [F] or 'free' to enable ONLY 100% Free Models (Zero-Cost Pool)\n"
             f"    • Enter [A] or 'all' to enable ALL models simultaneously\n"
             f"    • Enter [1-{len(sorted_meta)}] or comma list (e.g. 1,3,5) for MULTIPLE models\n"
             f"    • Enter [{rec_index}] or press Enter for Recommended ({rec_model_name}) | [B] / 'back' for previous step: "
@@ -272,6 +277,49 @@ def select_model_dialog(models: List[str], prov: str) -> str:
     elif m_choice.lower() in ("0", "auto", "swapper", "dynamic"):
         print("  🎯 Selected: AUTO (Dynamic Action-Based Model Swapper)")
         return "AUTO"
+    elif m_choice.lower() in ("f", "free", "zero", "free_only"):
+        free_models = [
+            m for m in sorted_meta
+            if m.get("is_free") or ":free" in m["model_id"].lower() or "free" in m["model_id"].lower().split("/")[-1]
+        ]
+        if not free_models:
+            from agents.IVA.engine.agi17.adapters.model_catalog import ModelMetadataCatalog
+            free_candidates = ModelMetadataCatalog.OPENROUTER_VERIFIED_FREE_MODELS
+            free_models = [ModelMetadataCatalog.get_specialty_metadata(m) for m in free_candidates]
+
+        print(f"\n  " + "═" * 84)
+        print(f"  🆓 100% FREE MODELS AVAILABLE FOR {prov.upper()} (ZERO-COST)")
+        print("  " + "═" * 84)
+        print("  [ 0] 🔄 [FREE AUTO] Dynamic Action Swapper among Free Models only")
+        print("  [ A] 🌐 [FREE ALL]  Enable ALL Free Models simultaneously")
+        print("  " + "─" * 84)
+        for f_idx, f_item in enumerate(free_models, 1):
+            f_mid = f_item["model_id"]
+            f_comp = f_item.get("company", "Independent")
+            f_plabel = f_item.get("params_label", "")
+            f_speed = f_item.get("speed_tier", "")
+            f_badge = f_item.get("badge", "")
+            print(f"  [{f_idx:2d}] [{f_comp}] {f_mid} [{f_plabel}] {f_speed} {f_badge}")
+
+        print("  " + "═" * 84)
+        try:
+            f_choice = input(f"  Select Free Model target [0=Auto Free Swapper, A=All Free, 1-{len(free_models)}, default: 0]: ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            f_choice = "0"
+
+        if f_choice in ("0", "auto", "swapper", ""):
+            print("  🎯 Selected: FREE_AUTO (Zero-Cost Dynamic Action Swapper)")
+            return "FREE_AUTO"
+        elif f_choice in ("a", "all"):
+            picked_free = [m["model_id"] for m in free_models]
+            print(f"  🎯 Selected: ALL {len(picked_free)} Free Models Enabled")
+            return "MULTI:" + ",".join(picked_free)
+        elif f_choice.isdigit() and 1 <= int(f_choice) <= len(free_models):
+            chosen_free = free_models[int(f_choice) - 1]["model_id"]
+            print(f"  🎯 Selected Free Model: {chosen_free}")
+            return chosen_free
+        else:
+            return "FREE_AUTO"
     elif m_choice.lower() in ("a", "all"):
         print(f"  🎯 Selected: ALL ({len(sorted_meta)} remote models active — adaptive routing enabled)")
         return "ALL"

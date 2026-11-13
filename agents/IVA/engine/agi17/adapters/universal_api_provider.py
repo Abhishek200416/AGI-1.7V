@@ -496,8 +496,29 @@ class UniversalAPIProvider(BaseModelProvider):
             ],
         }
 
-        if os.environ.get("IVA_MODEL") == "AUTO" or os.environ.get("ACTIVE_MODEL") == "AUTO" or getattr(self, "model_name", "") == "AUTO":
-            return "AUTO"
+        is_free_only = (
+            os.environ.get("IVA_FREE_ONLY", "").lower() in ("true", "1", "yes")
+            or getattr(self, "model_name", "") in ("FREE", "FREE_AUTO", "FREE_ALL")
+            or str(os.environ.get("IVA_MODEL", "")).startswith("FREE")
+            or str(os.environ.get("ACTIVE_MODEL", "")).startswith("FREE")
+        )
+
+        if is_free_only:
+            free_candidates = [c for c in candidates if ":free" in c.lower() or "free" in c.lower().split("/")[-1]]
+            if not free_candidates and (self.provider_type == "openrouter" or "openrouter.ai" in getattr(self, "base_url", "")):
+                free_candidates = list(ModelMetadataCatalog.OPENROUTER_VERIFIED_FREE_MODELS)
+            if free_candidates:
+                candidates = free_candidates
+                preferences["openrouter"] = [
+                    "meta-llama/llama-3.3-70b-instruct:free",
+                    "deepseek/deepseek-r1:free",
+                    "google/gemini-2.0-flash-exp:free",
+                    "qwen/qwen-2.5-coder-32b-instruct:free",
+                    "meta-llama/llama-3.2-3b-instruct:free",
+                ]
+
+        if os.environ.get("IVA_MODEL") in ("AUTO", "FREE_AUTO") or os.environ.get("ACTIVE_MODEL") in ("AUTO", "FREE_AUTO") or getattr(self, "model_name", "") in ("AUTO", "FREE_AUTO"):
+            return "FREE_AUTO" if is_free_only else "AUTO"
 
         actual_prov = "nvidia" if ("integrate.api.nvidia.com" in getattr(self, "base_url", "") or getattr(self, "api_key", "").startswith("nvapi-")) else self.provider_type
         pref_list = preferences.get(actual_prov, preferences.get(self.provider_type, preferences.get("openai", [])))
@@ -583,6 +604,21 @@ class UniversalAPIProvider(BaseModelProvider):
                 models_pool = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
             else:
                 models_pool = ["gpt-4o", "gpt-4o-mini"]
+
+        is_free_mode = (
+            os.environ.get("IVA_FREE_ONLY", "").lower() in ("true", "1", "yes")
+            or getattr(self, "model_name", "") in ("FREE", "FREE_AUTO", "FREE_ALL")
+            or str(getattr(self, "model_name", "")).startswith("FREE:")
+            or str(os.environ.get("IVA_MODEL", "")).startswith("FREE")
+            or str(os.environ.get("ACTIVE_MODEL", "")).startswith("FREE")
+        )
+
+        if is_free_mode:
+            free_candidates = [m for m in models_pool if ":free" in m.lower() or "free" in m.lower().split("/")[-1]]
+            if not free_candidates and is_or:
+                free_candidates = list(ModelMetadataCatalog.OPENROUTER_VERIFIED_FREE_MODELS)
+            if free_candidates:
+                models_pool = free_candidates
 
         try:
             from .model_researcher import AutonomousModelResearcher

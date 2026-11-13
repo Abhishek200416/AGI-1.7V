@@ -24,6 +24,21 @@ from typing import Any, Dict, List, Optional, Tuple
 class ModelMetadataCatalog:
     """Authoritative catalog for model parameter sizes, providers, and task specialties."""
 
+    # Verified 100% Free Models available on OpenRouter & zero-cost endpoints
+    OPENROUTER_VERIFIED_FREE_MODELS: List[str] = [
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "deepseek/deepseek-r1:free",
+        "deepseek/deepseek-chat:free",
+        "google/gemini-2.0-flash-exp:free",
+        "google/gemini-2.0-flash-lite-preview-02-05:free",
+        "meta-llama/llama-3.2-3b-instruct:free",
+        "meta-llama/llama-3.1-8b-instruct:free",
+        "mistralai/mistral-7b-instruct:free",
+        "qwen/qwen-2.5-coder-32b-instruct:free",
+        "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
+        "microsoft/phi-3-medium-128k-instruct:free",
+    ]
+
     # Explicit parameter mappings for models without unambiguous 'B' in name
     EXPLICIT_PARAMS_B: Dict[str, float] = {
         "nvidia/nemotron-3-ultra-550b-a55b": 550.0,
@@ -540,6 +555,11 @@ class ModelMetadataCatalog:
             badge = "★ ULTRA-FAST ROUTING"
             specialty = "Sub-150ms response, micro-task parsing, JSON formatting & event routing"
 
+        # Free model detection
+        is_free = (":free" in lower) or (clean.endswith(":free")) or ("free" in lower.split("/")[-1])
+        if is_free:
+            badge = f"[🆓 FREE] {badge}"
+
         return {
             "model_id": clean,
             "company": company,
@@ -550,10 +570,17 @@ class ModelMetadataCatalog:
             "badge": badge,
             "specialty": specialty,
             "is_recommended": is_recommended,
+            "is_free": is_free,
         }
 
     @classmethod
-    def rank_and_sort_models(cls, models: List[str]) -> List[Dict[str, Any]]:
+    def filter_free_models(cls, models: List[str]) -> List[str]:
+        """Extracts strictly free models (e.g. :free on OpenRouter or zero-cost endpoints)."""
+        free_models = [m for m in models if (":free" in m.lower() or "free" in m.lower().split("/")[-1])]
+        return free_models or list(cls.OPENROUTER_VERIFIED_FREE_MODELS)
+
+    @classmethod
+    def rank_and_sort_models(cls, models: List[str], free_only: bool = False) -> List[Dict[str, Any]]:
         """Sorts models strictly descending by parameter count (B).
         
         Ordering:
@@ -561,6 +588,8 @@ class ModelMetadataCatalog:
         2. Recommended status (True before False within identical parameter bucket).
         3. Model Identifier (Alphabetical tie-breaker).
         """
+        if free_only:
+            models = cls.filter_free_models(models)
         parsed = [cls.get_specialty_metadata(m) for m in set(models)]
         # Sort key: (-params_b, -int(is_recommended), model_id)
         sorted_meta = sorted(
@@ -570,7 +599,13 @@ class ModelMetadataCatalog:
         return sorted_meta
 
     @classmethod
-    def get_action_model(cls, available_models: List[str], action_type: str = "default") -> str:
+    def get_action_model(
+        cls,
+        available_models: List[str],
+        action_type: str = "default",
+        *,
+        free_only: bool = False,
+    ) -> str:
         """Autonomously selects the fastest and most specialized model from the available pool for a given action.
         
         Action Types:
@@ -579,10 +614,82 @@ class ModelMetadataCatalog:
         - 'coding' / 'code' / 'ast' / 'refactor': Selects dedicated coding specialist.
         - 'reasoning' / 'architecture' / 'frontier': Selects largest parameter frontier model (550B/253B/340B).
         - 'finance' / 'quant' / 'volatility': Selects specialized finance/volatility model.
-        - 'default': Selects balanced workhorse (Nemotron 70B).
+        - 'default': Selects balanced workhorse (Nemotron 70B or Llama 3.3 70B Free).
         """
+        import os
+        is_free_mode = free_only or os.environ.get("IVA_FREE_ONLY", "").lower() in ("true", "1", "yes")
+
         if not available_models:
+            if is_free_mode:
+                return "meta-llama/llama-3.3-70b-instruct:free"
             return "meta-llama/llama-3.3-70b-instruct"
+
+        action = (action_type or "default").lower().strip()
+
+        if is_free_mode:
+            free_candidates = [m for m in available_models if ":free" in m.lower() or "free" in m.lower()]
+            if free_candidates:
+                available_models = free_candidates
+            else:
+                available_models = list(cls.OPENROUTER_VERIFIED_FREE_MODELS)
+
+        models_lower = {m.lower(): m for m in available_models}
+
+        if is_free_mode:
+            # Dedicated Free Model Preferences
+            if action in ("vision", "multimodal", "screenshot", "dom", "browser"):
+                free_vision = [
+                    "google/gemini-2.0-flash-exp:free",
+                    "meta-llama/llama-3.2-11b-vision-instruct:free",
+                    "meta-llama/llama-3.2-90b-vision-instruct:free",
+                ]
+                for vp in free_vision:
+                    for ml, original in models_lower.items():
+                        if vp in ml or ml.endswith(vp.split("/")[-1]):
+                            return original
+            elif action in ("fast", "micro", "routing", "parser", "classify", "triage"):
+                free_fast = [
+                    "meta-llama/llama-3.2-3b-instruct:free",
+                    "google/gemini-2.0-flash-lite-preview-02-05:free",
+                    "meta-llama/llama-3.1-8b-instruct:free",
+                    "mistralai/mistral-7b-instruct:free",
+                ]
+                for fp in free_fast:
+                    for ml, original in models_lower.items():
+                        if fp in ml or ml.endswith(fp.split("/")[-1]):
+                            return original
+            elif action in ("coding", "code", "ast", "refactor", "debug", "patch"):
+                free_code = [
+                    "qwen/qwen-2.5-coder-32b-instruct:free",
+                    "deepseek/deepseek-r1:free",
+                    "meta-llama/llama-3.3-70b-instruct:free",
+                ]
+                for cp in free_code:
+                    for ml, original in models_lower.items():
+                        if cp in ml or ml.endswith(cp.split("/")[-1]):
+                            return original
+            elif action in ("reasoning", "architecture", "frontier", "complex", "math"):
+                free_reasoning = [
+                    "deepseek/deepseek-r1:free",
+                    "meta-llama/llama-3.3-70b-instruct:free",
+                    "deepseek/deepseek-chat:free",
+                ]
+                for rp in free_reasoning:
+                    for ml, original in models_lower.items():
+                        if rp in ml or ml.endswith(rp.split("/")[-1]):
+                            return original
+
+            # Free workhorse default
+            free_defaults = [
+                "meta-llama/llama-3.3-70b-instruct:free",
+                "deepseek/deepseek-r1:free",
+                "google/gemini-2.0-flash-exp:free",
+            ]
+            for fd in free_defaults:
+                for ml, original in models_lower.items():
+                    if fd in ml or ml.endswith(fd.split("/")[-1]):
+                        return original
+            return available_models[0]
 
         action = (action_type or "default").lower().strip()
         models_lower = {m.lower(): m for m in available_models}
