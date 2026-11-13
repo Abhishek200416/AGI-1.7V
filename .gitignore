@@ -113,6 +113,15 @@ MISSION_STATUS.md
 *.wav
 !assets/motion_graphics_starter_kit/sfx/*.wav
 *.mp3
+*.mp4
+*.mkv
+*.mov
+*.webm
+*.avi
+*.flv
+studio/projects/**/segs/
+studio/projects/**/*.mp4
+video/final_exports/
 *.bak
 .venv*
 
