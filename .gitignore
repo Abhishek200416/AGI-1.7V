@@ -92,6 +92,7 @@ agents/agents/
 *.woff
 *.woff2
 *.ttf
+!assets/motion_graphics_starter_kit/fonts/*.woff2
 COLLABORATION_CHANNEL.md
 MISSION_STATUS.md
 
@@ -110,6 +111,7 @@ MISSION_STATUS.md
 /verify_sync_and_capture.py
 /voice_cache/
 *.wav
+!assets/motion_graphics_starter_kit/sfx/*.wav
 *.mp3
 *.bak
 .venv*

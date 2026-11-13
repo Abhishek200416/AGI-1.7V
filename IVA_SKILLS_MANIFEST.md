@@ -26,14 +26,22 @@ Unified ecosystem unifying all MCP servers, external tools, quant modules, and m
 | **`order-pretrade-validation`** | `native` | `validate_pretrade_gates`, `check_price_collars` | Pre-trade sanity checks: fat-finger prevention, price collars, notional size limits, lot size rounding. |
 | **`paper-trading-execution`** | `native` | `execute_paper_order`, `reconcile_paper_ledger` | Simulate real-time paper trading on live exchange feeds with simulated order books and fill probability. |
 
-## Media Studio, Video Directing & Omnichannel Social (4 Skills)
+## Media Studio, Video Directing & Omnichannel Social (5 Skills)
 
 | Skill Name | Execution Type | Primary Tools / Commands | Description |
 | :--- | :---: | :--- | :--- |
 | **`iva-video-skill`** | `native` | `compile_real_footage`, `render_montage`, `audit_media_gates` | Autonomous video directing, 1080p-4K real footage sourcing, ASS kinetic subtitles, and -14 LUFS mastering. |
+| **`iva-motion-graphics-skill`** | `native` | `build_motion_html`, `render_motion_html_to_video`, `generate_multi_model_motion_project` | Universal multi-model advanced motion graphics engine (4 signature styles, 10 moves, 9 SFX, 7 fixes) for any LLM. |
 | **`iva-instagram-skill`** | `native` | `/ig-reel`, `/ig-viral`, `/ig-caption` (+3 more) | 13-skill Instagram growth suite: Reels, 26 hook formulas, 125-char caption linter, carousel design, humanizer. |
 | **`iva-omnichannel-social-skill`** | `native` | `adapt_for_all_platforms`, `export_omnichannel_bundle` | Universal multi-platform social media adaptation engine across YouTube, Instagram, TikTok, X, LinkedIn, Threads. |
 | **`lemo-opuscar`** | `native` | `generate_animation_script`, `direct_motion_film` | Autonomous code-driven animation, cinematic directing, and motion-graphics film creation system. |
+
+## Telemetry, Observability & Verification (2 Skills)
+
+| Skill Name | Execution Type | Primary Tools / Commands | Description |
+| :--- | :---: | :--- | :--- |
+| **`iva-agent-observability-skill`** | `native` | `AgentSpan`, `get_agent_summary`, `generate_dashboard_html` | OpenTelemetry-compatible agent tracing, latency tracking, token usage, 16 families health, and live dashboard. |
+| **`pytest-skill`** | `native` | `pytest_run`, `coverage_report` | Automated test suite execution, fixture validation, and regression verification across all modules. |
 
 ## Browser Automation & Web Operations (3 Skills)
 
