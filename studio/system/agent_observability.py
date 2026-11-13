@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from contextlib import contextmanager
 
 # Base directories
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
+BASE_DIR = os.environ.get("IVA_MEDIA_STUDIO", os.path.join(os.path.expanduser("~"), "Downloads", "ytsss", "AI_MEDIA_STUDIO"))
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
 PRIMARY_DB = r"D:\AGI_Storage\AGI_1_7\telemetry\agent_observability.db"
 LOCAL_DB = os.path.join(BASE_DIR, "system", "agent_observability.db")

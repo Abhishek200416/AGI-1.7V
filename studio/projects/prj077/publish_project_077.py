@@ -12,11 +12,11 @@ from playwright.async_api import async_playwright
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
+BASE_DIR = os.environ.get("IVA_STUDIO_DIR", os.path.join(str(os.path.expanduser("~")), "Downloads", "ytsss", "AI_MEDIA_STUDIO"))
 PROJECT_ID = "PRJ-077"
 PUBLISH_ID = "PUB-077"
 CHANNEL_ID = "UCX3ccjtvn5S4S2Yutu55YWA"
-USER_DATA = r"C:\Users\abhis\AppData\Local\ms-playwright-mcp\mcp-chrome-08d3779"
+USER_DATA = os.environ.get("CHROME_USER_DATA", os.path.join(str(os.path.expanduser("~")), "AppData", "Local", "ms-playwright-mcp", "mcp-chrome-08d3779"))
 VIDEO_PATH = os.path.join(BASE_DIR, "video", "final_exports", "prj077_couple_candid_short.mp4")
 TITLE = "Why Couples Look Awkward In Photos (Until 1 Silly Whisper!) 📸❤️ #Shorts #Psychology"
 DESCRIPTION = (

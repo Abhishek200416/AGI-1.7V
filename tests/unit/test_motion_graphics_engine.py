@@ -2,9 +2,10 @@ import os
 import sys
 import pytest
 
-# Add paths
-sys.path.insert(0, r"C:\Users\abhis\Projects\IVA\studio\system")
-sys.path.insert(0, r"C:\Users\abhis\Projects\IVA\iva")
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT / "studio" / "system"))
+sys.path.insert(0, str(REPO_ROOT / "iva"))
 
 import motion_graphics_engine as mge
 

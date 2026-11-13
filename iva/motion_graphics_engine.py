@@ -16,7 +16,7 @@ import shutil
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
+BASE_DIR = os.environ.get("IVA_MEDIA_STUDIO", os.path.join(os.path.expanduser("~"), "Downloads", "ytsss", "AI_MEDIA_STUDIO"))
 FFMPEG = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe"
 FFPROBE = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffprobe.exe"
 KIT_DIR = os.path.join(BASE_DIR, "motion_graphics", "starter_kit")

@@ -8,14 +8,15 @@ import edge_tts
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
-sys.path.insert(0, r"C:\Users\abhis\Projects\IVA\studio\system")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(REPO_ROOT, "system"))
 import iva_video_bridge as bridge
 
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
+BASE_DIR = os.environ.get("IVA_STUDIO_DIR", os.path.join(str(os.path.expanduser("~")), "Downloads", "ytsss", "AI_MEDIA_STUDIO"))
 WORK_DIR = os.path.join(BASE_DIR, "video", "prj077_couple_candid")
 AUDIO_DIR = os.path.join(BASE_DIR, "audio", "prj077_couple_candid")
 FINAL_MP4 = os.path.join(BASE_DIR, "video", "final_exports", "prj077_couple_candid_short.mp4")
-ART_DIR = r"C:\Users\abhis\.gemini\antigravity\brain\93384ca3-839f-48d8-82bc-403889e3d4bc"
+ART_DIR = os.path.join(str(os.path.expanduser("~")), ".gemini", "antigravity", "brain", "93384ca3-839f-48d8-82bc-403889e3d4bc")
 
 FFMPEG = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe"
 FFPROBE = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffprobe.exe"

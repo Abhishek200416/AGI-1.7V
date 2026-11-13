@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
-BASE_DIR = r"c:\Users\abhis\Downloads\ytsss\AI_MEDIA_STUDIO"
+BASE_DIR = os.environ.get("IVA_MEDIA_STUDIO", os.path.join(os.path.expanduser("~"), "Downloads", "ytsss", "AI_MEDIA_STUDIO"))
 FFMPEG = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffmpeg.exe"
 FFPROBE = r"C:\ffmpeg\ffmpeg-7.1-full_build\bin\ffprobe.exe"
 PROD_DB = os.path.join(BASE_DIR, "system", "omega_production.db")
