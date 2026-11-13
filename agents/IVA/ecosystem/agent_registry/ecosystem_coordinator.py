@@ -253,6 +253,7 @@ class EcosystemCoordinator:
         contract: AgentContract,
         *,
         is_repair: bool = False,
+        task_intent: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Builds the active MCP, Plugin, Skill, and Agency coordination context for a specialist call."""
         import re as _re
@@ -273,6 +274,19 @@ class EcosystemCoordinator:
         plugins = list(mapping["plugins"])
         skills = list(mapping["skills"])
         agency_profile = str(mapping["agency_profile"])
+
+        # Dynamic Autonomous Skill Routing if task_intent is provided
+        dynamic_skills_routed: List[Dict[str, Any]] = []
+        if task_intent:
+            try:
+                from agents.IVA.ecosystem.autonomous_skill_router import autonomous_skill_router
+                matches = autonomous_skill_router.route_skills(task_intent, limit=3, min_score=0.20)
+                for match in matches:
+                    dynamic_skills_routed.append(match.to_dict())
+                    if match.skill.name not in skills:
+                        skills.append(match.skill.name)
+            except Exception:
+                pass
 
         if is_repair or contract.agent_id == "swe_patch_minimizer":
             if "sequential-thinking" not in mcp_servers:
@@ -299,6 +313,7 @@ class EcosystemCoordinator:
             "mcp_servers_bound": mcp_servers,
             "plugins_applied": plugins,
             "skills_applied": skills,
+            "dynamic_skills_routed": dynamic_skills_routed,
             "railings_prompt_block": (
                 f"ACTIVE ECOSYSTEM COORDINATION RAILINGS "
                 f"(MCPs: {', '.join(mcp_servers)} | Plugins: {', '.join(plugins)} | "

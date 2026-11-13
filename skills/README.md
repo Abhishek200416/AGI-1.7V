@@ -15,4 +15,8 @@ This directory hosts the unified native skills, external MCP adapters, and multi
 9. **Research & Deep Evidence Synthesis**: Autonomous deep research, fan-out web search, citation ledgers.
 10. **System, OS & Storage Stewards**: Safe filesystem operations, Windows PowerShell reliability, GonkaRouter multi-model LLM pool, Omega persistent memory.
 
+## Dynamic Autonomous Routing & Execution
+
+IVA includes the `AutonomousSkillRouter` (`agents/IVA/ecosystem/autonomous_skill_router.py`), which scores incoming intents, selects the best-fit skills dynamically, composes multi-skill pipelines, and injects optimal tool railings into specialist executions on-the-fly.
+
 See the full specification and tool schemas in [`IVA_SKILLS_MANIFEST.md`](../IVA_SKILLS_MANIFEST.md).

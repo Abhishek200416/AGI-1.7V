@@ -453,6 +453,9 @@ class IvaSkillsRegistry:
     def total_count(self) -> int:
         return len(self._catalog)
 
+    def get_all_skills(self) -> List[IvaSkillDefinition]:
+        return list(self._catalog)
+
     def list_categories(self) -> List[str]:
         return [c.value for c in SkillCategory]
 

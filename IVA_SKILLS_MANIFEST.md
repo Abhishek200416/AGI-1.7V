@@ -94,3 +94,24 @@ Unified ecosystem unifying all MCP servers, external tools, quant modules, and m
 | **`windows-shell-reliability`** | `native` | `execute_powershell_safe` | Reliable PowerShell Windows command execution, encoding guards, and path quoting conventions. |
 | **`gonkarouter`** | `mcp_bridge` | `gonkarouter_list_models`, `gonkarouter_chat`, `gonkarouter_ask` | Universal multi-provider LLM routing: NVIDIA Build, OpenRouter, Groq, Cerebras, DeepSeek. |
 | **`memory`** | `hybrid` | `store_fact`, `recall_memory`, `prune_superseded` | Persistent SQLite WAL memory and knowledge graph storage across multi-session agent operations. |
+
+---
+
+## Autonomous Skill Router & Dynamic Selection Engine (`AutonomousSkillRouter`)
+
+IVA is equipped with an autonomous selection and pipeline composition engine:
+`agents/IVA/ecosystem/autonomous_skill_router.py`
+
+### 1. Dynamic Intent Scoring & Matching
+- **Multi-Factor Scoring**: Evaluates exact name, tool signatures, category affinity, semantic keywords, and execution latency preferences (`native` > `hybrid` > `mcp_bridge`).
+- **Autonomous Resolution**: `resolve_best_skill(intent)` resolves the highest-confidence skill in < 5ms without human intervention.
+
+### 2. Multi-Skill Pipeline Composer (`compose_pipeline`)
+Autonomously decomposes complex tasks into ordered execution stages:
+1. **Omnichannel Media Pipeline**: `research-prompt` → `lemo-opuscar` → `iva-instagram-skill` → `iva-omnichannel-social-skill`.
+2. **Bug Triage & Refactor Pipeline**: `gsd-debug` → `sequential-thinking` → `ponytail` → `code-review`.
+3. **Quant Finance Pipeline**: `financial-data-validation` → `omega-quant-trading` → `trading-risk-management` → `trading-ledger`.
+
+### 3. Dynamic Specialist Railing Injection
+In `EcosystemCoordinator.build_coordination_railings(contract, task_intent=...)`, any specialist called with an intent automatically receives dynamic skill tools on-the-fly, giving IVA universal adaptive power across all 41+ skills!
+
