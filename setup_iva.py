@@ -796,7 +796,7 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     labels = {
         "build": "IVA Build & Engineering (24/7 Autonomous Coding & Debugging)",
         "studios": "IVA Studios (IVA Video Skill Directing, Real-World Visuals & YouTube Upload)",
-        "marketing_studio": "IVA Marketing Studio (Hybrid Marketing + IVA Studios: YT/IG/LinkedIn + Inbox)",
+        "marketing_studio": "IVA Marketing Studio (Hybrid Marketing + IVA Studios: YouTube Shorts + Instagram Reels/Carousels/Hooks + Inbox)",
     }
 
     selected = existing if existing in labels else "build"
@@ -806,7 +806,7 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
         print("  " + "═" * 74)
         print("  [1] IVA Build & Engineering (24/7) — App building, auto-debugging & CI tests")
         print("  [2] IVA Studios                    — Real-world video editing, outside photos/clips & YT upload")
-        print("  [3] IVA Marketing Studio           — Hybrid Marketing + Studios (YT/IG/LinkedIn + Inbox replies)")
+        print("  [3] IVA Marketing Studio           — Hybrid Marketing + Studios (YouTube Shorts + Instagram Reels/Carousels/Hooks + Inbox)")
         print("  [0] ⬅️  Back to Step 3 (Permissions & API Setup)")
         try:
             raw = input("\n  Choose category [0-3, default: 1]: ").strip().lower()
@@ -851,6 +851,8 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     print(f"  ✅ Active IVA Category: {labels[selected]}")
     if selected in ("studios", "marketing_studio"):
         print(f"  ✅ Studio Brand & Niche: {brand_name} ({studio_niche})")
+    if selected == "marketing_studio":
+        print("  ✅ Instagram Agent Suite: iva-instagram-skill activated (Reels, Viral Hooks, Carousel, Humanizer, DM/Comments)")
     print(f"  ✅ Daily Analytics Report Schedule: {report_time}")
     return selected
 

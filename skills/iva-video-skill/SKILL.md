@@ -54,6 +54,11 @@ BRIEF & SCRIPT → VOICEOVER (EDGE-TTS / SARVAM) → CUE MAP & BEAT GRID → SCE
    - **Layer 4: Voiceover** (highpass 75 Hz, loudnorm -14 LUFS).
 4. **Kinetic Typography**:
    - Stylized ASS subtitles with font styling, high-contrast drop-shadows, and color-coded alert highlights (Cyan, Gold, Red).
+5. **Copyright Safety & Transformative Editing Law (NEVER Raw Clip Re-Uploads)**:
+   - **Never grab raw clips and upload them unedited.** Every external video clip MUST be heavily edited for copyright safety and high retention:
+     * **Audio Stripping**: Always drop 100% of source clip audio (`-an`) and replace it with original educational/analytical voiceover + royalty-free/CC-BY BGM (attributed in description) + foley SFX.
+     * **Short Transformative Cuts**: Limit any single third-party film/news clip cut to **`1.8s–3.5s` max continuous duration** (intercut cleanly with Wikimedia/NASA/public-domain photography, Pexels/CC0 B-roll, and BTS shots).
+     * **Active Visual Transformation**: Always reframe into vertical `1080x1920`, apply camera motion (`zoompan`/push/crop pan), color grading (`eq`), dynamic transitions (`xfade`/flash/whoosh), and synced lower-third kinetic captions so the output is genuinely transformative commentary/education rather than a re-uploaded clip.
 
 ---
 

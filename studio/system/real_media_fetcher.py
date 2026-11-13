@@ -193,16 +193,14 @@ def download_yt_dlp_clip(query: str, dest_mp4: str, max_duration_s: int = 240) -
     prioritizing 4K (2160p) -> 1440p -> 1080p -> 720p minimum, validated via ffprobe.
     """
     os.makedirs(os.path.dirname(os.path.abspath(dest_mp4)), exist_ok=True)
-    fmt = (
-        "bestvideo[height>=2160][ext=mp4]/best[height>=2160][ext=mp4]/"
-        "bestvideo[height>=1440][ext=mp4]/best[height>=1440][ext=mp4]/"
-        "bestvideo[height>=1080][ext=mp4]/best[height>=1080][ext=mp4]/"
-        "bestvideo[height>=720][ext=mp4]/best[height>=720]/best[height>=720]"
-    )
+    fmt = "bv*[height>=1080][ext=mp4]+ba[ext=m4a]/bv*[height>=1080]+ba/b[height>=1080]/bv*[height>=720]+ba/b[height>=720]/best"
     cmd = [
         sys.executable, "-m", "yt_dlp",
+        "--ffmpeg-location", r"C:\ffmpeg\ffmpeg-7.1-full_build\bin",
+        "--extractor-args", "youtube:player_client=android,web",
         "--no-playlist",
-        "--match-filter", f"duration <= {max_duration_s}",
+        "--download-sections", "*00:00:10-00:00:45",
+        "--force-keyframes-at-cuts",
         "-f", fmt,
         "--merge-output-format", "mp4",
         "-o", dest_mp4,
