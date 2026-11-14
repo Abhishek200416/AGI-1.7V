@@ -3138,8 +3138,14 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if any(kw in low_clean for kw in ("chatgpt bridge", "connect to chatgpt", "generate image with chatgpt", "dall-e", "dalle")):
             self.execute_browser_chatgpt_wizard(prompt=clean)
             return
+        if any(kw in low_clean for kw in ("demo video", "frontend demo", "record frontend", "record my app", "make video for my app", "marketing video", "spec promo", "motion graphics", "animate app", "promo video")):
+            self._run_marketing_advanced(prompt=clean)
+            return
         if any(kw in low_clean for kw in ("generate video", "create video", "gemini video", "veo video")):
             self.execute_video_synthesis_wizard(prompt=clean)
+            return
+        if any(kw in low_clean for kw in ("studios video", "normal video", "shorts video", "create short")):
+            self.execute_studios_wizard(prompt=clean)
             return
         if any(kw in low_clean for kw in ("architecture design", "system architecture", "design microservice", "blueprint system")):
             self.execute_architecture_wizard(prompt=clean)

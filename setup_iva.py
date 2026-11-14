@@ -851,6 +851,7 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     prod_mode = os.environ.get("IVA_STUDIO_MODE", "both")
     codebase_path = os.environ.get("IVA_CODEBASE_PATH", str(REPO_ROOT))
     motion_style = os.environ.get("IVA_MOTION_STYLE", "Pop Bold")
+    launch_cmd = os.environ.get("IVA_FRONTEND_LAUNCH_CMD", "")
 
     if interactive:
         print("\n" + "  " + "═" * 74)
@@ -896,15 +897,18 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
         except (KeyboardInterrupt, EOFError):
             prod_mode = "both"
 
-        # If Advanced or Both, ask for codebase path and signature motion style
+        # If Advanced or Both, ask for codebase / frontend demo access and signature motion style
         if prod_mode in ("advanced", "both"):
             print("\n  " + "─" * 74)
-            print("  💻 CODEBASE SOURCE FOR ADVANCED MOTION GRAPHICS & APP DEMOS")
-            print("  IVA inspects the codebase (files, AST, modules, LOC) to build procedural")
-            print("  animations, kinetic feature demos, spec ads, and demo marketing assets.")
+            print("  💻 FRONTEND DEMO & CODEBASE ACCESS (Autonomous Video Creation)")
+            print("  Give IVA access to your frontend demo or codebase:")
+            print("  • IVA autonomously runs your app preview / dev server")
+            print("  • IVA captures UI screens, animations, and AST metrics")
+            print("  • IVA synthesizes high-retention motion graphics demo videos by itself")
+            print("  • From then onwards, you can chat with IVA naturally to direct changes!")
             print("  " + "─" * 74)
             try:
-                cb_input = input(f"  Enter codebase directory path [Enter to use '{REPO_ROOT.name}']: ").strip().strip("'\"`")
+                cb_input = input(f"  Enter frontend demo or codebase path [Enter for '{REPO_ROOT.name}']: ").strip().strip("'\"`")
                 if cb_input.lower() in ("0", "back", "b"):
                     return "__BACK__"
                 if cb_input:
@@ -919,6 +923,15 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
                     codebase_path = str(REPO_ROOT)
             except (KeyboardInterrupt, EOFError):
                 codebase_path = str(REPO_ROOT)
+
+            launch_cmd = ""
+            try:
+                cmd_input = input("  Dev server launch command (optional, e.g. 'npm run dev', or Enter to auto-detect): ").strip()
+                if cmd_input.lower() in ("0", "back", "b"):
+                    return "__BACK__"
+                launch_cmd = cmd_input
+            except (KeyboardInterrupt, EOFError):
+                pass
 
             print("\n  🎨 Choose Signature Motion Style for Code Animations:")
             print("    [1] Pop Bold         (High-contrast punchy neo-brutalist pop — Best for App Demos)")
@@ -951,18 +964,19 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
         except (KeyboardInterrupt, EOFError):
             pass
 
-    upsert_env_vars(
-        env_file,
-        {
-            "IVA_ACTIVE_CATEGORY": selected,
-            "IVA_STUDIO_MODE": prod_mode,
-            "IVA_CODEBASE_PATH": codebase_path,
-            "IVA_MOTION_STYLE": motion_style,
-            "IVA_DAILY_REPORT_TIME": report_time,
-            "IVA_STUDIO_BRAND_NAME": brand_name,
-            "IVA_STUDIO_NICHE": studio_niche,
-        },
-    )
+    env_updates = {
+        "IVA_ACTIVE_CATEGORY": selected,
+        "IVA_STUDIO_MODE": prod_mode,
+        "IVA_CODEBASE_PATH": codebase_path,
+        "IVA_FRONTEND_DEMO_PATH": codebase_path,
+        "IVA_MOTION_STYLE": motion_style,
+        "IVA_DAILY_REPORT_TIME": report_time,
+        "IVA_STUDIO_BRAND_NAME": brand_name,
+        "IVA_STUDIO_NICHE": studio_niche,
+    }
+    if launch_cmd:
+        env_updates["IVA_FRONTEND_LAUNCH_CMD"] = launch_cmd
+    upsert_env_vars(env_file, env_updates)
     print(f"  ✅ Active IVA Category: {labels[selected]}")
     if selected in ("studios", "marketing_studio"):
         tier_label = {
