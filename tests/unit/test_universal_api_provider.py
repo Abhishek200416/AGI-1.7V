@@ -265,6 +265,55 @@ class TestUniversalAPIProvider(unittest.TestCase):
         self.assertEqual(res["provider_usage"]["input_tokens"], 40)
         self.assertEqual(res["provider_usage"]["output_tokens"], 20)
 
+    def test_10_multi_key_pool_aggregation_and_discovery(self) -> None:
+        """Verifies that when two API keys are present (e.g. Gemini + OpenRouter), models from BOTH keys are fetched and aggregated."""
+        with patch.dict(os.environ, {
+            "GEMINI_API_KEY": "AIzaSyMultiTestKey123",
+            "OPENROUTER_API_KEY": "sk-or-v1-multi-test-key-456",
+            "NVIDIA_API_KEY": "",
+            "NVIDIA_NIM_API_KEY": "",
+            "OPENAI_API_KEY": "",
+            "DEEPSEEK_API_KEY": "",
+            "GROQ_API_KEY": "",
+            "ANTHROPIC_API_KEY": "",
+            "CLAUDE_API_KEY": "",
+            "GOOGLE_API_KEY": "",
+        }, clear=False):
+            pool = UniversalAPIProvider.get_configured_providers_pool()
+            self.assertIn("gemini", pool)
+            self.assertIn("openrouter", pool)
+
+            def mock_verify(api_key, provider_type=None, base_url=None, timeout_sec=6.0):
+                if provider_type == "gemini":
+                    return (True, "gemini", ["gemini-2.5-flash", "gemini-2.5-pro"], None)
+                elif provider_type == "openrouter":
+                    return (True, "openrouter", ["nvidia/nemotron-3-ultra-550b-a55b", "mistralai/codestral-22b-instruct-v0.1:free"], None)
+                return (False, provider_type, [], "Mock error")
+
+            with patch.object(UniversalAPIProvider, "verify_and_fetch_models", side_effect=mock_verify):
+                status = UniversalAPIProvider.fetch_all_pool_models(force_refresh=True)
+                self.assertTrue(status["multi_provider_enabled"])
+                self.assertIn("gemini", status["providers"])
+                self.assertIn("openrouter", status["providers"])
+                self.assertEqual(status["total_models"], 4)
+                self.assertIn("gemini-2.5-flash", status["all_models"])
+                self.assertIn("nvidia/nemotron-3-ultra-550b-a55b", status["all_models"])
+                self.assertEqual(status["model_to_provider"]["gemini-2.5-flash"], "gemini")
+                self.assertEqual(status["model_to_provider"]["nvidia/nemotron-3-ultra-550b-a55b"], "openrouter")
+
+    def test_11_cross_provider_smart_routing(self) -> None:
+        """Verifies that get_provider_for_model accurately maps model targets to the correct provider in the pool."""
+        test_pool = {
+            "gemini": {"name": "Google Gemini"},
+            "openrouter": {"name": "OpenRouter"},
+            "anthropic": {"name": "Anthropic Claude"},
+            "nvidia": {"name": "NVIDIA NIM"},
+        }
+        self.assertEqual(UniversalAPIProvider.get_provider_for_model("gemini-2.5-flash", pool=test_pool), "gemini")
+        self.assertEqual(UniversalAPIProvider.get_provider_for_model("nvidia/nemotron-3-ultra-550b-a55b:free", pool=test_pool), "openrouter")
+        self.assertEqual(UniversalAPIProvider.get_provider_for_model("claude-3-5-sonnet-20241022", pool=test_pool), "anthropic")
+        self.assertEqual(UniversalAPIProvider.get_provider_for_model("meta/llama-3.3-70b-instruct", pool=test_pool), "nvidia")
+
 
 if __name__ == "__main__":
     unittest.main()

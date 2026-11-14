@@ -76,6 +76,9 @@ load_repo_dotenv()
 class UniversalAPIProvider(BaseModelProvider):
     """Production standard library provider supporting direct Google Gemini and OpenAI-compatible endpoints."""
 
+    _POOL_MODELS_CACHE: Dict[str, Any] = {}
+    _POOL_MODELS_CACHE_TIME: float = 0.0
+
     def __init__(
         self,
         *,
@@ -93,10 +96,10 @@ class UniversalAPIProvider(BaseModelProvider):
         self.backoff_sec = backoff_sec
 
         # Resolve credentials and provider type
-        gemini_key = api_key if (provider_type == "gemini") else (api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
-        anthropic_key = api_key if (provider_type == "anthropic") else (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY"))
-        nvidia_key = api_key if (provider_type == "nvidia") else (os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_NIM_API_KEY"))
-        openai_key = api_key if (provider_type == "openai") else os.environ.get("OPENAI_API_KEY")
+        gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+        nvidia_key = os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_NIM_API_KEY")
+        openai_key = os.environ.get("OPENAI_API_KEY")
         groq_key = os.environ.get("GROQ_API_KEY")
         deepseek_key = os.environ.get("DEEPSEEK_API_KEY")
         openrouter_key = os.environ.get("OPENROUTER_API_KEY")
@@ -105,20 +108,28 @@ class UniversalAPIProvider(BaseModelProvider):
         active_prov_env = (os.environ.get("ACTIVE_PROVIDER") or "").lower()
         if provider_type:
             self.provider_type = provider_type.lower()
+        elif api_key:
+            det = self.detect_provider_from_key(api_key)
+            if det != "unknown":
+                self.provider_type = det
+            elif active_prov_env in ("openrouter", "nvidia", "gemini", "anthropic", "groq", "deepseek", "openai"):
+                self.provider_type = active_prov_env
+            else:
+                self.provider_type = "openai"
         elif active_prov_env in ("openrouter", "nvidia", "gemini", "anthropic", "groq", "deepseek", "openai"):
             self.provider_type = active_prov_env
-        elif nvidia_key and (not api_key or api_key.startswith("nvapi-")):
-            self.provider_type = "nvidia"
-        elif anthropic_key and (not api_key or api_key.startswith("sk-ant-")):
-            self.provider_type = "anthropic"
-        elif groq_key and (not api_key or api_key.startswith("gsk_")):
-            self.provider_type = "groq"
-        elif deepseek_key and (not api_key or os.environ.get("ACTIVE_PROVIDER") == "deepseek"):
-            self.provider_type = "deepseek"
-        elif openrouter_key and (not api_key or api_key.startswith("sk-or-")):
+        elif openrouter_key:
             self.provider_type = "openrouter"
-        elif gemini_key and (not api_key or api_key.startswith("AIza")):
+        elif gemini_key:
             self.provider_type = "gemini"
+        elif nvidia_key:
+            self.provider_type = "nvidia"
+        elif anthropic_key:
+            self.provider_type = "anthropic"
+        elif groq_key:
+            self.provider_type = "groq"
+        elif deepseek_key:
+            self.provider_type = "deepseek"
         elif openai_key or custom_base:
             self.provider_type = "openai"
         else:
@@ -126,8 +137,26 @@ class UniversalAPIProvider(BaseModelProvider):
 
         self.provider_brand = self.provider_type
 
+        # Ground self.api_key to explicit api_key or resolved provider key
+        if api_key:
+            self.api_key = api_key
+        elif self.provider_type == "gemini":
+            self.api_key = gemini_key or ""
+        elif self.provider_type == "openrouter":
+            self.api_key = openrouter_key or ""
+        elif self.provider_type == "nvidia":
+            self.api_key = nvidia_key or ""
+        elif self.provider_type == "anthropic":
+            self.api_key = anthropic_key or ""
+        elif self.provider_type == "groq":
+            self.api_key = groq_key or ""
+        elif self.provider_type == "deepseek":
+            self.api_key = deepseek_key or ""
+        else:
+            self.api_key = openai_key or ""
+
         if self.provider_type == "gemini":
-            self.api_key = gemini_key or api_key or ""
+            self.api_key = api_key or gemini_key or ""
             # Default to gemini-2.5-flash or gemini-2.0-flash (fast, reliable, free tiers available)
             self.model_name = (
                 model_name
@@ -141,7 +170,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 or "https://generativelanguage.googleapis.com/v1beta"
             ).rstrip("/")
         elif self.provider_type == "nvidia":
-            self.api_key = nvidia_key or api_key or ""
+            self.api_key = api_key or nvidia_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("NVIDIA_MODEL")
@@ -155,7 +184,7 @@ class UniversalAPIProvider(BaseModelProvider):
             ).rstrip("/")
             self.provider_type = "openai"  # NVIDIA NIM uses standard OpenAI completions wire protocol
         elif self.provider_type == "anthropic":
-            self.api_key = anthropic_key or api_key or ""
+            self.api_key = api_key or anthropic_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("ANTHROPIC_MODEL")
@@ -168,7 +197,7 @@ class UniversalAPIProvider(BaseModelProvider):
                 or "https://api.anthropic.com/v1"
             ).rstrip("/")
         elif self.provider_type == "groq":
-            self.api_key = groq_key or api_key or ""
+            self.api_key = api_key or groq_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("GROQ_MODEL")
@@ -182,7 +211,7 @@ class UniversalAPIProvider(BaseModelProvider):
             ).rstrip("/")
             self.provider_type = "openai"
         elif self.provider_type == "deepseek":
-            self.api_key = deepseek_key or api_key or ""
+            self.api_key = api_key or deepseek_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("DEEPSEEK_MODEL")
@@ -196,7 +225,7 @@ class UniversalAPIProvider(BaseModelProvider):
             ).rstrip("/")
             self.provider_type = "openai"
         elif self.provider_type == "openrouter":
-            self.api_key = openrouter_key or api_key or ""
+            self.api_key = api_key or openrouter_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("OPENROUTER_MODEL")
@@ -210,7 +239,7 @@ class UniversalAPIProvider(BaseModelProvider):
             ).rstrip("/")
             self.provider_type = "openai"
         else:
-            self.api_key = openai_key or api_key or ""
+            self.api_key = api_key or openai_key or ""
             self.model_name = (
                 model_name
                 or os.environ.get("OPENAI_MODEL")
@@ -539,17 +568,27 @@ class UniversalAPIProvider(BaseModelProvider):
         return ranked[0]["model_id"] if ranked else candidates[0]
 
     def get_model_discovery_status(self) -> Dict[str, Any]:
-        """Returns structured metadata about model auto-discovery."""
+        """Returns structured metadata about model auto-discovery, including multi-provider pool status."""
         models = getattr(self, "available_models", [])
+        multi_status: Dict[str, Any] = {}
+        try:
+            multi_status = self.get_multi_provider_discovery_status()
+        except Exception:
+            pass
+        effective_models = models or multi_status.get("all_models", [])
         return {
             "provider_type": self.provider_type,
             "active_model": self.model_name,
             "auto_discovered": getattr(self, "auto_discovered", False),
-            "available_models_count": len(models),
-            "available_models": models,
-            "models_metadata": ModelMetadataCatalog.rank_and_sort_models(models) if models else [],
+            "available_models_count": len(effective_models),
+            "available_models": effective_models,
+            "models_metadata": ModelMetadataCatalog.rank_and_sort_models(effective_models) if effective_models else [],
             "base_url": self.base_url,
             "has_key": bool(self.api_key),
+            "multi_provider_enabled": multi_status.get("multi_provider_enabled", False),
+            "configured_providers": multi_status.get("providers", {}),
+            "total_pool_models": multi_status.get("total_models", len(effective_models)),
+            "models_by_provider": multi_status.get("models_by_provider", {}),
         }
 
     def resolve_effective_model(self, request: ModelRequest) -> str:
@@ -583,7 +622,14 @@ class UniversalAPIProvider(BaseModelProvider):
         if self.available_models:
             models_pool = self.available_models
         else:
-            if is_or:
+            multi_info: Dict[str, Any] = {}
+            try:
+                multi_info = self.get_multi_provider_discovery_status()
+            except Exception:
+                pass
+            if multi_info.get("all_models"):
+                models_pool = multi_info["all_models"]
+            elif is_or:
                 models_pool = [
                     "meta-llama/llama-3.3-70b-instruct",
                     "meta-llama/llama-3.2-3b-instruct:free",
@@ -731,7 +777,137 @@ class UniversalAPIProvider(BaseModelProvider):
                 "default_model": os.environ.get("ANTHROPIC_MODEL") or "claude-3-5-sonnet-20241022",
                 "specialty": "Complex Engineering Architecture, Nuanced Logic",
             }
+        for p in ("nvidia", "gemini", "openai", "deepseek", "groq", "openrouter", "anthropic"):
+            if p in pool:
+                multi_k = os.environ.get(f"{p.upper()}_API_KEYS")
+                if multi_k:
+                    k_list = [k.strip() for k in multi_k.split(",") if k.strip()]
+                    if len(k_list) > 1:
+                        pool[p]["all_keys"] = k_list
         return pool
+
+    @classmethod
+    def get_provider_for_model(cls, model_name: str, pool: Optional[Dict[str, Any]] = None) -> Optional[str]:
+        """Maps a given model identifier to the best configured provider in the pool."""
+        if not model_name:
+            return None
+        m_low = model_name.lower().strip()
+        if pool is None:
+            pool = cls.get_configured_providers_pool()
+        if not pool:
+            return None
+
+        # Exact match or prefix match
+        if ":free" in m_low and "openrouter" in pool:
+            return "openrouter"
+        if ("gemini" in m_low or m_low.startswith("models/gemini")) and "gemini" in pool:
+            return "gemini"
+        if ("claude" in m_low or m_low.startswith("anthropic/")) and "anthropic" in pool:
+            return "anthropic"
+        if (m_low.startswith("meta/") or m_low.startswith("nvidia/")) and "nvidia" in pool:
+            return "nvidia"
+        if m_low.startswith("deepseek") and "deepseek" in pool:
+            return "deepseek"
+        if (m_low.startswith("gpt-") or m_low.startswith("o1-") or m_low.startswith("chatgpt")) and "openai" in pool:
+            return "openai"
+        if (m_low.startswith("llama-") or "groq" in m_low) and "groq" in pool:
+            return "groq"
+        if "/" in m_low and "openrouter" in pool:
+            return "openrouter"
+        return None
+
+    @classmethod
+    def fetch_all_pool_models(
+        cls,
+        timeout_sec: float = 6.0,
+        force_refresh: bool = False,
+    ) -> Dict[str, Any]:
+        """Queries upstream REST endpoints for ALL active keys in the configured provider pool.
+        
+        Aggregates models from all providers (Gemini, OpenRouter, NVIDIA, Anthropic, Groq, DeepSeek, OpenAI)
+        into a unified, deduplicated catalog while preserving provider provenance and metadata.
+        Caches results for 10 minutes unless force_refresh is True.
+        """
+        now = time.time()
+        if not force_refresh and cls._POOL_MODELS_CACHE and (now - cls._POOL_MODELS_CACHE_TIME < 600.0):
+            return cls._POOL_MODELS_CACHE
+
+        pool = cls.get_configured_providers_pool()
+        if not pool:
+            return {
+                "providers": {},
+                "all_models": [],
+                "models_by_provider": {},
+                "model_to_provider": {},
+                "total_models": 0,
+                "multi_provider_enabled": False,
+            }
+
+        providers_meta: Dict[str, Any] = {}
+        all_models_list: List[str] = []
+        models_by_provider: Dict[str, List[str]] = {}
+        model_to_provider: Dict[str, str] = {}
+
+        for p_name, p_info in pool.items():
+            raw_key = p_info.get("key", "")
+            base_url = p_info.get("base_url")
+            is_valid, resolved_p, p_models, err = cls.verify_and_fetch_models(
+                api_key=raw_key,
+                provider_type=p_name,
+                base_url=base_url,
+                timeout_sec=timeout_sec,
+            )
+            prov_models = p_models if is_valid and p_models else ([p_info.get("default_model")] if p_info.get("default_model") else [])
+            models_by_provider[p_name] = prov_models
+            for m in prov_models:
+                if m not in all_models_list:
+                    all_models_list.append(m)
+                if m not in model_to_provider:
+                    model_to_provider[m] = p_name
+
+            k_masked = raw_key[:6] + "..." + raw_key[-4:] if len(raw_key) > 12 else "******"
+            providers_meta[p_name] = {
+                "name": p_info.get("name", p_name.upper()),
+                "verified": bool(is_valid),
+                "key_masked": k_masked,
+                "models_count": len(prov_models),
+                "default_model": p_info.get("default_model"),
+                "specialty": p_info.get("specialty", ""),
+                "error": err if not is_valid else None,
+            }
+
+        result = {
+            "providers": providers_meta,
+            "all_models": all_models_list,
+            "models_by_provider": models_by_provider,
+            "model_to_provider": model_to_provider,
+            "total_models": len(all_models_list),
+            "multi_provider_enabled": len(providers_meta) > 1 or os.environ.get("MULTI_PROVIDER_ENABLED") == "true",
+        }
+        cls._POOL_MODELS_CACHE = result
+        cls._POOL_MODELS_CACHE_TIME = now
+        return result
+
+    @classmethod
+    def get_multi_provider_discovery_status(
+        cls,
+        force_refresh: bool = False,
+        timeout_sec: float = 6.0,
+    ) -> Dict[str, Any]:
+        """Returns structured metadata about all configured keys and aggregated models across the pool."""
+        pool_data = cls.fetch_all_pool_models(timeout_sec=timeout_sec, force_refresh=force_refresh)
+        active_m = os.environ.get("IVA_MODEL") or os.environ.get("ACTIVE_MODEL") or "AUTO"
+        active_p = (os.environ.get("ACTIVE_PROVIDER") or "gemini").lower()
+        return {
+            "active_model": active_m,
+            "active_provider": active_p,
+            "multi_provider_enabled": pool_data.get("multi_provider_enabled", False),
+            "providers": pool_data.get("providers", {}),
+            "all_models": pool_data.get("all_models", []),
+            "total_models": pool_data.get("total_models", 0),
+            "models_by_provider": pool_data.get("models_by_provider", {}),
+            "model_to_provider": pool_data.get("model_to_provider", {}),
+        }
 
     def generate(self, request: ModelRequest) -> Dict[str, Any]:
         """Executes a model request via direct REST API and returns structured execution metadata."""
@@ -749,6 +925,32 @@ class UniversalAPIProvider(BaseModelProvider):
                 "OPENAI_API_KEY (OpenAI), or ANTHROPIC_API_KEY (Claude). "
                 "Set any of these in your local .env or type `keys` in the terminal."
             )
+
+        # Smart Cross-Provider Routing: If requested/effective model belongs to another provider in pool, route directly
+        eff_model = getattr(request, "model_override", None) or self.model_name
+        if eff_model and eff_model.upper() == "AUTO":
+            eff_model = self.resolve_effective_model(request)
+
+        pool = self.get_configured_providers_pool()
+        my_brand = getattr(self, "provider_brand", self.provider_type)
+        target_prov = self.get_provider_for_model(eff_model, pool=pool)
+
+        if target_prov and target_prov != my_brand and target_prov in pool:
+            cfg = pool[target_prov]
+            alt_key = cfg.get("key")
+            if alt_key:
+                try:
+                    alt_provider = UniversalAPIProvider(
+                        provider_type=target_prov,
+                        api_key=alt_key,
+                        model_name=eff_model,
+                        base_url=cfg.get("base_url"),
+                    )
+                    res = alt_provider.generate(request)
+                    if res.get("status") == "SUCCEEDED" and res.get("response_text"):
+                        return res
+                except Exception as route_exc:
+                    logger.debug("Cross-provider direct routing to '%s' failed: %s", target_prov, route_exc)
 
         if self.provider_type == "gemini":
             res = self._call_gemini_rest(request, t0)

@@ -366,11 +366,11 @@ class TerminalClient:
             return 1
 
     def print_models(self) -> None:
-        """Queries upstream API provider, displays auto-discovered optimal model and available choices."""
+        """Queries upstream API provider(s), displays auto-discovered optimal model and available choices across all keys."""
         print("\n" + cyan("=" * 78))
         print(bold(magenta("   🤖 IVA ACTIVE MODEL TARGET & REMOTE MODEL AUTO-DISCOVERY")))
         print(cyan("=" * 78))
-        print(dim("   Zero-user-prompting: queries provider REST endpoint directly and selects optimal target.\n"))
+        print(dim("   Zero-user-prompting: queries provider REST endpoints directly and aggregates active keys.\n"))
 
         model_adapter = getattr(self.adapter, "model_adapter", None)
         provider = getattr(model_adapter, "api_provider", None) if model_adapter else None
@@ -381,25 +381,48 @@ class TerminalClient:
             except Exception:
                 pass
 
-        if provider is not None:
-            status = provider.get_model_discovery_status()
-            active_m = status.get("active_model", "gemini-2.5-flash")
-            prov_type = status.get("provider_type", "gemini").upper()
-            models = status.get("available_models", [])
-            print(f"   • Active Provider       : {green(prov_type)}")
-            print(f"   • API Key Scoping       : {dim('Models strictly grounded to your active ' + prov_type + ' API key')}")
+        multi_status: Dict[str, Any] = {}
+        try:
+            from ..adapters.universal_api_provider import UniversalAPIProvider
+            multi_status = UniversalAPIProvider.get_multi_provider_discovery_status()
+        except Exception:
+            pass
+
+        configured_provs = multi_status.get("providers", {})
+        if provider is not None or configured_provs:
+            status = provider.get_model_discovery_status() if provider is not None else {}
+            active_m = multi_status.get("active_model") or status.get("active_model", "gemini-2.5-flash")
+            prov_type = (multi_status.get("active_provider") or status.get("provider_type", "gemini")).upper()
+            all_models = multi_status.get("all_models") or status.get("available_models", [])
+
+            if len(configured_provs) > 1:
+                print(f"   • Configured API Keys   : {green(f'{len(configured_provs)} Active Verified Keys')}")
+                for idx, (p_name, p_info) in enumerate(configured_provs.items(), 1):
+                    p_badge = green("VERIFIED ✅") if p_info.get("verified") else yellow("CONFIGURED")
+                    m_cnt = p_info.get("models_count", 0)
+                    print(f"     - Key #{idx} [{bold(p_info.get('name', p_name.upper()))}]: {p_info.get('key_masked', '***')} | {yellow(str(m_cnt))} remote endpoints ({p_badge})")
+                print(f"   • Discovered Remote Pool: {bold(cyan(str(len(all_models))))} verified remote endpoints across all keys")
+                print(f"   • Multi-Key Routing     : {green('ACTIVE (Cross-Key Dynamic Swapper & Auto-Failover)')}")
+            elif len(configured_provs) == 1:
+                p_name, p_info = next(iter(configured_provs.items()))
+                print(f"   • Active Provider       : {green(p_info.get('name', prov_type))}")
+                print(f"   • API Key Scoping       : {dim(p_info.get('key_masked', '***') + ' (' + str(p_info.get('models_count', len(all_models))) + ' verified remote endpoints)')}")
+            else:
+                print(f"   • Active Provider       : {green(prov_type)}")
+                print(f"   • API Key Scoping       : {dim('Models strictly grounded to your active ' + prov_type + ' API key')}")
+
             if active_m.upper() == "AUTO":
-                print(f"   • Active Model Target   : {bold(cyan('AUTO (Dynamic Action Swapper)'))} {green('(Auto-swapping fastest/best model per action)')}")
+                print(f"   • Active Model Target   : {bold(cyan('AUTO (Dynamic Action Swapper)'))} {green('(Auto-swapping fastest/best model per action across all keys)')}")
             else:
                 print(f"   • Active Model Target   : {bold(cyan(active_m))} {green('(Autonomously Selected)')}")
             print(f"   • Zero User Prompting   : {green('Active (Zero friction, no manual selection required)')}")
-            print(f"   • Models for this Key   : {yellow(str(len(models)))} verified remote endpoints")
-            if models:
+
+            if all_models:
                 try:
                     from ..adapters.model_catalog import ModelMetadataCatalog
-                    ranked_meta = ModelMetadataCatalog.rank_and_sort_models(models)
+                    ranked_meta = ModelMetadataCatalog.rank_and_sort_models(all_models)
                 except Exception:
-                    ranked_meta = [{"model_id": m, "company": prov_type, "params_label": "", "speed_tier": "", "badge": "", "specialty": ""} for m in models]
+                    ranked_meta = [{"model_id": m, "company": prov_type, "params_label": "", "speed_tier": "", "badge": "", "specialty": ""} for m in all_models]
 
                 print("\n   " + bold(f"Discovered Remote Models ({len(ranked_meta)} Total — Ordered: Highest B Params → Lowest B):"))
                 for idx, item in enumerate(ranked_meta, 1):
@@ -2779,9 +2802,10 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if not topic:
             topic = "Next-Gen Quantum Computing"
 
-        cb_path = ""
+        cb_path = os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH") or ""
         try:
-            cb_input = input("   Enter codebase path to inspect & animate [Enter for current workspace]: ").strip().strip("'\"`")
+            default_hint = f" [default: {cb_path}]" if cb_path else " [Enter for current workspace]"
+            cb_input = input(f"   Enter codebase path to inspect & animate{default_hint}: ").strip().strip("'\"`")
             if cb_input:
                 resolved_cb = Path(cb_input).resolve()
                 if resolved_cb.exists():
@@ -2871,6 +2895,15 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 print(yellow(f"   ⚠️ Motion graphics render notice: {e}"))
         else:
             print(bold(green("   ✅ Advanced Motion Graphics Engine staged successfully!")))
+        print("\n   " + cyan("═" * 74))
+        print(bold(magenta("   💬 IVA CONVERSATIONAL CREATIVE DIRECTOR ACTIVE")))
+        print(cyan("═" * 74))
+        print("   Your project composition is loaded into active memory.")
+        print("   You can continue conversing naturally with IVA right now in chat:")
+        print(dim("   • 'Generate a 10-second version with Liquid Glass style'"))
+        print(dim("   • 'Change the soundtrack mood to synthwave'"))
+        print(dim("   • 'Export vertical 9:16 for YouTube Shorts'"))
+        print("   " + cyan("═" * 74))
         print(cyan("-" * 78) + "\n")
 
     def execute_marketing_wizard(self, prompt: Optional[str] = None) -> None:
@@ -2951,9 +2984,10 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if not app_name:
             app_name = "NexusFlow AI"
 
-        cb_path = ""
+        cb_path = os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH") or ""
         try:
-            cb_input = input("   Enter app codebase path to inspect & showcase [Enter for current workspace]: ").strip().strip("'\"`")
+            default_hint = f" [default: {cb_path}]" if cb_path else " [Enter for current workspace]"
+            cb_input = input(f"   Enter app codebase path to inspect & showcase{default_hint}: ").strip().strip("'\"`")
             if cb_input:
                 resolved_cb = Path(cb_input).resolve()
                 if resolved_cb.exists():
@@ -3011,6 +3045,16 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 print(yellow(f"   ⚠️ Promo video render notice: {e}"))
         else:
             print(bold(green("   ✅ Advanced App Launch Promo Video staged successfully!")))
+        print("\n   " + cyan("═" * 74))
+        print(bold(magenta("   💬 IVA CONVERSATIONAL MARKETING & CREATIVE DIRECTOR ACTIVE")))
+        print(cyan("═" * 74))
+        print(f"   Your demo codebase ({app_name}) and promo assets are active in memory.")
+        print("   You can continue conversing naturally with IVA right now in chat:")
+        print(dim("   • 'Generate 5 hook variations for TikTok & YouTube Shorts'"))
+        print(dim("   • 'Write a high-converting LinkedIn launch post'"))
+        print(dim("   • 'Switch motion graphics style to Liquid Glass and re-render'"))
+        print(dim("   • 'Audit the frontend demo code and suggest UI improvements'"))
+        print("   " + cyan("═" * 74))
         print(cyan("-" * 78) + "\n")
 
     def execute_observability_wizard(self) -> None:

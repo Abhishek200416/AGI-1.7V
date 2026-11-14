@@ -228,11 +228,18 @@ def select_model_dialog(models: List[str], prov: str) -> str:
     print("  [Company] Model Identifier [Params] [Speed Tier] ★ Specialty Badge")
     print("  " + "─" * 84)
 
-    print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper (Recommended for Autonomous Operation)")
-    print("       ⚡ Automatically picks the best model per task; swap any model live later via `swap <model>`")
-    print("  [ F] 🆓 [FREE] Use ONLY 100% Free Models (Zero-Cost Routing Pool)")
-    print("       ⚡ Restricts routing strictly to verified zero-cost/free models (:free on OpenRouter, Gemini free-tier, etc.)")
-    print("  [ A] 🌐 [ALL]  Enable ALL Remote Models (Full Adaptive Routing Pool)")
+    if "MULTI-KEY" in prov.upper():
+        print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper across ALL Configured API Keys (Recommended)")
+        print("       ⚡ Autonomously routes each task to the best key (e.g. Gemini for 2M/Vision, OpenRouter for Reasoning/Coding)")
+        print("  [ F] 🆓 [FREE] Use ONLY 100% Free Models (Zero-Cost Routing Pool across ALL keys)")
+        print("       ⚡ Restricts routing strictly to verified zero-cost/free models (:free on OpenRouter, Gemini free tier, etc.)")
+        print(f"  [ A] 🌐 [ALL]  Enable ALL {len(sorted_meta)} Remote Models Simultaneously (Full Adaptive Multi-Key Pool)")
+    else:
+        print("  [ 0] 🔄 [AUTO] Dynamic Action-Based Model Swapper (Recommended for Autonomous Operation)")
+        print("       ⚡ Automatically picks the best model per task; swap any model live later via `swap <model>`")
+        print("  [ F] 🆓 [FREE] Use ONLY 100% Free Models (Zero-Cost Routing Pool)")
+        print("       ⚡ Restricts routing strictly to verified zero-cost/free models (:free on OpenRouter, Gemini free-tier, etc.)")
+        print("  [ A] 🌐 [ALL]  Enable ALL Remote Models (Full Adaptive Routing Pool)")
     print("  [ B] ⬅️  [BACK] Return to previous API Key step")
     print("  " + "─" * 84)
 
@@ -627,22 +634,57 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 if val and not any(e["key"] == val for e in pool_entries):
                     pool_entries.append({"provider": prov_name, "key": val, "verified": None, "models": []})
         elif hub_choice in ("3", ""):
-            # Pick tested valid entry (or test primary now)
-            primary = next((e for e in pool_entries if e["verified"] is True), pool_entries[0])
-            if not primary["models"]:
-                _test_entry(primary)
+            # Ensure all configured keys in pool_entries are tested and models fetched
+            for entry in pool_entries:
+                if entry.get("verified") is None or not entry.get("models"):
+                    _test_entry(entry)
+
+            # Collect models from ALL verified keys in pool_entries
+            verified_entries = [e for e in pool_entries if e.get("verified") is True]
+            if not verified_entries:
+                verified_entries = pool_entries
+
+            combined_models: List[str] = []
+            models_by_prov: Dict[str, List[str]] = {}
+            model_to_prov: Dict[str, str] = {}
+            for e in verified_entries:
+                p = str(e["provider"]).lower()
+                e_mods = e.get("models") or []
+                models_by_prov[p] = e_mods
+                for m in e_mods:
+                    if m not in combined_models:
+                        combined_models.append(m)
+                    if m not in model_to_prov:
+                        model_to_prov[m] = p
+
+            primary = verified_entries[0]
             active_prov = str(primary["provider"])
             active_key = str(primary["key"])
-            if primary["models"]:
-                raw_m = select_model_dialog(list(primary["models"]), active_prov)
+
+            if len(verified_entries) > 1:
+                prov_summary = " + ".join([f"{str(e['provider']).upper()} ({len(e.get('models', []))} models)" for e in verified_entries])
+                dialog_prov = f"MULTI-KEY POOL: {prov_summary}"
+            else:
+                dialog_prov = str(active_prov).upper()
+
+            if combined_models:
+                raw_m = select_model_dialog(combined_models, dialog_prov)
                 if raw_m == "__BACK__":
                     continue
                 selected_model, selected_pool = _normalize_model_choice(raw_m)
+                if selected_model in model_to_prov:
+                    active_prov = model_to_prov[selected_model]
+                    active_entry = next((e for e in verified_entries if str(e["provider"]).lower() == active_prov), primary)
+                    active_key = str(active_entry["key"])
             else:
                 selected_model = selected_model or PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO")
             break
         elif hub_choice in ("4", "next", "n"):
-            primary = next((e for e in pool_entries if e["verified"] is True), pool_entries[0])
+            for entry in pool_entries:
+                if entry.get("verified") is None or not entry.get("models"):
+                    _test_entry(entry)
+            verified_entries = [e for e in pool_entries if e.get("verified") is True] or pool_entries
+            primary = verified_entries[0]
             active_prov = str(primary["provider"])
             active_key = str(primary["key"])
             selected_model = selected_model or PROVIDER_DEFAULT_MODELS.get(active_prov, "AUTO")
@@ -651,31 +693,33 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
     # Persist all added API keys (primary + multi-provider + multi-key rotation lists)
     per_prov_keys: Dict[str, List[str]] = {}
     for e in pool_entries:
-        p_k = str(e["provider"])
+        p_k = str(e["provider"]).lower()
         per_prov_keys.setdefault(p_k, []).append(str(e["key"]))
 
-    for p_k, keys_list in per_prov_keys.items():
-        if p_k != active_prov:
-            save_key_and_model_to_env(
-                env_file,
-                keys_list[0],
-                p_k,
-                selected_model or "AUTO",
-                selected_models=selected_pool,
-                extra_keys_for_provider=keys_list,
-                is_active_provider=False,
-            )
+    is_multi = len(pool_entries) > 1 or len(per_prov_keys) > 1
+    active_prov_list = list(per_prov_keys.keys())
 
-    if active_key and active_prov != "none":
+    for p_k, keys_list in per_prov_keys.items():
+        is_active = (p_k == active_prov.lower())
         save_key_and_model_to_env(
             env_file,
-            str(active_key),
-            active_prov,
+            keys_list[0],
+            p_k,
             selected_model or "AUTO",
             selected_models=selected_pool,
-            extra_keys_for_provider=per_prov_keys.get(active_prov),
-            is_active_provider=True,
+            extra_keys_for_provider=keys_list,
+            is_active_provider=is_active,
         )
+
+    multi_updates: Dict[str, str] = {}
+    if is_multi:
+        multi_updates["MULTI_PROVIDER_ENABLED"] = "true"
+        multi_updates["IVA_ACTIVE_PROVIDERS"] = ",".join(active_prov_list)
+    if selected_model:
+        multi_updates["ACTIVE_MODEL"] = selected_model
+        multi_updates["IVA_MODEL"] = selected_model
+    if multi_updates:
+        upsert_env_vars(env_file, multi_updates)
         print(f"  💾 Saved {len(pool_entries)} API key(s) & model target ({selected_model}) to .env")
 
     return env_file, str(active_key) if active_key else None, selected_model or "AUTO", active_prov

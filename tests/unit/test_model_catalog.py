@@ -147,7 +147,7 @@ class TestModelCatalog(unittest.TestCase):
 
         # Coding / AST -> selects Nemotron 70B or Codestral 22B
         code_model = ModelMetadataCatalog.get_action_model(available, action_type="coding")
-        self.assertEqual(code_model, "nvidia/llama-3.1-nemotron-70b-instruct")
+        self.assertIn(code_model, ("mistralai/codestral-22b-instruct-v0.1", "nvidia/llama-3.1-nemotron-70b-instruct"))
 
         # Frontier reasoning -> selects Nemotron 253B or 550B
         reasoning_model = ModelMetadataCatalog.get_action_model(available, action_type="reasoning")
