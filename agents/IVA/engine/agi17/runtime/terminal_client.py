@@ -2779,6 +2779,29 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if not topic:
             topic = "Next-Gen Quantum Computing"
 
+        cb_path = ""
+        try:
+            cb_input = input("   Enter codebase path to inspect & animate [Enter for current workspace]: ").strip().strip("'\"`")
+            if cb_input:
+                resolved_cb = Path(cb_input).resolve()
+                if resolved_cb.exists():
+                    cb_path = str(resolved_cb)
+        except (KeyboardInterrupt, EOFError):
+            pass
+        if not cb_path:
+            repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+            cb_path = str(repo_root)
+
+        codebase_metrics = None
+        for mod_name in ("iva.codebase_motion_generator", "studio.system.codebase_motion_generator"):
+            try:
+                import importlib
+                cmg = importlib.import_module(mod_name)
+                codebase_metrics = cmg.analyze_codebase(cb_path)
+                break
+            except Exception:
+                pass
+
         print("\n   Choose Signature Style:")
         print("     [1] Kinetic Type     (Bold typographic rhythms, counter punch, highlighter box)")
         print("     [2] Liquid Glass     (Frosted glass cards, specular borders, floating badges)")
@@ -2811,6 +2834,8 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         selected_model = model_map.get(m_choice, "Autonomous Procedural")
 
         print(f"\n   • Topic        : {bold(cyan(topic))}")
+        if codebase_metrics:
+            print(f"   • Codebase     : {bold(cyan(codebase_metrics['repo_name']))} ({codebase_metrics['total_code_files']} files, {codebase_metrics['total_loc']:,} LOC)")
         print(f"   • Style        : {bold(magenta(selected_style))}")
         print(f"   • Model Target : {bold(yellow(selected_model))}")
         print("   • Features     : 10 Classic Moves, 9 Code SFX, 7 Pro Visual Fixes, 60fps WebM/MP4, -14 LUFS")
@@ -2827,8 +2852,11 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if engine_mod and hasattr(engine_mod, "generate_multi_model_motion_project"):
             print(dim("\n   Synthesizing universal motion graphics composition..."))
             try:
+                full_topic = topic
+                if codebase_metrics:
+                    full_topic = f"{topic} — {codebase_metrics['repo_name']} ({codebase_metrics['total_loc']:,} LOC)"
                 res = engine_mod.generate_multi_model_motion_project(
-                    topic=topic,
+                    topic=full_topic,
                     signature_style=selected_style,
                     target_model=selected_model,
                     duration_seconds=5.0,
@@ -2923,7 +2951,32 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if not app_name:
             app_name = "NexusFlow AI"
 
+        cb_path = ""
+        try:
+            cb_input = input("   Enter app codebase path to inspect & showcase [Enter for current workspace]: ").strip().strip("'\"`")
+            if cb_input:
+                resolved_cb = Path(cb_input).resolve()
+                if resolved_cb.exists():
+                    cb_path = str(resolved_cb)
+        except (KeyboardInterrupt, EOFError):
+            pass
+        if not cb_path:
+            repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+            cb_path = str(repo_root)
+
+        codebase_metrics = None
+        for mod_name in ("iva.codebase_motion_generator", "studio.system.codebase_motion_generator"):
+            try:
+                import importlib
+                cmg = importlib.import_module(mod_name)
+                codebase_metrics = cmg.analyze_codebase(cb_path)
+                break
+            except Exception:
+                pass
+
         print(f"   • App / SaaS  : {bold(cyan(app_name))}")
+        if codebase_metrics:
+            print(f"   • Codebase    : {bold(cyan(codebase_metrics['repo_name']))} ({codebase_metrics['total_code_files']} files, {codebase_metrics['total_loc']:,} LOC)")
         print("   • Format      : High-Retention Kinetic Spec Promo Video (9:16 Vertical, 1080x1920)")
         print("   • Visual Style: Pop Bold / Liquid Glass Kinetic Typography with UI Mockup Frames")
         print("   • Audio       : Code-synthesized Pop, Chime, and Success SFX with -14 LUFS Mastering")
@@ -2940,8 +2993,11 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if engine_mod and hasattr(engine_mod, "generate_multi_model_motion_project"):
             print(dim("\n   Synthesizing marketing launch promo video composition..."))
             try:
+                promo_topic = f"Introducing {app_name} — Next-Gen AI Platform"
+                if codebase_metrics:
+                    promo_topic = f"Introducing {app_name} — {codebase_metrics['repo_name']} ({codebase_metrics['total_code_files']} modules, {codebase_metrics['total_loc']:,} LOC)"
                 res = engine_mod.generate_multi_model_motion_project(
-                    topic=f"Introducing {app_name} — Next-Gen AI Platform",
+                    topic=promo_topic,
                     signature_style="Pop Bold",
                     target_model="Autonomous Procedural",
                     duration_seconds=5.0,

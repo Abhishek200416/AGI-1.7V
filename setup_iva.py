@@ -848,13 +848,23 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     }
 
     selected = existing if existing in labels else "build"
+    prod_mode = os.environ.get("IVA_STUDIO_MODE", "both")
+    codebase_path = os.environ.get("IVA_CODEBASE_PATH", str(REPO_ROOT))
+    motion_style = os.environ.get("IVA_MOTION_STYLE", "Pop Bold")
+
     if interactive:
         print("\n" + "  " + "═" * 74)
         print("  🧭 [Step 6/7] SELECT IVA OPERATING CATEGORY")
         print("  " + "═" * 74)
         print("  [1] IVA Build & Engineering (24/7) — App building, auto-debugging & CI tests")
         print("  [2] IVA Studios                    — Real-world video editing, outside photos/clips & YT upload")
-        print("  [3] IVA Marketing Studio           — Universal Omnichannel (YouTube, Instagram, TikTok, X/Twitter, LinkedIn, Threads)")
+        print("      ↳ [1] Normal  : Web/Stock clips, real footage & automatic upload")
+        print("      ↳ [2] Advanced: Codebase Motion Graphics (App demos, 4 styles, 10 moves, 9 SFX)")
+        print("      ↳ [3] Both    : Combined real-footage clips + Codebase Motion Graphics")
+        print("  [3] IVA Marketing Studio           — Universal Omnichannel (YouTube, Instagram, TikTok, X, LinkedIn)")
+        print("      ↳ [1] Normal  : Multi-platform social campaign pack & reply triage inbox")
+        print("      ↳ [2] Advanced: Codebase Motion Graphics SaaS & App Launch Demo Videos")
+        print("      ↳ [3] Both    : Combined multi-platform campaigns + Motion Graphics App Launch")
         print("  [0] ⬅️  Back to Step 3 (Permissions & API Setup)")
         try:
             raw = input("\n  Choose category [0-3, default: 1]: ").strip().lower()
@@ -867,14 +877,68 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     brand_name = os.environ.get("IVA_STUDIO_BRAND_NAME", "My Studio")
     studio_niche = os.environ.get("IVA_STUDIO_NICHE", "Custom User-Defined Niche")
     report_time = os.environ.get("IVA_DAILY_REPORT_TIME", "21:30")
+
     if interactive and selected in ("studios", "marketing_studio"):
+        cat_title = "IVA Studios (Video Creation)" if selected == "studios" else "IVA Marketing Studio"
+        print("\n  " + "─" * 74)
+        print(f"  🎬 SELECT PRODUCTION MODE FOR {cat_title.upper()}")
+        print("  " + "─" * 74)
+        print("  [1] Normal Mode         — Real-world video editing, outside footage/clips & automatic upload")
+        print("  [2] Advanced Mode       — Codebase-Driven Motion Graphics (Inspects app code, 4 styles, 10 moves, 9 SFX)")
+        print("  [3] Both (Simultaneous) — Combined: Real footage clips + Codebase Motion Graphics demo marketing")
+        print("  [0] ⬅️  Back to Category Selection")
+        try:
+            mode_choice = input("\n  Select production mode [1=Normal, 2=Advanced, 3=Both, default: 3]: ").strip().lower()
+            if mode_choice in ("0", "back", "b"):
+                return "__BACK__"
+            mode_map = {"1": "normal", "2": "advanced", "3": "both", "normal": "normal", "advanced": "advanced", "both": "both"}
+            prod_mode = mode_map.get(mode_choice, "both")
+        except (KeyboardInterrupt, EOFError):
+            prod_mode = "both"
+
+        # If Advanced or Both, ask for codebase path and signature motion style
+        if prod_mode in ("advanced", "both"):
+            print("\n  " + "─" * 74)
+            print("  💻 CODEBASE SOURCE FOR ADVANCED MOTION GRAPHICS & APP DEMOS")
+            print("  IVA inspects the codebase (files, AST, modules, LOC) to build procedural")
+            print("  animations, kinetic feature demos, spec ads, and demo marketing assets.")
+            print("  " + "─" * 74)
+            try:
+                cb_input = input(f"  Enter codebase directory path [Enter to use '{REPO_ROOT.name}']: ").strip().strip("'\"`")
+                if cb_input.lower() in ("0", "back", "b"):
+                    return "__BACK__"
+                if cb_input:
+                    resolved_p = Path(cb_input).resolve()
+                    if resolved_p.exists():
+                        codebase_path = str(resolved_p)
+                        print(f"  ✅ Codebase verified: {codebase_path}")
+                    else:
+                        print(f"  ⚠️ Path '{cb_input}' not found. Defaulting to current workspace: {REPO_ROOT}")
+                        codebase_path = str(REPO_ROOT)
+                else:
+                    codebase_path = str(REPO_ROOT)
+            except (KeyboardInterrupt, EOFError):
+                codebase_path = str(REPO_ROOT)
+
+            print("\n  🎨 Choose Signature Motion Style for Code Animations:")
+            print("    [1] Pop Bold         (High-contrast punchy neo-brutalist pop — Best for App Demos)")
+            print("    [2] Kinetic Type     (Bold typographic rhythms, counter punch, highlighter box)")
+            print("    [3] Liquid Glass     (Frosted glass cards, specular borders, floating badges)")
+            print("    [4] Editorial Grain  (Warm noise, monospaced typewriter, paper aesthetic)")
+            try:
+                style_choice = input("  Select motion style [1-4, default: 1]: ").strip().lower()
+                style_map = {"1": "Pop Bold", "2": "Kinetic Type", "3": "Liquid Glass", "4": "Editorial Grain"}
+                motion_style = style_map.get(style_choice, "Pop Bold")
+            except (KeyboardInterrupt, EOFError):
+                motion_style = "Pop Bold"
+
         try:
             print("\n  " + "─" * 74)
-            print("  🎨 STUDIO FOCUS & CHANNEL CONFIGURATION (Quick Setup)")
-            print("  Describe your channel / niche in plain English (or press Enter for defaults):")
+            print("  🎨 CHANNEL FOCUS & NICHE CONFIGURATION (Quick Setup)")
+            print("  Describe your channel / app demo focus in plain English (or press Enter for defaults):")
             print("  Examples: 'App Demos Channel', 'manage my existing app demos', 'Tech & AI'")
             print("  " + "─" * 74)
-            summary_input = input("  Studio Focus [Enter for defaults, or type description]: ").strip()
+            summary_input = input("  Channel Focus [Enter for defaults, or type description]: ").strip()
             if summary_input.lower() in ("0", "back", "b"):
                 return "__BACK__"
             if summary_input:
@@ -891,6 +955,9 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
         env_file,
         {
             "IVA_ACTIVE_CATEGORY": selected,
+            "IVA_STUDIO_MODE": prod_mode,
+            "IVA_CODEBASE_PATH": codebase_path,
+            "IVA_MOTION_STYLE": motion_style,
             "IVA_DAILY_REPORT_TIME": report_time,
             "IVA_STUDIO_BRAND_NAME": brand_name,
             "IVA_STUDIO_NICHE": studio_niche,
@@ -898,6 +965,15 @@ def select_iva_category(env_file: Path, interactive: bool = True) -> str:
     )
     print(f"  ✅ Active IVA Category: {labels[selected]}")
     if selected in ("studios", "marketing_studio"):
+        tier_label = {
+            "normal": "Normal Mode (Real-world footage, outside clips & automatic upload)",
+            "advanced": f"Advanced Mode (Codebase Motion Graphics for {Path(codebase_path).name}, Style: {motion_style})",
+            "both": f"Both (Simultaneous: Real clips + Codebase Motion Graphics for {Path(codebase_path).name})",
+        }.get(prod_mode, prod_mode)
+        print(f"  ✅ Production Tier: {tier_label}")
+        if prod_mode in ("advanced", "both"):
+            print(f"  ✅ Target Codebase: {codebase_path}")
+            print(f"  ✅ Motion Style   : {motion_style} (10 moves, 9 SFX, 7 pro fixes, -14 LUFS)")
         print(f"  ✅ Studio Brand & Niche: {brand_name} ({studio_niche})")
     if selected == "marketing_studio":
         print("  ✅ Universal Omnichannel Engine: iva-omnichannel-social-skill activated (YouTube, Instagram, TikTok, X/Twitter, LinkedIn, Threads, FB Reels)")
