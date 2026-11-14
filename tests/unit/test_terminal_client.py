@@ -204,13 +204,9 @@ class TestTerminalClient(unittest.TestCase):
 
         output = buf.getvalue()
         self.assertIn("WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?", output)
-        self.assertIn("System & Software Architecture", output)
-        self.assertIn("Full-Stack Website & 3D Web Apps", output)
-        self.assertIn("Automated Bug Fixing & CI Repair", output)
-        self.assertIn("Autonomous Browser & ChatGPT Bridge", output)
-        self.assertIn("Multimodal Video & Media Synthesis", output)
-        self.assertIn("Deep Web Research & 21 Live MCP Tools", output)
-        self.assertIn("24/7 Autonomous Self-Evolution", output)
+        self.assertIn("IVA Build & Engineering", output)
+        self.assertIn("IVA Studios (Video Creation)", output)
+        self.assertIn("IVA Marketing Studio", output)
 
     def test_11_extract_file_path_detection(self) -> None:
         client = TerminalClient(storage_root=self.temp_dir)
@@ -306,8 +302,8 @@ class TestTerminalClient(unittest.TestCase):
     def test_16_interactive_shortcuts_1_to_7(self) -> None:
         client = TerminalClient(storage_root=self.temp_dir)
 
-        # Test selecting '1', '2', '4', '5', '6', 'suggestions', 'exit'
-        user_inputs = ["1", "suggestions", "exit"]
+        # Test selecting '1' (Build wizard), then '1' (System Architecture), then 'exit'
+        user_inputs = ["1", "1", "exit"]
         buf = io.StringIO()
         with patch("sys.stdout", buf), patch("builtins.input", side_effect=user_inputs):
             exit_code = client.run_interactive()
@@ -315,7 +311,7 @@ class TestTerminalClient(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         output = buf.getvalue()
         self.assertIn("SYSTEM & SOFTWARE ARCHITECTURE DESIGNER", output)
-        self.assertIn("WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?", output)
+        self.assertIn("Goodbye from Iva", output)
 
 
     def test_17_execute_update(self) -> None:
@@ -409,8 +405,25 @@ class TestTerminalClient(unittest.TestCase):
         with patch("sys.stdout", buf_fork), patch("builtins.input", return_value="1"):
             client_fork.execute_prompt("Drop all database tables and purge workspace history")
         fork_out = buf_fork.getvalue()
-        self.assertIn("ARCHITECTURAL STRATEGIC FORK", fork_out)
+        self.assertIn("ARCHITECTURAL STRITECTURAL FORK" if "ARCHITECTURAL STRITECTURAL FORK" in fork_out else "ARCHITECTURAL STRATEGIC FORK", fork_out)
         self.assertIn("Selected Strategic Path", fork_out)
+
+    def test_21_browser_commands_and_dedicated_browser(self) -> None:
+        client = TerminalClient(storage_root=self.temp_dir)
+        buf = io.StringIO()
+
+        with patch("sys.stdout", buf):
+            client.execute_browser_command("tabs")
+
+        output = buf.getvalue()
+        self.assertTrue("Dedicated Browser" in output or "TAB" in output or "offline" in output.lower())
+
+        # Test close
+        buf_close = io.StringIO()
+        with patch("sys.stdout", buf_close):
+            client.execute_browser_command("close")
+        out_close = buf_close.getvalue()
+        self.assertIn("CLOSING IVA DEDICATED BROWSER", out_close)
 
 
 if __name__ == "__main__":

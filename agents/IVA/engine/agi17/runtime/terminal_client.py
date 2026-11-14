@@ -248,11 +248,12 @@ class TerminalClient:
             print(bold(f"   👋 Hi {op_name}! Your demo frontend and channel context are loaded in memory."))
             print("   Tell me what you'd like to do — just chat naturally, and I'll execute while we talk:")
             print()
-            print(f"   {bold(yellow('[1]'))} {bold('🔐 Platform Logins')}          : Type {cyan('login <platform>')} (YouTube, IG, LinkedIn, X)")
-            print(f"   {bold(yellow('[2]'))} {bold('📂 Ingest App Docs / Notes')}   : Type {cyan('docs <folder/file>')} (PRD, README, features)")
-            print(f"   {bold(yellow('[3]'))} {bold('🔍 Competitor Intelligence')}   : Type {cyan('competitors')} (Automated research & gap analysis)")
-            print(f"   {bold(yellow('[4]'))} {bold('🎬 Generate Promo Video')}      : Type {cyan('demo video')} (Motion graphics & screen recording)")
-            print(f"   {bold(yellow('[5]'))} {bold('💬 Natural Chat')}              : Type any question, prompt, or marketing instruction below!")
+            print(f"   {bold(yellow('[1]'))} {bold('🌐 Dedicated Browser')}         : Type {cyan('browser')} (Multi-tab hub: YouTube, IG, LinkedIn, X & Demo Preview)")
+            print(f"   {bold(yellow('[2]'))} {bold('🔐 Platform Logins')}          : Type {cyan('login <platform>')} (Log in once, sessions saved)")
+            print(f"   {bold(yellow('[3]'))} {bold('📂 Ingest App Docs / Notes')}   : Type {cyan('docs <folder/file>')} (PRD, README, features)")
+            print(f"   {bold(yellow('[4]'))} {bold('🔍 Competitor Intelligence')}   : Type {cyan('competitors')} (Automated research & gap analysis)")
+            print(f"   {bold(yellow('[5]'))} {bold('🎬 Generate Promo Video')}      : Type {cyan('demo video')} (Motion graphics & screen recording)")
+            print(f"   {bold(yellow('[6]'))} {bold('💬 Natural Chat')}              : Type any question, prompt, or marketing instruction below!")
             print(cyan("=" * 78) + "\n")
         else:
             self.display_suggestions_menu()
@@ -591,21 +592,135 @@ class TerminalClient:
             except Exception as e:
                 print(yellow(f"   Notice: {e}"))
         else:
-            print(cyan(f"\n   🌐 Launching managed Chrome profile for {plat.upper()} authentication..."))
-            print(dim("   Log in in the browser window. Once logged in, your session cookies stay saved in your local profile."))
+            print(cyan(f"\n   🌐 Launching IVA Dedicated Browser for {plat.upper()} authentication..."))
+            print(dim("   Log in once in the browser window. Your cookies & sessions stay saved in ~/.iva/browser_data/managed_profile."))
             try:
-                import subprocess
-                browser_auth_script = Path(__file__).resolve().parents[5] / "studio" / "system" / "platform_browser_auth.py"
-                if browser_auth_script.exists():
-                    subprocess.run([sys.executable, str(browser_auth_script), plat], check=False)
-                else:
-                    profile_dir = Path.home() / ".iva" / "browser_profiles" / plat
-                    profile_dir.mkdir(parents=True, exist_ok=True)
-                    print(bold(green(f"   ✅ Created persistent local session profile at: {profile_dir}")))
-                    print(dim("   IVA can now launch headless or headed browser runs using this persistent session profile!"))
+                from ..browser.iva_dedicated_browser import IVADedicatedBrowserManager
+                b_mgr = IVADedicatedBrowserManager.get_instance()
+                plat_url = b_mgr.PLATFORM_TARGETS.get(plat, f"https://www.{plat}.com")
+                b_mgr.launch()
+                b_mgr.open_new_tab(plat_url)
+                print(bold(green(f"   ✅ Opened {plat.upper()} in IVA Dedicated Browser ({plat_url})!")))
+                print(dim("   Complete your login in the browser tab. IVA automatically tracks login status."))
+                print(b_mgr.format_tab_table())
             except Exception as e:
-                print(yellow(f"   Browser launcher notice: {e}"))
+                profile_dir = Path.home() / ".iva" / "browser_data" / "managed_profile"
+                profile_dir.mkdir(parents=True, exist_ok=True)
+                print(yellow(f"   Browser notice: {e}"))
+                print(bold(green(f"   Persistent profile directory verified at: {profile_dir}")))
         print(cyan("-" * 78) + "\n")
+
+    def execute_browser_command(self, arg: str = "") -> None:
+        """Manages IVA's dedicated browser instance, multi-tab coordination, and session states."""
+        try:
+            from ..browser.iva_dedicated_browser import IVADedicatedBrowserManager
+        except ImportError:
+            try:
+                from agents.IVA.engine.agi17.browser.iva_dedicated_browser import IVADedicatedBrowserManager
+            except ImportError:
+                print(red("   ❌ Could not load IVADedicatedBrowserManager module."))
+                return
+
+        manager = IVADedicatedBrowserManager.get_instance()
+        clean_arg = (arg or "").strip().lower()
+
+        if clean_arg in ("launch", "open", "start", "run"):
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta("   🌐 LAUNCHING IVA DEDICATED MANAGED BROWSER")))
+            print(cyan("=" * 78))
+            print(dim("   Starting isolated Chromium window with persistent user profile...\n"))
+            demo_path = os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH")
+            res = manager.launch(frontend_demo_path=demo_path)
+            if res.get("status") in ("LAUNCHED", "ALREADY_ACTIVE"):
+                print(bold(green(f"   ✅ IVA Dedicated Browser is active! [CDP Port: {res.get('cdp_port')}]")))
+                print(f"   • Profile Dir : {cyan(res.get('profile_dir'))}")
+                print(f"   • Open Tabs   : {yellow(str(res.get('open_tabs')))}\n")
+                print(manager.format_tab_table())
+            else:
+                print(yellow(f"   ⚠️ Launch status: {res.get('status')} - {res.get('error', '')}"))
+            print(cyan("=" * 78) + "\n")
+            return
+
+        elif clean_arg in ("close", "stop", "kill", "quit", "exit"):
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta("   🛑 CLOSING IVA DEDICATED BROWSER")))
+            print(cyan("=" * 78))
+            ok = manager.close_browser()
+            if ok:
+                print(bold(green("   ✅ Browser closed successfully. Cookies and session state preserved on disk.")))
+            else:
+                print(dim("   Browser was not running or has already stopped."))
+            print(cyan("=" * 78) + "\n")
+            return
+
+        elif clean_arg.startswith("open ") or clean_arg.startswith("http://") or clean_arg.startswith("https://"):
+            target_url = clean_arg[5:].strip() if clean_arg.startswith("open ") else clean_arg
+            if not target_url.startswith(("http://", "https://", "file://")):
+                target_url = "https://" + target_url
+            if not manager.is_cdp_available():
+                print(cyan("\n   🌐 Browser is offline. Starting IVA Dedicated Browser first..."))
+                manager.launch()
+            new_tab = manager.open_new_tab(target_url)
+            if new_tab:
+                print(bold(green(f"\n   ✅ Opened tab in IVA Dedicated Browser: {target_url}")))
+            else:
+                print(yellow(f"\n   ⚠️ Could not open tab: {target_url}"))
+            print(manager.format_tab_table())
+            print(cyan("=" * 78) + "\n")
+            return
+
+        elif clean_arg in ("tabs", "tab", "list", "status", "check"):
+            print("\n" + manager.format_tab_table() + "\n")
+            return
+
+        # Default menu if just `browser`
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🌐 IVA DEDICATED MANAGED BROWSER & TAB CONTROL HUB")))
+        print(cyan("=" * 78))
+        print(dim("   Dedicated browser with persistent profile (~/.iva/browser_data/managed_profile)."))
+        print(dim("   Log in once to YouTube Studio, Instagram, LinkedIn, and X — IVA handles the rest!\n"))
+
+        if manager.is_cdp_available():
+            print(bold(green("   ● STATUS: BROWSER IS RUNNING (CDP Port 9229 Active)\n")))
+            print(manager.format_tab_table())
+            print(f"\n   {bold(yellow('[1]'))} Refresh tab list & login states")
+            print(f"   {bold(yellow('[2]'))} Open new tab / URL")
+            print(f"   {bold(yellow('[3]'))} Close browser window")
+            print(f"   {bold(yellow('[0]'))} Back to chat prompt\n")
+            try:
+                b_choice = input("   Choose action [1-3, 0=Back]: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                return
+            if b_choice == "1":
+                print("\n" + manager.format_tab_table() + "\n")
+            elif b_choice == "2":
+                try:
+                    u_in = input("   Enter URL to open: ").strip()
+                    if u_in:
+                        self.execute_browser_command(f"open {u_in}")
+                except (KeyboardInterrupt, EOFError):
+                    pass
+            elif b_choice == "3":
+                self.execute_browser_command("close")
+        else:
+            print(bold(yellow("   ○ STATUS: BROWSER IS CURRENTLY STANDBY (Not Launched)\n")))
+            print(f"   {bold(yellow('[1]'))} 🚀 Launch Dedicated Browser (Opens YouTube, IG, LinkedIn, X & Demo Preview)")
+            print(f"   {bold(yellow('[2]'))} 🌐 Open specific URL")
+            print(f"   {bold(yellow('[0]'))} Back to chat prompt\n")
+            try:
+                b_choice = input("   Choose action [1-2, 0=Back]: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                return
+            if b_choice == "1":
+                self.execute_browser_command("launch")
+            elif b_choice == "2":
+                try:
+                    u_in = input("   Enter URL to open: ").strip()
+                    if u_in:
+                        self.execute_browser_command(f"open {u_in}")
+                except (KeyboardInterrupt, EOFError):
+                    pass
+        print(cyan("=" * 78) + "\n")
 
     def execute_context_ingestion(self, path_arg: str = "") -> None:
         """Ingests documents, READMEs, PRDs, and specs into persistent memory to deeply understand the app."""
@@ -3054,6 +3169,25 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
             cb_path = str(repo_root)
 
+        # Check if frontend demo entrypoint exists and can be previewed in IVA Dedicated Browser
+        p_cb = Path(cb_path)
+        index_candidates = list(p_cb.glob("index.html")) if p_cb.is_dir() else ([p_cb] if p_cb.suffix == ".html" else [])
+        if index_candidates:
+            print(f"\n   🌐 Frontend demo entrypoint detected: {cyan(str(index_candidates[0]))}")
+            print(dim("   IVA can run the frontend in its dedicated test browser and inspect live UI elements."))
+            try:
+                ans = input("   Launch demo preview in IVA Dedicated Browser? [Y/n, default: Y]: ").strip().lower()
+            except (KeyboardInterrupt, EOFError):
+                ans = "y"
+            if ans in ("", "y", "yes"):
+                try:
+                    from ..browser.iva_dedicated_browser import IVADedicatedBrowserManager
+                    b_mgr = IVADedicatedBrowserManager.get_instance()
+                    b_mgr.launch(frontend_demo_path=str(p_cb))
+                    print(bold(green("   ✅ Frontend demo loaded into IVA Dedicated Browser tab!")))
+                except Exception as b_err:
+                    print(yellow(f"   Browser launch notice: {b_err}"))
+
         codebase_metrics = None
         for mod_name in ("iva.codebase_motion_generator", "studio.system.codebase_motion_generator"):
             try:
@@ -3235,6 +3369,25 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if not cb_path:
             repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
             cb_path = str(repo_root)
+
+        # Check if frontend demo entrypoint exists and can be previewed in IVA Dedicated Browser
+        p_cb = Path(cb_path)
+        index_candidates = list(p_cb.glob("index.html")) if p_cb.is_dir() else ([p_cb] if p_cb.suffix == ".html" else [])
+        if index_candidates:
+            print(f"\n   🌐 Frontend demo entrypoint detected: {cyan(str(index_candidates[0]))}")
+            print(dim("   IVA can run the frontend in its dedicated test browser and inspect live UI elements."))
+            try:
+                ans = input("   Launch demo preview in IVA Dedicated Browser? [Y/n, default: Y]: ").strip().lower()
+            except (KeyboardInterrupt, EOFError):
+                ans = "y"
+            if ans in ("", "y", "yes"):
+                try:
+                    from ..browser.iva_dedicated_browser import IVADedicatedBrowserManager
+                    b_mgr = IVADedicatedBrowserManager.get_instance()
+                    b_mgr.launch(frontend_demo_path=str(p_cb))
+                    print(bold(green("   ✅ Frontend demo loaded into IVA Dedicated Browser tab!")))
+                except Exception as b_err:
+                    print(yellow(f"   Browser launch notice: {b_err}"))
 
         codebase_metrics = None
         for mod_name in ("iva.codebase_motion_generator", "studio.system.codebase_motion_generator"):
@@ -3441,6 +3594,9 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         if any(kw in low_clean for kw in ("login details", "i have login", "do the logins", "login for me", "platform login", "platform logins")):
             self.execute_platform_login("")
             return
+        if any(kw in low_clean for kw in ("dedicated browser", "test browser", "open browser", "launch browser", "start browser", "open your browser", "own browser", "manage tabs", "browser tabs", "show tabs", "browser status", "browser hub")):
+            self.execute_browser_command(clean)
+            return
 
         # Check if user passed a file path or wants to inspect/fix a file
         file_path_candidate = self._extract_file_path(clean)
@@ -3617,7 +3773,10 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
                 self.execute_web_3d_wizard()
             elif low in ("fix", "repair", "bug", "ci"):
                 self.execute_bug_repair_wizard()
-            elif low in ("4", "browser", "chatgpt", "image", "images", "dalle", "bridge"):
+            elif low in ("browser", "browsers") or low.startswith("browser ") or low in ("tabs", "tab") or low.startswith("tab "):
+                arg = line.split(" ", 1)[1].strip() if " " in line else ""
+                self.execute_browser_command(arg)
+            elif low in ("4", "chatgpt", "image", "images", "dalle", "bridge"):
                 self.execute_browser_chatgpt_wizard()
             elif low in ("5", "video-gemini", "veo", "omni"):
                 self.execute_video_synthesis_wizard()
