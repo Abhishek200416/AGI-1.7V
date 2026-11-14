@@ -285,10 +285,33 @@ def select_model_dialog(models: List[str], prov: str) -> str:
         print("  🎯 Selected: AUTO (Dynamic Action-Based Model Swapper)")
         return "AUTO"
     elif m_choice.lower() in ("f", "free", "zero", "free_only"):
-        free_models = [
-            m for m in sorted_meta
-            if m.get("is_free") or ":free" in m["model_id"].lower() or "free" in m["model_id"].lower().split("/")[-1]
-        ]
+        free_models = []
+        seen_free = set()
+        for m in sorted_meta:
+            m_id = m["model_id"]
+            m_low = m_id.lower()
+            if m_id in seen_free:
+                continue
+
+            # 1. OpenRouter verified free models
+            if m.get("is_free") or ":free" in m_low or "free" in m_low.split("/")[-1]:
+                seen_free.add(m_id)
+                free_models.append(m)
+            # 2. NVIDIA Build free starter credits models (top workhorses)
+            elif m.get("company", "").upper() == "NVIDIA" and any(k in m_low for k in ("nemotron-70b", "llama-3.3-70b", "nemotron-3-super", "nemotron-4-340b", "granite-3.0-8b")):
+                seen_free.add(m_id)
+                m_copy = dict(m)
+                m_copy["badge"] = "★ FREE STARTER CREDITS"
+                m_copy["is_free"] = True
+                free_models.append(m_copy)
+            # 3. Google Gemini free tier models
+            elif "gemini" in m_low and any(k in m_low for k in ("2.5-flash", "2.0-flash", "1.5-flash")):
+                seen_free.add(m_id)
+                m_copy = dict(m)
+                m_copy["badge"] = "★ FREE DAILY TIER"
+                m_copy["is_free"] = True
+                free_models.append(m_copy)
+
         if not free_models:
             from agents.IVA.engine.agi17.adapters.model_catalog import ModelMetadataCatalog
             free_candidates = ModelMetadataCatalog.OPENROUTER_VERIFIED_FREE_MODELS
@@ -520,10 +543,15 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
         "openrouter": "OPENROUTER_API_KEY",
     }
     pool_entries: List[Dict[str, object]] = []
+    seen_keys: Set[str] = set()
     for prov_name, env_var in key_var_map.items():
-        raw_val = os.environ.get(env_var) or ""
-        if raw_val:
-            pool_entries.append({"provider": prov_name, "key": raw_val, "verified": None, "models": []})
+        raw_val = (os.environ.get(env_var) or "").strip().strip("'\"")
+        if raw_val and raw_val not in seen_keys:
+            real_prov = UniversalAPIProvider.detect_provider_from_key(raw_val)
+            if real_prov == "unknown":
+                real_prov = prov_name
+            seen_keys.add(raw_val)
+            pool_entries.append({"provider": real_prov, "key": raw_val, "verified": None, "models": []})
 
     active_key = pool_entries[0]["key"] if pool_entries else None
     active_prov = str(pool_entries[0]["provider"]) if pool_entries else "none"
@@ -563,6 +591,20 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
                 return None
             if not entered or entered.lower() in ("0", "back", "b"):
                 return None
+
+            existing_match = next((e for e in pool_entries if e.get("key") == entered), None)
+            if existing_match:
+                p_label = str(existing_match.get("provider", "provider")).upper()
+                print(f"\n  ⚠️  Notice: This API key is ALREADY ADDED for {p_label} ({mask_key(entered)})!")
+                print("     [1] Continue with existing keys")
+                print("     [2] Paste a different API key")
+                try:
+                    dup_choice = input("     Choose [1-2, default: 1]: ").strip()
+                except (KeyboardInterrupt, EOFError):
+                    dup_choice = "1"
+                if dup_choice == "2":
+                    continue
+                return None
             det_prov = UniversalAPIProvider.detect_provider_from_key(entered)
             if det_prov == "unknown":
                 det_prov = select_provider_dialog()
@@ -597,6 +639,16 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
             return env_file, None, "offline-cognitive-partner", "offline"
 
     while True:
+        # Deduplicate pool entries by unique key to prevent repeating providers
+        deduped_entries = []
+        _seen = set()
+        for e in pool_entries:
+            k = str(e.get("key", "")).strip()
+            if k and k not in _seen:
+                _seen.add(k)
+                deduped_entries.append(e)
+        pool_entries = deduped_entries
+
         print("\n  " + "═" * 74)
         print("  🔑 [Step 2/7] API KEY & MODEL CONTROL HUB")
         print("  " + "═" * 74)
@@ -662,7 +714,11 @@ def setup_environment_and_models(interactive: bool = True) -> Tuple[Path, Option
             active_key = str(primary["key"])
 
             if len(verified_entries) > 1:
-                prov_summary = " + ".join([f"{str(e['provider']).upper()} ({len(e.get('models', []))} models)" for e in verified_entries])
+                prov_model_counts: Dict[str, int] = {}
+                for e in verified_entries:
+                    p_up = str(e["provider"]).upper()
+                    prov_model_counts[p_up] = max(prov_model_counts.get(p_up, 0), len(e.get("models", [])))
+                prov_summary = " + ".join([f"{p} ({cnt} models)" for p, cnt in prov_model_counts.items()])
                 dialog_prov = f"MULTI-KEY POOL: {prov_summary}"
             else:
                 dialog_prov = str(active_prov).upper()
@@ -1045,7 +1101,12 @@ def print_ready_guide(db_path: Path, selected_model: str, provider: str, interac
     print("  🚀 [Step 7/7] IVA SETUP COMPLETE & FULLY OPERATIONAL ON YOUR SYSTEM!")
     print("=" * 80)
     print(f"  • Cognitive Memory Database : {db_path}")
-    print(f"  • Active Model Target       : {selected_model} ({provider.upper()})")
+    active_provs = os.environ.get("IVA_ACTIVE_PROVIDERS")
+    if active_provs and "," in active_provs:
+        prov_display = "MULTI-KEY: " + " + ".join([p.upper() for p in active_provs.split(",")])
+    else:
+        prov_display = provider.upper()
+    print(f"  • Active Model Target       : {selected_model} ({prov_display})")
     if os.environ.get("IVA_SELECTED_MODELS"):
         print(f"  • Multi-Model Selection Pool: {os.environ['IVA_SELECTED_MODELS']}")
     print(f"  • Operating Mode            : Fail-Closed Paper Simulation (Safe)")
