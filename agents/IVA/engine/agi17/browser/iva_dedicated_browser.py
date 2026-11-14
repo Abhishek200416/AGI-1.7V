@@ -78,30 +78,32 @@ class IVADedicatedBrowserManager:
 
     @staticmethod
     def resolve_browser_binary() -> str:
-        """Finds Chromium or Chrome binary on the system (prioritizing Playwright Chromium)."""
+        """Finds Google Chrome binary on the system (prioritizing Official Google Chrome)."""
         system = platform.system()
         candidates: List[str] = []
 
         if system == "Windows":
-            # 1. Playwright managed Chromium builds (isolated developer browser)
-            playwright_glob = str(Path.home() / "AppData" / "Local" / "ms-playwright" / "**" / "chrome.exe")
-            matches = glob.glob(playwright_glob, recursive=True)
-            if matches:
-                # Pick latest build
-                candidates.extend(sorted(matches, reverse=True))
-
-            # 2. System Google Chrome
+            # 1. Official Google Chrome (Top Priority)
             candidates.extend([
                 r"C:\Program Files\Google\Chrome\Application\chrome.exe",
                 r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
                 str(Path.home() / "AppData" / "Local" / "Google" / "Chrome" / "Application" / "chrome.exe"),
+            ])
+            # 2. Playwright Chromium builds (Fallback)
+            playwright_glob = str(Path.home() / "AppData" / "Local" / "ms-playwright" / "**" / "chrome.exe")
+            matches = glob.glob(playwright_glob, recursive=True)
+            if matches:
+                candidates.extend(sorted(matches, reverse=True))
+
+            # 3. Microsoft Edge (Fallback)
+            candidates.extend([
                 r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
                 r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
             ])
         elif system == "Darwin":
             candidates.extend([
-                str(Path.home() / "Library" / "Caches" / "ms-playwright" / "**" / "Chromium.app" / "Contents" / "MacOS" / "Chromium"),
                 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                str(Path.home() / "Library" / "Caches" / "ms-playwright" / "**" / "Chromium.app" / "Contents" / "MacOS" / "Chromium"),
                 "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
             ])
         else:
@@ -121,17 +123,22 @@ class IVADedicatedBrowserManager:
                 return c
 
         raise FileNotFoundError(
-            "No compatible Chrome, Chromium, or Edge binary found. "
-            "Please install Google Chrome or run `playwright install chromium`."
+            "No compatible Google Chrome or Chromium binary found. "
+            "Please install Google Chrome from https://www.google.com/chrome/"
         )
 
-    def is_cdp_available(self) -> bool:
-        """Checks if the browser remote debugging port is answering."""
-        try:
-            req = urllib.request.urlopen(f"http://127.0.0.1:{self.cdp_port}/json/version", timeout=1.0)
-            return req.status == 200
-        except Exception:
-            return False
+    def is_cdp_available(self, port: Optional[int] = None) -> bool:
+        """Checks if Chrome remote debugging port is answering (checks active port or 9222/9229)."""
+        ports = [port] if port else [self.cdp_port, 9222]
+        for p in ports:
+            try:
+                req = urllib.request.urlopen(f"http://127.0.0.1:{p}/json/version", timeout=0.8)
+                if req.status == 200:
+                    self.cdp_port = p
+                    return True
+            except Exception:
+                pass
+        return False
 
     def launch(
         self,
@@ -343,13 +350,24 @@ class IVADedicatedBrowserManager:
         tabs = self.list_tabs()
         if not tabs:
             if not self.is_cdp_available():
-                return "   ⚠️ IVA Dedicated Browser is currently offline. Type `browser open` to launch."
-            return "   ℹ️ Browser is open, but no active pages detected."
+                return "   ⚠️ IVA Dedicated Google Chrome is currently offline. Type `browser open` to launch."
+            return "   ℹ️ Google Chrome is open, but no active pages detected."
+
+        browser_name = "Official Google Chrome (chrome.exe)"
+        try:
+            exe = self.resolve_browser_binary()
+            if "edge" in exe.lower():
+                browser_name = "Microsoft Edge (msedge.exe)"
+            elif "playwright" in exe.lower():
+                browser_name = "Chromium (Playwright build)"
+        except Exception:
+            pass
 
         lines = [
             "   " + "═" * 74,
-            "   🌐 IVA DEDICATED MANAGED BROWSER — ACTIVE TAB CONTROL HUB",
+            "   🌐 IVA DEDICATED GOOGLE CHROME — ACTIVE TAB CONTROL HUB",
             "   " + "═" * 74,
+            f"   • Engine : {browser_name}",
             f"   • CDP Remote Debug Port: 127.0.0.1:{self.cdp_port} | Profile: {self.profile_dir.name}",
             "   " + "─" * 74,
         ]
