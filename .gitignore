@@ -121,6 +121,7 @@ MISSION_STATUS.md
 *.flv
 studio/projects/**/segs/
 studio/projects/**/*.mp4
+studio/projects/prj082/
 video/final_exports/
 *.bak
 .venv*

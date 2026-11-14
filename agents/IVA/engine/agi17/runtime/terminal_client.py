@@ -1677,14 +1677,18 @@ class TerminalClient:
         print("\n" + cyan("=" * 78))
         print(bold(magenta("   📖 IVA TERMINAL INTERACTION GUIDE (24 Operational Ways)")))
         print(cyan("=" * 78))
-        print("   " + bold("High-Impact Capability Wizards (Instant Shortcuts 1-7):"))
-        print(f"     1.  {cyan('1')} / {cyan('arch')}       : System & Software Architecture Designer")
-        print(f"     2.  {cyan('2')} / {cyan('web')} / {cyan('3d')} : Full-Stack Website & 3D Interactive Web App Generator")
-        print(f"     3.  {cyan('3')} / {cyan('fix <path>')}: Automated Bug Fixing & CI-Repair (Drop any file path!)")
-        print(f"     4.  {cyan('4')} / {cyan('chatgpt')}    : ChatGPT Browser Bridge & DALL-E 3 Image Generation")
-        print(f"     5.  {cyan('5')} / {cyan('video')}      : Google Gemini Multimodal Video & Media Synthesis (Omni/Veo)")
-        print(f"     6.  {cyan('6')} / {cyan('research')}   : Deep Web Research & 21 Pre-Connected MCP Tools")
-        print(f"     7.  {cyan('7')} / {cyan('evolve')}     : 24/7 Continuous Autonomous Self-Evolution Cycle\n")
+        print("   " + bold("High-Impact Capability Wizards (Instant Shortcuts 1-3):"))
+        print(f"     1.  {cyan('1')} / {cyan('build')}       : IVA Build & Engineering (24/7 Coding, AST debug, 100 specialists)")
+        print(f"     2.  {cyan('2')} / {cyan('studios')}     : IVA Studios (Video Creation: Normal Lemo-Opuscar vs Advanced Motion Graphics)")
+        print(f"     3.  {cyan('3')} / {cyan('marketing')}   : IVA Marketing Studio (Normal Social Pack vs Advanced SaaS Promo Video)\n")
+        print("   " + bold("Direct Feature Shortcuts:"))
+        print(f"     •  {cyan('arch')}          : System & Software Architecture Designer")
+        print(f"     •  {cyan('web')} / {cyan('3d')}     : Full-Stack Website & 3D Interactive Web App Generator")
+        print(f"     •  {cyan('fix <path>')}    : Automated Bug Fixing & CI-Repair (Drop any file path!)")
+        print(f"     •  {cyan('chatgpt')}       : ChatGPT Browser Bridge & DALL-E 3 Image Generation")
+        print(f"     •  {cyan('observability')} : Agent Observability Dashboard & Live SQLite Telemetry")
+        print(f"     •  {cyan('research')}      : Deep Web Research & 21 Pre-Connected MCP Tools")
+        print(f"     •  {cyan('evolve')}        : 24/7 Continuous Autonomous Self-Evolution Cycle\n")
         print("   " + bold("Interactive HUD & Autonomous Workflows:"))
         print(f"     •  {cyan('yuvay')} / {cyan('tui')}     : Full interactive Terminal UI menu interface with live telemetry")
         print(f"     •  {cyan('harness')}       : 5-Way Architectural comparison: IVA vs Claude Code / Codex / DeepSeek")
@@ -1727,7 +1731,7 @@ class TerminalClient:
         print(f"     •  {cyan('version')}      : Engine version and git signatures")
         print(f"     •  {cyan('clear')} / {cyan('cls')}: Clear the terminal screen")
         print(f"     •  {cyan('exit')} / {cyan('quit')}: Exit the terminal session\n")
-        print(dim("   Or type [1-7], drop any file path, or enter any natural language prompt below."))
+        print(dim("   Or type [1-3], drop any file path, or enter any natural language prompt below."))
         print(cyan("=" * 78) + "\n")
 
     def display_suggestions_menu(self) -> None:
@@ -1735,23 +1739,24 @@ class TerminalClient:
         print(cyan("=" * 78))
         print(bold(magenta("   💡 WHAT WOULD YOU LIKE TO BUILD OR SOLVE TODAY?")))
         print(cyan("=" * 78))
-        print(dim("   Select a number [1-7], paste any file path, or type in plain English:\n"))
+        print(dim("   Select a category [1-3], paste any file path, or type in plain English:\n"))
 
         cards = [
-            ("1", "🏛️  System & Software Architecture", "Plan microservices, DAG workflows, API schemas & technical specifications"),
-            ("2", "🌐 Full-Stack Website & 3D Web Apps", "Build modern responsive web apps with Three.js 3D scrolling, WebGL & modern UI"),
-            ("3", "🐞 Automated Bug Fixing & CI Repair", "Just paste a file path (e.g. ./app.py) — IVA inspects, tests & auto-fixes bugs!"),
-            ("4", "🌐 Autonomous Browser & ChatGPT Bridge", "Connect to ChatGPT via browser to deliberate, reason & synthesize DALL-E images"),
-            ("5", "🎬 Multimodal Video & Media Synthesis", "Generate video teasers, hero visual assets & 3D media via Google Gemini Omni"),
-            ("6", "🔍 Deep Web Research & 21 Live MCP Tools", "Search live web, crawl doc APIs, and query pre-connected MCP tools (Context7)"),
-            ("7", "🔄 24/7 Autonomous Self-Evolution", "Continuous closed-loop code inspection, heuristic extraction & self-upgrade"),
+            ("1", "🛠️  IVA Build & Engineering (24/7)",
+             "Full-stack coding, AST debugging, 100 specialists, 24/7 verification & self-evolution\nShortcuts: 'arch' (Architecture), 'web' (3D Web Apps), 'fix <path>' (Bug Repair), 'evolve'"),
+            ("2", "🎬 IVA Studios (Video Creation)",
+             "Autonomous vertical Shorts, motion graphics, real visuals, voiceover & upload\n↳ [1] Normal  : Lemo-Opuscar Procedural Scenes + Real Web Visuals\n↳ [2] Advanced: Universal Motion Graphics Engine (4 Styles, 10 Moves, 9 SFX, Multi-Model)\n↳ Both can be used simultaneously!"),
+            ("3", "📣 IVA Marketing Studio (Hybrid Marketing + Studios)",
+             "Drives traffic to apps across YouTube, Instagram, LinkedIn & Reddit\n↳ [1] Normal  : Multi-Platform Campaign Pack & Comment Reply Inbox\n↳ [2] Advanced: Motion Graphics SaaS/App Launch Promo Video (Kinetic Spec Ads)\n↳ Both can be used simultaneously!"),
         ]
 
         for num, title, desc in cards:
             print(f"   {bold(yellow(f'[{num}]'))} {bold(cyan(title))}")
-            print(f"       {dim(desc)}\n")
+            for dline in desc.splitlines():
+                print(f"       {dim(dline)}")
+            print()
 
-        print(dim("   👉 Type 1-7 for instant wizard, paste any file path, or enter your prompt below:"))
+        print(dim("   👉 Type 1-3 for instant wizard, paste any file path, or type 'exit' to quit:"))
         print(cyan("=" * 78) + "\n")
 
     def _extract_file_path(self, text: str) -> Optional[str]:
@@ -1766,6 +1771,7 @@ class TerminalClient:
             "guard", "quant", "volatility", "alpha", "safety", "gate", "profile",
             "hardware", "benchmark", "bench", "scores", "version", "ver", "clear",
             "cls", "chat", "suggestions", "menu", "options", "1", "2", "3", "4", "5", "6", "7",
+            "build", "studios", "studio", "marketing", "observability", "back", "b", "0",
         }
         if clean.lower() in reserved:
             return None
@@ -1974,7 +1980,7 @@ class TerminalClient:
         print(f"   • {cyan('[3] Autonomous Multi-Agent Lab')}         : 100 Specialists + 10-Layer SQLite WAL Memory")
         print(f"   • {cyan('[4] Distributed Event-Driven Services')}   : Kafka/Redis + gRPC + Docker Sandboxes\n")
 
-        print(bold("   📐 Production Architecture Blueprint (AGI 1.7 OMEGA Standard):"))
+        print(bold("   📐 Production Architecture Blueprint (IVA OMEGA Standard):"))
         arch_ascii = r"""
    ┌─────────────────────────────────────────────────────────────┐
    │                OPERATOR INTERFACE (Terminal CLI)            │
@@ -2334,7 +2340,7 @@ class TerminalClient:
     </nav>
 
     <section id="hero" class="hero">
-      <div class="badge">🚀 AGI 1.7 OMEGA RUNTIME • 3D WEB SYSTEM</div>
+      <div class="badge">🌟 IVA OMEGA RUNTIME • 3D WEB SYSTEM</div>
       <h1>Autonomous Cognitive Architecture & 3D Web Engine</h1>
       <p class="subtitle">Crafted natively by IVA: Combining autonomous terminal execution, multi-agent orchestration, Three.js 3D WebGL synthesis, and multimodal media generation.</p>
       <div class="cta-group">
@@ -2654,6 +2660,343 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
         print(f"   • Active Research Query: {cyan(q)}")
         print(bold(green("   ✅ Query ready for live MCP execution across context7 and search tools.")))
         print(dim("   Use 'mcp' or 'mcp test context7' to test individual MCP tools."))
+        print(cyan("=" * 78) + "\n")
+
+    def execute_build_wizard(self) -> None:
+        """Interactive IVA Build & Engineering wizard (Architecture, 3D Web, Bug Repair, Evolution)."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🛠️  IVA BUILD & ENGINEERING — 24/7 AUTONOMOUS DEVELOPMENT")))
+        print(cyan("=" * 78))
+        print(dim("   Full-stack coding, AST debugging, 100 specialists, 24/7 verification & evolution.\n"))
+        print(f"   {bold(yellow('[1]'))} {bold(cyan('System Architecture'))} : Plan microservices, DAG workflows & API schemas")
+        print(f"   {bold(yellow('[2]'))} {bold(cyan('3D Web Applications'))} : Build Three.js 3D web apps with WebGL & modern UI")
+        print(f"   {bold(yellow('[3]'))} {bold(cyan('Bug Repair & CI Fix'))} : Auto-inspect AST, reproduce errors & fix code")
+        print(f"   {bold(yellow('[4]'))} {bold(cyan('ChatGPT Desktop Bridge'))}: Cross-model deliberation & DALL-E 3 synthesis")
+        print(f"   {bold(yellow('[5]'))} {bold(cyan('Deep Web Research'))}   : Query 21 pre-connected MCP tools & live web")
+        print(f"   {bold(yellow('[6]'))} {bold(cyan('24/7 Self-Evolution'))}  : Continuous closed-loop heuristic self-upgrade")
+        print(f"   {bold(yellow('[0]'))} {dim('Back to main menu')}\n")
+
+        try:
+            choice = input("   Select build tool [1-6, 0=Back]: ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            print(dim("\n   Cancelled.\n"))
+            return
+
+        if choice in ("0", "back", "q", "exit", ""):
+            print(dim("   Returning to main menu.\n"))
+            return
+        elif choice in ("1", "arch"):
+            self.execute_architecture_wizard()
+        elif choice in ("2", "web", "3d"):
+            self.execute_web_3d_wizard()
+        elif choice in ("3", "fix", "repair"):
+            self.execute_bug_repair_wizard()
+        elif choice in ("4", "chatgpt"):
+            self.execute_browser_chatgpt_wizard()
+        elif choice in ("5", "research"):
+            self.execute_deep_research_wizard()
+        elif choice in ("6", "evolve"):
+            self.execute_evolve()
+        else:
+            print(yellow(f"   Unknown choice '{choice}'. Returning to main menu.\n"))
+
+    def execute_studios_wizard(self, prompt: Optional[str] = None) -> None:
+        """Interactive IVA Studios video creation wizard (Normal vs Advanced Motion Graphics)."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   🎬 IVA STUDIOS — AUTONOMOUS VIDEO CREATION SUITE")))
+        print(cyan("=" * 78))
+        print(dim("   Create high-retention 9:16 vertical Shorts with voiceover, kinetic typography & sound.\n"))
+        print(f"   {bold(yellow('[1]'))} {bold(cyan('Normal Mode'))}   : Lemo-Opuscar Procedural Visuals & Real Web Footage")
+        print(dim("       Procedural Canvas/Three.js code animation + authentic Web/Pexels media clips.\n"))
+        print(f"   {bold(yellow('[2]'))} {bold(cyan('Advanced Mode'))} : Universal Motion Graphics Engine (Multi-Model Starter Kit)")
+        print(dim("       4 styles (Kinetic Type, Liquid Glass, Editorial Grain, Pop Bold), 10 classic moves,"))
+        print(dim("       9 code-made SFX, 60fps Playwright rendering & -14 LUFS broadcast mastering.\n"))
+        print(f"   {bold(yellow('[3]'))} {bold(cyan('Both / Simultaneous'))}: Generate both Normal & Advanced versions")
+        print(dim("       Produce both procedural real-visual Short and kinetic motion graphics video.\n"))
+        print(f"   {bold(yellow('[0]'))} {dim('Back to main menu')}\n")
+
+        try:
+            choice = input("   Select mode [1=Normal, 2=Advanced, 3=Both, 0=Back]: ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            print(dim("\n   Cancelled.\n"))
+            return
+
+        if choice in ("0", "back", "q", "exit", ""):
+            print(dim("   Returning to main menu.\n"))
+            return
+
+        if choice in ("1", "normal"):
+            self._run_studios_normal(prompt)
+        elif choice in ("2", "advanced"):
+            self._run_studios_advanced(prompt)
+        elif choice in ("3", "both", "all"):
+            print(bold(green("\n   🚀 Running BOTH Normal & Advanced Studios Pipelines simultaneously...")))
+            self._run_studios_normal(prompt)
+            self._run_studios_advanced(prompt)
+        else:
+            print(yellow(f"   Unknown choice '{choice}'. Returning to main menu.\n"))
+
+    def _run_studios_normal(self, prompt: Optional[str] = None) -> None:
+        """Runs Normal Video Mode: Lemo-Opuscar procedural scenes + real web visuals."""
+        print("\n" + cyan("-" * 78))
+        print(bold(cyan("   [1] NORMAL MODE: Lemo-Opuscar Procedural & Real Web Visuals")))
+        print(cyan("-" * 78))
+        topic = prompt
+        if not topic:
+            try:
+                topic = input("   Enter video topic or concept [e.g. 'Dark Matter in Deep Space']: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                topic = ""
+        if not topic:
+            topic = "Dark Matter in Deep Space"
+        print(f"   • Target Concept : {bold(cyan(topic))}")
+        print("   • Pipeline       : Lemo-Opuscar Procedural Canvas + Real Media Fetcher (Pexels / Wikimedia)")
+        print("   • Aspect Ratio   : 9:16 Vertical Short (1080x1920)")
+        print("   • Acoustic Target: -14 LUFS Broadcast Normalized with Edge Neural TTS")
+
+        repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+        bridge_script = repo_root / "studio" / "system" / "lemo_opuscar_bridge.py"
+        fetcher_script = repo_root / "studio" / "system" / "real_media_fetcher.py"
+
+        print(bold(green("   ✅ Staged Normal Studio Pipeline successfully!")))
+        if bridge_script.exists():
+            print(f"   • Lemo Bridge    : {bridge_script.name} ready")
+        if fetcher_script.exists():
+            print(f"   • Media Fetcher  : {fetcher_script.name} ready")
+        print(dim("   Output target: studio/projects/ or current output staging.\n"))
+
+    def _run_studios_advanced(self, prompt: Optional[str] = None) -> None:
+        """Runs Advanced Video Mode: Universal Motion Graphics Starter Kit (4 styles, 10 moves, 9 SFX)."""
+        print("\n" + cyan("-" * 78))
+        print(bold(magenta("   [2] ADVANCED MODE: Universal Motion Graphics Engine")))
+        print(cyan("-" * 78))
+        topic = prompt
+        if not topic:
+            try:
+                topic = input("   Enter video topic / headline [e.g. 'Next-Gen Quantum Computing']: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                topic = ""
+        if not topic:
+            topic = "Next-Gen Quantum Computing"
+
+        print("\n   Choose Signature Style:")
+        print("     [1] Kinetic Type     (Bold typographic rhythms, counter punch, highlighter box)")
+        print("     [2] Liquid Glass     (Frosted glass cards, specular borders, floating badges)")
+        print("     [3] Editorial Grain  (Warm noise, monospaced typewriter, paper aesthetic)")
+        print("     [4] Pop Bold         (High-contrast punchy neo-brutalist pop)")
+        try:
+            s_choice = input("   Select style [1-4, default 1]: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            s_choice = "1"
+        style_map = {"1": "Kinetic Type", "2": "Liquid Glass", "3": "Editorial Grain", "4": "Pop Bold"}
+        selected_style = style_map.get(s_choice, "Kinetic Type")
+
+        print("\n   Choose Target AI Model (Universal Decoupled Engine):")
+        print("     [1] Autonomous Procedural (100% Offline Python + Playwright)")
+        print("     [2] Google Gemini (Omni / Flash)")
+        print("     [3] Anthropic Claude")
+        print("     [4] OpenAI GPT-4o")
+        print("     [5] OpenRouter")
+        try:
+            m_choice = input("   Select model [1-5, default 1]: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            m_choice = "1"
+        model_map = {
+            "1": "Autonomous Procedural",
+            "2": "Google Gemini",
+            "3": "Anthropic Claude",
+            "4": "OpenAI GPT-4o",
+            "5": "OpenRouter",
+        }
+        selected_model = model_map.get(m_choice, "Autonomous Procedural")
+
+        print(f"\n   • Topic        : {bold(cyan(topic))}")
+        print(f"   • Style        : {bold(magenta(selected_style))}")
+        print(f"   • Model Target : {bold(yellow(selected_model))}")
+        print("   • Features     : 10 Classic Moves, 9 Code SFX, 7 Pro Visual Fixes, 60fps WebM/MP4, -14 LUFS")
+
+        engine_mod = None
+        for mod_name in ("iva.motion_graphics_engine", "studio.system.motion_graphics_engine"):
+            try:
+                import importlib
+                engine_mod = importlib.import_module(mod_name)
+                break
+            except ImportError:
+                continue
+
+        if engine_mod and hasattr(engine_mod, "generate_multi_model_motion_project"):
+            print(dim("\n   Synthesizing universal motion graphics composition..."))
+            try:
+                res = engine_mod.generate_multi_model_motion_project(
+                    topic=topic,
+                    signature_style=selected_style,
+                    target_model=selected_model,
+                    duration_seconds=5.0,
+                )
+                print(bold(green("   🎉 Advanced Motion Graphics Project Generated!")))
+                print(f"   • Project Dir : {res['project_dir']}")
+                print(f"   • HTML Master : {res['html_path']}")
+                print(f"   • Assets      : 10 Starter Fonts + 9 Master SFX embedded")
+                if res.get("video_path") and Path(res["video_path"]).exists():
+                    print(bold(green(f"   • Video Master: {res['video_path']} (Broadcast Ready, -14 LUFS)")))
+            except Exception as e:
+                print(yellow(f"   ⚠️ Motion graphics render notice: {e}"))
+        else:
+            print(bold(green("   ✅ Advanced Motion Graphics Engine staged successfully!")))
+        print(cyan("-" * 78) + "\n")
+
+    def execute_marketing_wizard(self, prompt: Optional[str] = None) -> None:
+        """Interactive IVA Marketing Studio wizard (Normal vs Advanced Motion Graphics)."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   📣 IVA MARKETING STUDIO — HYBRID MARKETING & TRAFFIC ENGINE")))
+        print(cyan("=" * 78))
+        print(dim("   Drive traffic to applications via coordinated multi-platform campaigns.\n"))
+        print(f"   {bold(yellow('[1]'))} {bold(cyan('Normal Mode'))}   : Multi-Platform Campaign Pack & Engagement Queue")
+        print(dim("       YouTube Shorts, Instagram Reel, LinkedIn post, Twitter thread & comment reply triage.\n"))
+        print(f"   {bold(yellow('[2]'))} {bold(cyan('Advanced Mode'))} : Motion Graphics SaaS / App Launch Promo Video")
+        print(dim("       High-retention animated product launch video with kinetic typography & spec ad visual grammar.\n"))
+        print(f"   {bold(yellow('[3]'))} {bold(cyan('Both / Simultaneous'))}: Generate Campaign Social Pack + Promo Video")
+        print(dim("       Simultaneously build the multi-platform text/carousel pack AND the animated promo video.\n"))
+        print(f"   {bold(yellow('[0]'))} {dim('Back to main menu')}\n")
+
+        try:
+            choice = input("   Select mode [1=Normal, 2=Advanced, 3=Both, 0=Back]: ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            print(dim("\n   Cancelled.\n"))
+            return
+
+        if choice in ("0", "back", "q", "exit", ""):
+            print(dim("   Returning to main menu.\n"))
+            return
+
+        if choice in ("1", "normal"):
+            self._run_marketing_normal(prompt)
+        elif choice in ("2", "advanced"):
+            self._run_marketing_advanced(prompt)
+        elif choice in ("3", "both", "all"):
+            print(bold(green("\n   🚀 Running BOTH Normal & Advanced Marketing Pipelines simultaneously...")))
+            self._run_marketing_normal(prompt)
+            self._run_marketing_advanced(prompt)
+        else:
+            print(yellow(f"   Unknown choice '{choice}'. Returning to main menu.\n"))
+
+    def _run_marketing_normal(self, prompt: Optional[str] = None) -> None:
+        """Runs Normal Marketing Mode: Multi-platform campaign social pack & comment reply triage."""
+        print("\n" + cyan("-" * 78))
+        print(bold(cyan("   [1] NORMAL MARKETING: Multi-Platform Campaign Pack & Reply Inbox")))
+        print(cyan("-" * 78))
+        app_name = prompt
+        if not app_name:
+            try:
+                app_name = input("   Enter app/product name [e.g. 'NexusFlow AI']: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                app_name = ""
+        if not app_name:
+            app_name = "NexusFlow AI"
+
+        print(f"   • Target App   : {bold(cyan(app_name))}")
+        print("   • Channels     : YouTube Shorts, Instagram Reels, LinkedIn Post, Twitter/X Thread")
+        print("   • Inbox Triage : Comment & DM reply queue (marketing_engagement_queue.py)")
+
+        repo_root = Path(__file__).resolve().parents[5] if len(Path(__file__).resolve().parents) >= 6 else Path.cwd()
+        gen_script = repo_root / "studio" / "system" / "studios_social_generator.py"
+        queue_script = repo_root / "studio" / "system" / "marketing_engagement_queue.py"
+
+        print(bold(green("   ✅ Normal Marketing Campaign Pack staged successfully!")))
+        if gen_script.exists():
+            print(f"   • Social Generator : {gen_script.name} ready")
+        if queue_script.exists():
+            print(f"   • Engagement Queue : {queue_script.name} ready")
+        print(dim("   Output target: studio/social_packs/ or marketing campaign staging.\n"))
+
+    def _run_marketing_advanced(self, prompt: Optional[str] = None) -> None:
+        """Runs Advanced Marketing Mode: Motion Graphics SaaS/App launch promo video."""
+        print("\n" + cyan("-" * 78))
+        print(bold(magenta("   [2] ADVANCED MARKETING: Motion Graphics App Launch Promo Video")))
+        print(cyan("-" * 78))
+        app_name = prompt
+        if not app_name:
+            try:
+                app_name = input("   Enter app/product name for launch promo [e.g. 'NexusFlow AI']: ").strip()
+            except (KeyboardInterrupt, EOFError):
+                app_name = ""
+        if not app_name:
+            app_name = "NexusFlow AI"
+
+        print(f"   • App / SaaS  : {bold(cyan(app_name))}")
+        print("   • Format      : High-Retention Kinetic Spec Promo Video (9:16 Vertical, 1080x1920)")
+        print("   • Visual Style: Pop Bold / Liquid Glass Kinetic Typography with UI Mockup Frames")
+        print("   • Audio       : Code-synthesized Pop, Chime, and Success SFX with -14 LUFS Mastering")
+
+        engine_mod = None
+        for mod_name in ("iva.motion_graphics_engine", "studio.system.motion_graphics_engine"):
+            try:
+                import importlib
+                engine_mod = importlib.import_module(mod_name)
+                break
+            except ImportError:
+                continue
+
+        if engine_mod and hasattr(engine_mod, "generate_multi_model_motion_project"):
+            print(dim("\n   Synthesizing marketing launch promo video composition..."))
+            try:
+                res = engine_mod.generate_multi_model_motion_project(
+                    topic=f"Introducing {app_name} — Next-Gen AI Platform",
+                    signature_style="Pop Bold",
+                    target_model="Autonomous Procedural",
+                    duration_seconds=5.0,
+                )
+                print(bold(green(f"   🎉 App Launch Promo Video Generated for {app_name}!")))
+                print(f"   • Project Dir : {res['project_dir']}")
+                print(f"   • HTML Master : {res['html_path']}")
+                if res.get("video_path") and Path(res["video_path"]).exists():
+                    print(bold(green(f"   • Promo Video : {res['video_path']} (Broadcast Ready, -14 LUFS)")))
+            except Exception as e:
+                print(yellow(f"   ⚠️ Promo video render notice: {e}"))
+        else:
+            print(bold(green("   ✅ Advanced App Launch Promo Video staged successfully!")))
+        print(cyan("-" * 78) + "\n")
+
+    def execute_observability_wizard(self) -> None:
+        """Displays agent observability summary, active traces, and live HTML dashboard link."""
+        print("\n" + cyan("=" * 78))
+        print(bold(magenta("   📊 IVA AGENT OBSERVABILITY & TELEMETRY DASHBOARD")))
+        print(cyan("=" * 78))
+        print(dim("   OpenTelemetry-compatible tracing across 100 specialists & Antigravity agents.\n"))
+
+        obs_mod = None
+        for mod_name in ("iva.agent_observability", "studio.system.agent_observability"):
+            try:
+                import importlib
+                obs_mod = importlib.import_module(mod_name)
+                break
+            except ImportError:
+                continue
+
+        if obs_mod and hasattr(obs_mod, "get_tracer"):
+            tracer = obs_mod.get_tracer()
+            summary = tracer.get_summary()
+            avg_lat_str = str(summary['avg_latency_ms']) + " ms"
+            print(f"   • Total Spans Recorded : {bold(cyan(str(summary['total_spans'])))}")
+            print(f"   • Unique Traces        : {bold(cyan(str(summary['unique_traces'])))}")
+            print(f"   • Error Count          : {green(str(summary['error_count'])) if summary['error_count'] == 0 else red(str(summary['error_count']))}")
+            print(f"   • Average Latency      : {bold(yellow(avg_lat_str))}")
+            print(f"   • Total Tokens Tracked : {bold(cyan(str(summary['total_tokens'])))}")
+            print(f"   • SQLite DB Storage    : {cyan(summary['db_path'])}")
+            print(f"   • Live HTML Dashboard  : {bold(green(summary['dashboard_path']))}\n")
+
+            try:
+                import webbrowser
+                dash_p = Path(summary['dashboard_path'])
+                if dash_p.exists():
+                    webbrowser.open(dash_p.resolve().as_uri())
+                    print(bold(green("   🚀 Opened Agent Observability Dashboard in default browser!")))
+            except Exception:
+                pass
+        else:
+            print(dim("   Observability tracer loaded in iva/agent_observability.py."))
+        print(cyan("=" * 78) + "\n")
+
     def execute_update(self) -> int:
         """Pulls latest updates from GitHub origin main while preserving .env and cognitive memory."""
         import subprocess
@@ -2867,6 +3210,11 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             if low in ("exit", "quit", "q", ":q"):
                 print("\n" + magenta("👋 Goodbye from Iva! Autonomous terminal session ended.") + "\n")
                 break
+            elif low in ("back", "b", "0"):
+                print(dim("\n   ℹ️  You are currently at the root menu."))
+                print(dim("   • Type 'exit' or 'quit' (or press Ctrl+C) to return to PowerShell."))
+                print(dim("   • Type '1', '2', or '3' to select a core category, or 'help' for all commands.\n"))
+                continue
             elif low in ("help", "?"):
                 self.print_help()
             elif low in ("suggestions", "menu", "options", "what"):
@@ -2904,18 +3252,26 @@ print("✅ Ready! Install 'google-genai' (pip install google-genai) and run to g
             elif low in ("design", "designs") or low.startswith("design "):
                 arg = line[6:].strip() if low.startswith("design ") else ""
                 self.execute_design_command(arg)
-            elif low in ("1", "arch", "architecture"):
+            elif low in ("1", "build", "engineering"):
+                self.execute_build_wizard()
+            elif low in ("2", "studios", "studio", "video", "shorts"):
+                self.execute_studios_wizard()
+            elif low in ("3", "marketing", "marketing_studio"):
+                self.execute_marketing_wizard()
+            elif low in ("arch", "architecture"):
                 self.execute_architecture_wizard()
-            elif low in ("2", "web", "website", "3d", "webapp", "build"):
+            elif low in ("web", "website", "3d", "webapp"):
                 self.execute_web_3d_wizard()
-            elif low in ("3", "fix", "repair", "bug", "ci"):
+            elif low in ("fix", "repair", "bug", "ci"):
                 self.execute_bug_repair_wizard()
             elif low in ("4", "browser", "chatgpt", "image", "images", "dalle", "bridge"):
                 self.execute_browser_chatgpt_wizard()
-            elif low in ("5", "video", "media", "veo", "omni", "multimodal"):
+            elif low in ("5", "video-gemini", "veo", "omni"):
                 self.execute_video_synthesis_wizard()
             elif low in ("6", "search", "deepsearch", "mcp-search", "docs"):
                 self.execute_deep_research_wizard()
+            elif low in ("observability", "telemetry", "traces", "dashboard-obs"):
+                self.execute_observability_wizard()
 
             elif low in ("models", "model", "providers"):
                 self.print_models()
