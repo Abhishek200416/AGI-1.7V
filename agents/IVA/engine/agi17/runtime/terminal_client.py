@@ -624,21 +624,62 @@ class TerminalClient:
         manager = IVADedicatedBrowserManager.get_instance()
         clean_arg = (arg or "").strip().lower()
 
-        if clean_arg in ("launch", "open", "start", "run"):
+        if clean_arg in ("a", "dedicated"):
             print("\n" + cyan("=" * 78))
-            print(bold(magenta("   🌐 LAUNCHING IVA DEDICATED MANAGED BROWSER")))
+            print(bold(magenta("   🌐 OPTION A: LAUNCHING IVA DEDICATED GOOGLE CHROME")))
             print(cyan("=" * 78))
-            print(dim("   Starting isolated Chromium window with persistent user profile...\n"))
+            print(dim("   Starting isolated Google Chrome window side-by-side with your personal browser...\n"))
             demo_path = os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH")
-            res = manager.launch(frontend_demo_path=demo_path)
+            res = manager.launch(mode="dedicated", frontend_demo_path=demo_path)
             if res.get("status") in ("LAUNCHED", "ALREADY_ACTIVE"):
-                print(bold(green(f"   ✅ IVA Dedicated Browser is active! [CDP Port: {res.get('cdp_port')}]")))
+                print(bold(green(f"   ✅ IVA Dedicated Google Chrome is active! [CDP Port: {res.get('cdp_port')}]")))
                 print(f"   • Profile Dir : {cyan(res.get('profile_dir'))}")
                 print(f"   • Open Tabs   : {yellow(str(res.get('open_tabs')))}\n")
                 print(manager.format_tab_table())
             else:
                 print(yellow(f"   ⚠️ Launch status: {res.get('status')} - {res.get('error', '')}"))
             print(cyan("=" * 78) + "\n")
+            return
+
+        elif clean_arg in ("b", "existing", "attach", "personal"):
+            print("\n" + cyan("=" * 78))
+            print(bold(magenta("   🔗 OPTION B: CONNECTING TO EXISTING GOOGLE CHROME PROFILE")))
+            print(cyan("=" * 78))
+            print(dim("   Connecting to your default Chrome profile to use your already logged-in accounts...\n"))
+            demo_path = os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH")
+            res = manager.launch(mode="existing", restart_if_running=False, frontend_demo_path=demo_path)
+            if res.get("status") in ("ATTACHED_TO_RUNNING", "LAUNCHED"):
+                print(bold(green(f"   ✅ Connected to Google Chrome on port {res.get('cdp_port')}!")))
+                print(f"   • Profile Mode: {cyan('Existing Personal Profile (Default Chrome Data)')}")
+                print(f"   • Open Tabs   : {yellow(str(res.get('open_tabs')))}\n")
+                print(manager.format_tab_table())
+            elif res.get("status") == "CHROME_RUNNING_WITHOUT_DEBUGGING":
+                print(yellow("   ℹ️ Google Chrome is currently open, but without remote debugging enabled."))
+                print("   To use your existing profile with all your logged-in accounts, Chrome needs to restart with debugging on port 9222.")
+                try:
+                    restart_choice = input("   Would you like IVA to restart Chrome with remote debugging on port 9222? [Y/n, default: Y]: ").strip().lower()
+                except (KeyboardInterrupt, EOFError):
+                    restart_choice = "n"
+                if restart_choice in ("", "y", "yes"):
+                    print(cyan("\n   ⏳ Restarting Google Chrome with remote debugging on port 9222..."))
+                    r_res = manager.launch(mode="existing", restart_if_running=True, frontend_demo_path=demo_path)
+                    if r_res.get("status") in ("LAUNCHED", "ATTACHED_TO_RUNNING"):
+                        print(bold(green(f"   ✅ Google Chrome restarted with remote debugging on port {r_res.get('cdp_port')}!")))
+                        print(f"   • Open Tabs: {yellow(str(r_res.get('open_tabs')))}\n")
+                        print(manager.format_tab_table())
+                    else:
+                        print(yellow(f"   ⚠️ Launch status: {r_res.get('status')} - {r_res.get('error', '')}"))
+                else:
+                    print(dim("\n   Keeping personal Chrome as-is. Launching isolated Dedicated Chrome Window instead..."))
+                    self.execute_browser_command("a")
+            else:
+                print(yellow(f"   ⚠️ Connection status: {res.get('status')} - {res.get('error', '')}"))
+            print(cyan("=" * 78) + "\n")
+            return
+
+        elif clean_arg in ("launch", "open", "start", "run"):
+            # Check if arg specified or default to showing choice
+            self.execute_browser_command("")
             return
 
         elif clean_arg in ("close", "stop", "kill", "quit", "exit"):
@@ -658,11 +699,11 @@ class TerminalClient:
             if not target_url.startswith(("http://", "https://", "file://")):
                 target_url = "https://" + target_url
             if not manager.is_cdp_available():
-                print(cyan("\n   🌐 Browser is offline. Starting IVA Dedicated Browser first..."))
+                print(cyan("\n   🌐 Browser is offline. Starting IVA Dedicated Google Chrome first..."))
                 manager.launch()
             new_tab = manager.open_new_tab(target_url)
             if new_tab:
-                print(bold(green(f"\n   ✅ Opened tab in IVA Dedicated Browser: {target_url}")))
+                print(bold(green(f"\n   ✅ Opened tab in Google Chrome: {target_url}")))
             else:
                 print(yellow(f"\n   ⚠️ Could not open tab: {target_url}"))
             print(manager.format_tab_table())
@@ -675,13 +716,12 @@ class TerminalClient:
 
         # Default menu if just `browser`
         print("\n" + cyan("=" * 78))
-        print(bold(magenta("   🌐 IVA DEDICATED MANAGED BROWSER & TAB CONTROL HUB")))
+        print(bold(magenta("   🌐 IVA GOOGLE CHROME CONTROL HUB — CHOOSE LAUNCH MODE")))
         print(cyan("=" * 78))
-        print(dim("   Dedicated browser with persistent profile (~/.iva/browser_data/managed_profile)."))
-        print(dim("   Log in once to YouTube Studio, Instagram, LinkedIn, and X — IVA handles the rest!\n"))
+        print(dim("   Engine: Official Google Chrome (chrome.exe)\n"))
 
         if manager.is_cdp_available():
-            print(bold(green("   ● STATUS: BROWSER IS RUNNING (CDP Port 9229 Active)\n")))
+            print(bold(green(f"   ● STATUS: GOOGLE CHROME IS RUNNING (CDP Port {manager.cdp_port} Active)\n")))
             print(manager.format_tab_table())
             print(f"\n   {bold(yellow('[1]'))} Refresh tab list & login states")
             print(f"   {bold(yellow('[2]'))} Open new tab / URL")
@@ -703,23 +743,31 @@ class TerminalClient:
             elif b_choice == "3":
                 self.execute_browser_command("close")
         else:
-            print(bold(yellow("   ○ STATUS: BROWSER IS CURRENTLY STANDBY (Not Launched)\n")))
-            print(f"   {bold(yellow('[1]'))} 🚀 Launch Dedicated Browser (Opens YouTube, IG, LinkedIn, X & Demo Preview)")
-            print(f"   {bold(yellow('[2]'))} 🌐 Open specific URL")
+            print(bold(yellow("   ○ STATUS: GOOGLE CHROME IS CURRENTLY STANDBY (Not Launched)\n")))
+            print("   Please choose how you want IVA to connect to Google Chrome:\n")
+            print(f"   {bold(yellow('[A]'))} {bold('🚀 Option A: Dedicated Chrome Window (Isolated Profile - Recommended)')}")
+            print("       • Opens Chrome side-by-side with your personal browser right now.")
+            print("       • Uses isolated profile (~/.iva/browser_data/managed_profile).")
+            print("       • Preloads YouTube Studio, Instagram, LinkedIn, X & Demo Preview.")
+            print("       • Zero interference with personal browsing. Log in once!")
+            print()
+            print(f"   {bold(yellow('[B]'))} {bold('🔗 Option B: Existing Chrome / Personal Profile (Use Your Logged-In Accounts)')}")
+            print("       • Connects directly to your default Chrome profile where your accounts")
+            print("         are already logged in (Google, YouTube, IG, etc.)!")
+            print("       • Attaches to running Chrome or launches Chrome on port 9222.")
+            print()
+            print(f"   {bold(yellow('[1]'))} 🌐 Open specific URL")
             print(f"   {bold(yellow('[0]'))} Back to chat prompt\n")
             try:
-                b_choice = input("   Choose action [1-2, 0=Back]: ").strip()
+                b_choice = input("   Choose Option [A / B / 0=Back, default: A]: ").strip().lower()
             except (KeyboardInterrupt, EOFError):
                 return
-            if b_choice == "1":
-                self.execute_browser_command("launch")
-            elif b_choice == "2":
-                try:
-                    u_in = input("   Enter URL to open: ").strip()
-                    if u_in:
-                        self.execute_browser_command(f"open {u_in}")
-                except (KeyboardInterrupt, EOFError):
-                    pass
+            if b_choice in ("", "a", "1"):
+                self.execute_browser_command("a")
+            elif b_choice in ("b", "2"):
+                self.execute_browser_command("b")
+            elif b_choice.startswith("http://") or b_choice.startswith("https://") or "." in b_choice:
+                self.execute_browser_command(f"open {b_choice}")
         print(cyan("=" * 78) + "\n")
 
     def execute_context_ingestion(self, path_arg: str = "") -> None:

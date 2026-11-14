@@ -140,13 +140,44 @@ class IVADedicatedBrowserManager:
                 pass
         return False
 
+    @staticmethod
+    def is_chrome_process_running() -> bool:
+        """Checks if a Google Chrome process is currently running on the system."""
+        if platform.system() == "Windows":
+            try:
+                res = subprocess.run(
+                    ["powershell", "-NoProfile", "-Command", "Get-Process chrome -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count"],
+                    capture_output=True,
+                    text=True,
+                    timeout=2.0,
+                )
+                count = int(res.stdout.strip() or 0)
+                return count > 0
+            except Exception:
+                return False
+        else:
+            try:
+                res = subprocess.run(["pgrep", "-f", "chrome"], capture_output=True, timeout=2.0)
+                return res.returncode == 0
+            except Exception:
+                return False
+
     def launch(
         self,
         urls: Optional[List[str]] = None,
         visible: bool = True,
         frontend_demo_path: Optional[str] = None,
+        mode: str = "dedicated",
+        restart_if_running: bool = False,
     ) -> Dict[str, Any]:
-        """Launches IVA's dedicated managed browser window with pre-loaded platform tabs."""
+        """Launches or connects to Google Chrome in either Dedicated or Existing Personal mode."""
+        if mode == "existing":
+            return self.launch_existing_profile(
+                urls=urls,
+                restart_if_running=restart_if_running,
+                frontend_demo_path=frontend_demo_path,
+            )
+
         if self.is_cdp_available():
             logger.info("IVA Dedicated Browser already active on CDP port %d. Reusing session.", self.cdp_port)
             tabs = self.list_tabs()
@@ -177,8 +208,6 @@ class IVADedicatedBrowserManager:
                 initial_urls.append(index_html.as_uri())
             else:
                 initial_urls.append("http://localhost:3000")
-
-        urls_args = " ".join([f'"{u}"' for u in initial_urls])
 
         cmd = [
             browser_exe,
@@ -217,6 +246,98 @@ class IVADedicatedBrowserManager:
             "pid": getattr(self.browser_process, "pid", None),
             "cdp_port": self.cdp_port,
             "profile_dir": str(self.profile_dir),
+            "binary": browser_exe,
+            "open_tabs": len(tabs),
+            "tabs": tabs,
+        }
+
+    def launch_existing_profile(
+        self,
+        urls: Optional[List[str]] = None,
+        restart_if_running: bool = False,
+        frontend_demo_path: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Attaches to running Google Chrome or launches Chrome with default personal profile."""
+        # 1. If CDP is already answering on 9222 or 9229, attach immediately!
+        if self.is_cdp_available():
+            tabs = self.list_tabs()
+            return {
+                "status": "ATTACHED_TO_RUNNING",
+                "cdp_port": self.cdp_port,
+                "profile_mode": "EXISTING_PERSONAL_PROFILE",
+                "open_tabs": len(tabs),
+                "tabs": tabs,
+            }
+
+        browser_exe = self.resolve_browser_binary()
+
+        # 2. If Chrome is already running without debugging
+        if self.is_chrome_process_running():
+            if not restart_if_running:
+                return {
+                    "status": "CHROME_RUNNING_WITHOUT_DEBUGGING",
+                    "cdp_port": 9222,
+                    "message": (
+                        "Google Chrome is already running without remote debugging enabled. "
+                        "To use your existing profile with all your logged-in accounts, Chrome "
+                        "needs to be started with '--remote-debugging-port=9222'."
+                    ),
+                }
+            # Gracefully restart Chrome
+            if platform.system() == "Windows":
+                subprocess.run(
+                    ["powershell", "-NoProfile", "-Command", "Stop-Process -Name chrome -Force -ErrorAction SilentlyContinue"],
+                    capture_output=True,
+                    timeout=5,
+                )
+                time.sleep(1.0)
+
+        # 3. Launch Chrome with default personal profile and remote debugging enabled
+        target_urls = list(urls) if urls else [
+            self.PLATFORM_TARGETS["youtube"],
+            self.PLATFORM_TARGETS["instagram"],
+            self.PLATFORM_TARGETS["linkedin"],
+            self.PLATFORM_TARGETS["x"],
+        ]
+        demo = frontend_demo_path or os.environ.get("IVA_FRONTEND_DEMO_PATH") or os.environ.get("IVA_CODEBASE_PATH")
+        if demo:
+            p_demo = Path(demo).resolve()
+            index_html = p_demo / "index.html"
+            if index_html.exists():
+                target_urls.append(index_html.as_uri())
+
+        cmd = [
+            browser_exe,
+            "--remote-debugging-port=9222",
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--window-size=1400,920",
+            "--window-position=50,30",
+        ]
+        cmd.extend(target_urls)
+
+        try:
+            self.browser_process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            self.cdp_port = 9222
+        except Exception as e:
+            return {"status": "FAILED", "error": str(e)}
+
+        t0 = time.time()
+        while time.time() - t0 < 6.0:
+            if self.is_cdp_available(9222):
+                break
+            time.sleep(0.3)
+
+        tabs = self.list_tabs() if self.is_cdp_available(9222) else []
+        return {
+            "status": "LAUNCHED" if self.is_cdp_available(9222) else "STARTING",
+            "pid": getattr(self.browser_process, "pid", None),
+            "cdp_port": 9222,
+            "profile_mode": "EXISTING_PERSONAL_PROFILE",
             "binary": browser_exe,
             "open_tabs": len(tabs),
             "tabs": tabs,

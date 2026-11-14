@@ -250,6 +250,29 @@ class TestIVADedicatedBrowser(unittest.TestCase):
             with patch("urllib.request.urlopen", return_value=mock_close_resp):
                 self.assertTrue(mgr.close_tab("new-123"))
 
+    def test_07_is_chrome_process_running_and_existing_profile_mode(self) -> None:
+        mgr = IVADedicatedBrowserManager(cdp_port=9229, profile_dir=self.temp_dir)
+
+        # 1. Test is_chrome_process_running helper
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value.stdout = "5\n"
+            self.assertTrue(mgr.is_chrome_process_running())
+            mock_run.return_value.stdout = "0\n"
+            self.assertFalse(mgr.is_chrome_process_running())
+
+        # 2. Test attach to already running CDP on 9222/9229
+        with patch.object(mgr, "is_cdp_available", return_value=True):
+            with patch.object(mgr, "list_tabs", return_value=[{"id": "t1", "platform": "YouTube Studio"}]):
+                res = mgr.launch_existing_profile()
+                self.assertEqual(res["status"], "ATTACHED_TO_RUNNING")
+                self.assertEqual(res["profile_mode"], "EXISTING_PERSONAL_PROFILE")
+
+        # 3. Test running without debugging prompt
+        with patch.object(mgr, "is_cdp_available", return_value=False):
+            with patch.object(mgr, "is_chrome_process_running", return_value=True):
+                res_warn = mgr.launch_existing_profile(restart_if_running=False)
+                self.assertEqual(res_warn["status"], "CHROME_RUNNING_WITHOUT_DEBUGGING")
+
 
 if __name__ == "__main__":
     unittest.main()
